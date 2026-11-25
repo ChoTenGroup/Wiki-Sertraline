@@ -13,6 +13,5 @@ site:
       key: space-2
       title: Sertraline-ZHCN
       path: zhcn
-      draft: true
       content:
         directory: ./sertraline-zhcn
