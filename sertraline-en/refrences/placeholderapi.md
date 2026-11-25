@@ -2,12 +2,12 @@
 icon: percent
 ---
 
-# PlaceHolderAPI
+# PlaceholderAPI
 
 ### Usage
 
 {% hint style="success" %}
-Siece `3.6.3`, The Script Utils can use in PAPI scripts, too.
+Sertraline scripts used through PlaceholderAPI can access the script utilities available in their context.
 {% endhint %}
 
 <figure><img src="../.gitbook/assets/image (8).png" alt=""><figcaption></figcaption></figure>
@@ -24,7 +24,7 @@ You can use `/papi parse me %sertraline_PREFIX:PARAM%` to test Placeholders.
 | javascript: / js:          | Execute JavaScript script                         | Root variables include player data, Includes script compilation and caching                |
 | jexl: / je:                | Execute JEXL script                               | Root variables include player data, Compiled and cached via prodJexlCompiler               |
 | fluxon: / fl:              | Execute Fluxon script                             | Root variables include player data                                                         |
-| graaljs: / gjs: (`3.6.3+`) | Execute GraalJS script                            | Recognized prefix. In the current implementation the script result may not be returned                                        |
+| graaljs: / gjs: (`3.6.3+`) | Execute GraalJS script                            | Runs the script. Use a placeholder that returns a value when you need display text                                        |
 | config:                    | Read value from configuration by key              | Directly returns config entry                                                              |
 | random: / rand:            | Generate random number (supports ints and floats) | Parameter format example: `40to80`                                                     |
 | data: (`3.6.3+`)           | Get raw player data                               | Uses DataUtil to get raw data                                                              |
@@ -37,4 +37,4 @@ You can use `/papi parse me %sertraline_PREFIX:PARAM%` to test Placeholders.
 | cdleftsec1a: (`3.6.3+`)    | Variant of cdleftsec1, trims trailing ".0"        | One decimal place with trailing ".0" removed                                               |
 | cdleftsec2a: (`3.6.3+`)    | Variant of cdleftsec2, trims trailing ".0"        | Two decimal places with trailing ".0" removed                                              |
 
-In game, run `/papi parse me %sertraline_random:40to80%` to verify the expansion. `random:1.5to3.5:2` rounds to two decimal places. Some placeholders accept a fallback, such as `%sertraline_data:my_key?:unset%`.
+In game, run `/papi parse me %sertraline_random:40to80%` to verify the expansion. `random:1.5to3.5:2` rounds to at most two decimal places and removes trailing zeros. Some placeholders accept a fallback, such as `%sertraline_data:my_key?:unset%`.

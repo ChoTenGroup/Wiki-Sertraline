@@ -38,9 +38,11 @@
 
 ## 参考
 
+* [Sertraline API](refrences/api/SertralineAPI.md)
+* [配方 API](refrences/api/recipe-api.md)
 * [脚本问题](refrences/script-issues.md)
 * [PlaceholderAPI](refrences/placeholderapi.md)
 * [XBuilder 参考](refrences/xbuilder.md)
 * [脚本工具](refrences/script-util/README.md)
   * [脚本工具和 API 参考](refrences/script-util/script-util-refs.md)
-* [Universal MythicMobs](refrences/universal-mythicmobs.md)
+* [MythicMobs 掉落与装备](refrences/universal-mythicmobs.md)

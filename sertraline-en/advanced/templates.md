@@ -4,343 +4,78 @@ icon: cards-blank
 
 # Templates
 
-## Try a bundled template
+Use a template when several items share settings such as material, lore, or attributes. After editing the template and reloading, get a fresh copy of an item to see the change.
 
-Save the example below in `plugins/Sertraline/workspace/template_practice.yml`. It uses `basic_melee_weapon` from the bundled `templates/basic_gear.yml`.
+## Create two swords from one template
 
-```yaml
-my_template_sword:
-  $template:
-    use: basic_melee_weapon
-    arguments:
-      material: IRON_SWORD
-      name: "<!i><green>Template Practice Sword"
-      damage: 10
-      speed: 1.6
-  sertraline:
-    tier: C
-```
-
-Run `/sertraline reload` and collect the sword with `/sertralineitem give my_template_sword`. Change `material` or `name` to create another variation. Templates substitute arguments where the template contains matching `%{argument}` placeholders.
-
-## Template System
-
-Sertraline's template system allows reusable YAML fragments with parameter substitution, value transformation (`$t`), and type casting (`$c`). Templates are loaded from the `templates/` folder and can be referenced from any config file using the `$template` directive.
-
-***
-
-### Defining Templates
-
-Place YAML files in the `templates/` directory. Each top-level key is a template name.
+Define a template in `plugins/Sertraline/templates/practice.yml`. Its top-level key, `practice:blade`, is the template ID.
 
 ```yaml
-# templates/example.yml
-my_weapon_template:
+practice:blade:
   xbuilder:
     material: "%{material?:IRON_SWORD}"
-    name: "%{name?:Unnamed Weapon}"
-    lore:
-      - "%{lore_line?:}"
+    name: "%{name?:<!i><green>Practice Sword}"
     unbreakable: true
-    attributes:
-      ATTACK_DAMAGE:
-        amount: "%{damage?:10}"
-        operation: ADD_NUMBER
-        slot: HAND
-      ATTACK_SPEED:
-        amount: "%{speed?:1.6}"
-        operation: ADD_NUMBER
-        slot: HAND
+    lore:
+      - "<!i><gray>Practice equipment"
 ```
 
-Templates can reference other templates (chaining):
+Create two items in `plugins/Sertraline/workspace/practice_blades.yml`.
 
 ```yaml
-# templates/tiers.yml
-iron_melee:
+practice_iron_blade:
+  $template: practice:blade
+
+practice_gold_blade:
   $template:
-    use: my_weapon_template
+    use: practice:blade
     arguments:
-      material: IRON_SWORD
-      damage: 8
-      speed: 1.6
-      name: Iron Sword
+      material: GOLDEN_SWORD
+      name: "<!i><gold>Gold Practice Sword"
+  xbuilder:
+    lore:
+      - "<!i><gray>Event reward"
 ```
 
-***
+Run `/sertraline reload`. Use `/sertralineitem give practice_iron_blade` and `/sertralineitem give practice_gold_blade` to get the swords. The iron one uses the default name and material from the template. The gold one uses the values from `arguments` and adds a line after the shared lore. Both swords are unbreakable.
 
-### Using Templates
+## Change arguments and overrides
 
-In any config file (items, recipes, etc.), use the `$template` directive:
+- `%{material}` uses the `material` in `arguments`. `%{material?:IRON_SWORD}` supplies an iron sword as the fallback. You can substitute text, numbers, and Boolean values.
+- `%{_ID}` uses the current file's top-level entry ID. For the gold sword its value is `practice_gold_blade`.
+- To replace the shared lore for an item, put `$list-mode: replace` alongside `$template`. The item's own fields take precedence for matching keys. Lists append by default.
+- Templates can use `$template` to build on other templates. Give each template a unique ID and include its namespace when referencing it. Templates also work in supported folders such as `recipes/` and `crafting-stations/`.
 
-```yaml
-my_custom_sword:
-  $template:
-    use: iron_melee
-    arguments:
-      name: My Custom Sword
-  sertraline:
-    tier: C
-```
+## Process an argument before inserting it
 
-Fields outside `$template` are merged into the resolved result, overriding template defaults.
-
-#### Auto `_ID` Parameter
-
-Every entry automatically receives `_ID` set to its root key:
-
-```yaml
-flame_sword:
-  $template:
-    use: my_weapon_template
-    arguments:
-      material: NETHERITE_SWORD
-      name: "Flame Sword of %{_ID}"
-# _ID = "flame_sword" → name becomes "Flame Sword of flame_sword"
-```
-
-***
-
-### Parameter Substitution
-
-#### Syntax
-
-| Pattern             | Description                                              |
-| ------------------- | -------------------------------------------------------- |
-| `%{param}`          | Replaces with argument `param`. If missing, kept as-is.  |
-| `%{param?:default}` | Replaces with argument `param`, or `default` if missing. |
-
-#### Default Values
-
-```yaml
-name: "%{name?:Unnamed Weapon}"     # default: "Unnamed Weapon"
-color: "%{color?:WHITE}"            # default: "WHITE"
-lore: "%{lore?:}"                   # default: empty string
-```
-
-#### Escape Sequences
-
-| Escape | Output       |
-| ------ | ------------ |
-| `\{`   | Literal `{`  |
-| `\}`   | Literal `}`  |
-| `\?:`  | Literal `?:` |
-
-***
-
-### Transformers (`$t`)
-
-Transformers process argument values before substitution. Place them in `$template.arguments` under any key:
+Use `$t` in `arguments` to transform an argument. Replace the gold sword's current `arguments` with the following and reload to see its name in uppercase.
 
 ```yaml
 arguments:
   name:
     $t:
       type: upper
-      value: "sword"
+      value: "gold practice blade"
+  material: GOLDEN_SWORD
 ```
 
-#### Short Form
+Other `$t` options include `lower`, `when`, `condition`, and `self_increase`. You can also compute a value with `kether`, `js`, `graaljs`, `fluxon`, or `jexl`. Transforms are evaluated in declaration order, so place the arguments they depend on first. `self_increase` assigns a value for each template expansion. Multiple references in that expansion share the value. A reload resets the sequence.
+
+For a template with a `%{damage}` argument, add this under `arguments`. Here `ceil` rounds `10.2` up to `11`. The integer converter also supports `floor` and `round`.
 
 ```yaml
-$t: upper
-```
-
-When the value is a string (not a map), it is used as the type directly.
-
-#### `$t: when`
-
-Maps a source value through a lookup table:
-
-```yaml
-$t:
-  type: when
-  source: "%{_ID}"
-  when:
-    wild_guardian: "&2Wild Guardian"
-    forest_guardian: "&aForest Guardian"
-  fallback: "Unknown"
-```
-
-#### `$t: upper` / `$t: lower`
-
-Case conversion:
-
-```yaml
-$t:
-  type: upper
-  value: "%{name}"
-  locale: en             # optional locale
-```
-
-```yaml
-$t:
-  type: lower
-  value: "HELLO"
-```
-
-Aliases: `uppercase`, `to_upper_case` / `lowercase`, `to_lower_case`
-
-#### `$t: condition`
-
-Boolean conditional selection:
-
-```yaml
-$t:
-  type: condition
-  condition: "%{enchanted?:false}"   # true/false/yes/no/1/0
-  "true": "&dEnchanted Sword"
-  "false": "&5Normal Sword"
-```
-
-#### `$t: self_increase`
-
-Auto-incrementing counter evaluated on each resolution:
-
-```yaml
-$t:
-  type: self_increase
-  from: 1
-  to: 999
-  step: 1
-  step_interval: 1
-```
-
-* `step_interval`: number of calls between increments (e.g., 2 means 0, 0, 1, 1, ...)
-
-#### `$t: kether`
-
-Evaluate a Kether expression. The `shell` value supports `%{...}` parameter substitution before evaluation.
-
-```yaml
-$t:
-  type: kether
-  shell: |
-    random 1 to 10
-  sandbox: true # Ignore exception
-  fallback: 1
-  nullfallback: 2
-  unitfallback: 3
-```
-
-**Using parameters inside Kether:**
-
-```yaml
-arguments:
-  min: 5
-  max:
-    $t:
-      type: kether
-      shell: |
-        math add %{min} 10
-      fallback: 15
-  bonus_name:
-    $t:
-      type: kether
-      shell: |
-        if check "%{_ID}" == "super_sword" then "Legendary" else "Normal"
-```
-
-The Kether expression runs via `KetherShell.eval` with the console sender as context. Use `sandbox: false` to throw exceptions instead of falling back.
-
-**Fallback priority:** `nullfallback` > `unitfallback` > `fallback` — matched against the Kether return type (null, Unit, or exception).
-
-#### `$t: js` / `$t: graaljs` / `$t: fluxon` / `$t: jexl`
-
-Evaluate script expressions with the same config shape:
-
-```yaml
-$t:
-  type: js
-  shell: Math.max(5, 10)
-  fallback: 0
-```
-
-```yaml
-$t:
-  type: jexl
-  shell: |
-    Math.min(%{min}, %{max})
-  fallback: 0
-```
-
-***
-
-### Type Casts (`$c`)
-
-Type converters cast string values to specific types with optional rounding:
-
-```yaml
-arguments:
   damage:
     $c:
       type: int
+      value: "10.2"
       round: ceil
 ```
 
-#### Short Form
+A `$c` cast uses the result of a `$t` on the same argument, then `$c.value`, then the same named argument from an outer template. Set `fallback` for a failed cast. Types include `int`, `double`, and `string`. Each configuration field still applies its own parsing rules after substitution.
 
-```yaml
-$c: double
-```
+See the bundled `templates/basic_gear.yml` and `workspace/default/example_templated_items.yml` for more examples. Check the reload log for duplicate template names, unused arguments, and unresolved placeholders.
 
-#### Types
-
-| Type     | Options                                              | Description                          |
-| -------- | ---------------------------------------------------- | ------------------------------------ |
-| `int`    | `round`: `ceil` / `cell`, `round`, `floor`           | Integer conversion with rounding     |
-| `double` | —                                                    | Double conversion                    |
-| `string` | `case`: `uppercase` / `upper`, `lowercase` / `lower` | String with optional case conversion |
-
-#### Case Conversion (any type)
-
-```yaml
-$c:
-  type: string
-  case: uppercase
-  locale: en
-```
-
-***
-
-### Combined `$t` + `$c`
-
-Transform first, then cast:
-
-```yaml
-arguments:
-  damage:
-    $t:
-      type: when
-      source: "%{_ID}"
-      when:
-        shadow_blade: "15.7"
-      fallback: "10"
-    $c:
-      type: int
-      round: ceil
-  name:
-    $t:
-      type: upper
-      value: "shadow blade"
-    $c:
-      type: string
-      case: upper
-```
-
-***
-
-### Argument Resolution Priority
-
-When templates chain (A → B → C), outer arguments take priority over inner defaults:
-
-1. `_ID` is always injected from the root entry key
-2. Arguments from the outermost `$template.arguments` are applied first
-3. Inner template arguments only apply for keys not already provided by outer layers
-
-***
-
-### API (Programmatic Access)
+## Developer API
 
 #### Template Access (via `SertralineAPI`)
 
@@ -407,85 +142,4 @@ fun interface ConverterProvider {
 fun interface DirectiveProvider {
     fun process(name: String, config: Map<String, Any?>, key: String, currentArgs: MutableMap<String, String>, dynamicArgs: MutableMap<String, () -> String>, resolveCtx: Map<String, String>)
 }
-```
-
-***
-
-### Kether Integration
-
-#### Template Arguments in Kether Actions
-
-Template-resolved values flow into item actions. Any `%{...}` in action scripts is substituted before execution.
-
-```yaml
-my_sword:
-  $template:
-    use: basic_melee_weapon
-    arguments:
-      damage: 20
-      material: DIAMOND_SWORD
-      name: "&bSword of %{_ID}"
-      power: 50
-  sertraline:
-    tier: S
-    actions:
-      onRightClick:
-        - kether: |
-            tell inline "&e%{name} &7deals &c%{damage} &7damage!"
-            tell inline "&7Power level: &a%{power}"
-            if check %{power} > 30 then give %{material} 1
-```
-
-#### Using `%{...}` in All Script Types
-
-```yaml
-actions:
-  onConsume:
-    - kether: |
-        tell inline "&aYou consumed %{name} (+%{heal?:5} HP)"
-    - js: |
-        player.sendMessage("Healed by " + "%{heal?:5}");
-    - jexl: |
-        player.sendMessage("Heal value: " + Math.max(%{heal?:5}, 0))
-```
-
-#### Template in Kether `$t` Chains
-
-You can combine `$t: kether` with other transformers:
-
-```yaml
-arguments:
-  enchant_power:
-    $t:
-      type: when
-      source: "%{_ID}"
-      when:
-        flame_sword: "5"
-        ice_sword: "3"
-      fallback: "1"
-    $c:
-      type: int
-  damage:
-    $t:
-      type: kether
-      shell: |
-        math multiply %{enchant_power} 4
-      fallback: 10
-      sandbox: true
-```
-
-***
-
-### Misc
-
-Templates are loaded from `plugins/Sertraline/templates/` during reload. The folder is auto-created if missing. Template loading happens **before** all other configs, so templates are available for items, recipes, etc.
-
-```
-plugins/Sertraline/
-├── templates/
-│   ├── basic_gear.yml
-│   └── material_tiers.yml
-├── workspace/
-├── recipes/
-└── crafting-stations/
 ```

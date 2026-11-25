@@ -2,123 +2,38 @@
 icon: cursor
 ---
 
-# Item Manager System
+# Item Manager
+
+Use the item manager to inspect loaded item definitions. Edit files in the workspace to add or change the items your server uses.
 
 ## Inspect a loaded item
 
-Create a workspace item and reload the plugin. Run `/sertraline manager use public` to select the persistent public scope, then `/sertraline manager list` to see loaded items. Use `/sertraline manager info beginner_sword` to inspect the [Beginner’s Sword](../basics/my-first-item.md). In game, `/sertralineitem browse` opens the item browser.
+Create `beginner_sword` and reload by following [My First Item](../basics/my-first-item.md). These commands list the sword and show its scope and loaded configuration keys.
 
-## Item Manager System
-
-Sertraline's item manager provides four storage modes for items: **Public** / **Private** × **Persistent** / **Temporary**. The manager handles item creation, retrieval, deletion, and lifecycle management across reloads.
-
-***
-
-### Architecture
-
-```
-ItemManager
-├── PublicManager          (visible to all players)
-│   ├── PERSISTENT         (survives reload, in itemMap)
-│   └── TEMPORARY          (survives reload via serialization buffer)
-│
-└── PrivateManager         (per-UUID, database-backed)
-    ├── PERSISTENT         (stored in database)
-    └── TEMPORARY          (in-memory only)
+```text
+/sertraline manager use public
+/sertraline manager list
+/sertraline manager info beginner_sword
 ```
 
-#### Storage Types
+In game, you can also use `/sertralineitem browse` to view loaded items.
 
-| Type                  | `SubManagerType` | Scope       | Persistence                                         |
-| --------------------- | ---------------- | ----------- | --------------------------------------------------- |
-| **Public Persistent** | `PERSISTENT`     | All players | itemMap (memory), cleared & reloaded from workspace |
-| Public Temporary      | `TEMPORARY`      | All players | Serialized to buffer during reload, restored after  |
-| Private Persistent    | `PERSISTENT`     | Per UUID    | Database                                            |
-| Private Temporary     | `TEMPORARY`      | Per UUID    | In-memory, lost on shutdown                         |
+## Choose a scope
 
-#### Enums
+| Arguments | Use |
+| --- | --- |
+| `public persistent` | Shared items created in `workspace/` files and read again on reload |
+| `public temporary` | Shared temporary definitions. They survive a config reload and expire on server restart |
+| `private persistent` | Definitions scoped to a UUID and stored in the database |
+| `private temporary` | Definitions scoped to a UUID and stored in memory until reload or restart |
 
-```kotlin
-enum class ManagerType(val alias: Set<String>) {
-    PUBLIC(setOf("public")),
-    PRIVATE(setOf("private"));
-}
+Use `/sertraline manager use public` or `/sertraline manager use private` to select the corresponding persistent scope. The 3.13.2.2 command parser rejects two-argument forms such as `use public temporary`. A private scope uses the current player's UUID by default. Use `/sertraline manager switch <UUID>` to choose another UUID. The console can also use the `private.auto-uuid` fallback in `manager.yml`.
 
-enum class SubManagerType(val alias: Set<String>) {
-    PERSISTENT(setOf("persistent", "pers", "p")),
-    TEMPORARY(setOf("temporary", "temp", "t"));
-}
-```
+In `manager.yml`, `defaults.scope` and `defaults.sub` set the starting scope. Command deletion for public persistent items is disabled by default. To remove a definition permanently, remove its top-level entry from the original file and reload. Check for other definitions in the same file before enabling `delete-file`.
 
-***
+You can also use `/manager` or `/mgr`. See [Common Commands](../basics/commands.md) for the arguments used to give items.
 
-### Configuration (`manager.yml`)
-
-```yaml
-# Default manager type and sub type
-defaults:
-  scope: "public"          # public / private
-  sub: "persistent"        # persistent / temporary
-
-# Allow deleting public-persistent items
-allow-delete-public-persistent: false
-
-# Also remove the file when deleting public-persistent items
-delete-file: false
-
-# Private manager settings
-private:
-  # Auto UUID fallback when no player context available
-  auto-uuid: ""
-```
-
-***
-
-### Public Items
-
-Public items are shared across all players. They are the standard item type loaded from `workspace/`.
-
-#### Behavior
-
-| Operation | PERSISTENT                         | TEMPORARY                                    |
-| --------- | ---------------------------------- | -------------------------------------------- |
-| Create    | Not supported via manager          | `createTemporary(id, item)`                  |
-| Read      | `getItem(id)` → itemMap            | `getItem(id)` → temporary → itemMap fallback |
-| Delete    | Remove from itemMap (config-gated) | Remove from temporary + itemMap              |
-| Reload    | Cleared, reloaded from workspace   | Serialized → buffer → restore                |
-
-#### Creation Restriction
-
-Creating public-persistent items through the manager is blocked (`UnsupportedOperationException`). These items are loaded from YAML workspace files only. For runtime registration, use `SertralineAPI.registerItem(id, item)` or the public-temporary path.
-
-***
-
-### Private Items
-
-Private items are scoped to a UUID (player or custom namespace). They support database persistence.
-
-#### Behavior
-
-| Operation | PERSISTENT                       | TEMPORARY      |
-| --------- | -------------------------------- | -------------- |
-| Create    | Cache + database insert          | In-memory only |
-| Read      | Cache → database fallback        | In-memory      |
-| Delete    | Cache + database delete          | In-memory only |
-| Reload    | Cache cleared, lazy-load from DB | Cleared        |
-| Shutdown  | Cleared                          | Cleared        |
-
-#### UUID Resolution
-
-When no UUID is provided, the manager resolves one in this order:
-
-1. Explicit UUID parameter
-2. Player UUID context
-3. `manager.yml` `private.auto-uuid` setting
-4. Throws `IllegalStateException` if none available
-
-***
-
-### API (via `SertralineAPI`)
+## Developer API
 
 ```kotlin
 val api = Sertraline.api()
@@ -150,7 +65,7 @@ api.createPrivateItem("uuid-here", "my_private_item", data, SubManagerType.TEMPO
 api.createPrivateItem("uuid-here", "my_db_item", data, SubManagerType.PERSISTENT)
 
 // Read
-val item = api.getPrivateItem("uuid-here", "my_private_item")
+val item = api.getPrivateItem("uuid-here", "my_private_item", SubManagerType.TEMPORARY)
 
 // Delete
 api.deletePrivateItem("uuid-here", "my_private_item", SubManagerType.TEMPORARY)
@@ -184,127 +99,3 @@ val privateMgr = Sertraline.manager.privateManager
 ```
 
 ***
-
-### Commands
-
-#### `/sertraline manager` (`/mgr`)
-
-Manage items across public/private, persistent/temporary scopes.
-
-| Subcommand                                      | Description                              |
-| ----------------------------------------------- | ---------------------------------------- |
-| `help`                                          | Show command usage                       |
-| `use <public\|private> [persistent\|temporary]` | Set manager scope                        |
-| `switch <uuid>`                                 | Switch private manager UUID              |
-| `create <id> <json>`                            | Create item in current scope (JSON body) |
-| `clone <templateId> <newId>`                    | Clone an existing item                   |
-| `delete <id>`                                   | Delete an item by ID                     |
-| `list`                                          | List items in current scope              |
-| `info <id>`                                     | Show item details                        |
-
-**Examples:**
-
-```
-# Use public-temporary scope
-/manager use public temp
-
-# Use private-persistent scope
-/manager use private persistent
-
-# Switch to a specific UUID for private operations
-/manager switch 550e8400-e29b-41d4-a716-446655440000
-
-# Create a public-temporary item with JSON body
-/manager create my_item {"xbuilder":{"material":"stone","name":"&aMy Item"}}
-
-# Clone an existing item
-/manager clone sword_of_skyline my_cloned_sword
-
-# List items in current scope
-/manager list
-
-# Show item details
-/manager info my_item
-
-# Delete an item
-/manager delete my_item
-```
-
-#### `/sertraline item give`
-
-Give Sertraline items to players.
-
-```
-/sertraline item give [player] [amount] [silent]
-```
-
-**Examples:**
-
-```
-# Give yourself 1 sword_of_skyline
-/sertraline item give sword_of_skyline
-
-# Give a player 5 of the item silently
-/sertraline item give sword_of_skyline 5 true
-```
-
-***
-
-### Kether Integration
-
-#### Kether Variables in Items
-
-Item variables (`vars` section) support inline Kether expressions using the `${kether:...}$` syntax:
-
-```yaml
-my_item:
-  xbuilder:
-    name: "<!i>&7Power Level: ${kether: check get power_level}$"
-    lore:
-      - "<!i><gray>Current: <yellow>${var:power_level}$"
-  sertraline:
-    vars:
-      power_level: 1
-```
-
-#### Conditional Actions with Kether
-
-```yaml
-my_item:
-  sertraline:
-    vars:
-      uses: 0
-    actions:
-      onRightClick:
-        - condition: check var uses < 10
-          js: |
-            var tag = ItemStackUtil.getItemTag(bItem);
-            tag.putDeep("sertraline_data.uses", uses + 1);
-            ItemStackUtil.setItemTagDirect(bItem, tag);
-            player.sendMessage("Used! Remaining: " + (10 - uses - 1));
-          kether: |
-            tell inline "&aYou used the item!"
-```
-
-## Structure
-
-```
-reloadCustomConfig()
-├── manager.preReload()
-│   └── PublicManager: serialize temporary items → buffer
-│
-├── Clear all caches (itemMap, etc.)
-├── Reload workspace items from YAML
-│
-├── manager.postReload()
-│   └── PublicManager: deserialize buffer → restore temporary items
-│
-└── Reload recipes, scripts, etc.
-```
-
-During reload:
-
-* **Public-Persistent**: wiped and reloaded from workspace YAML files
-* **Public-Temporary**: serialized to string buffer before clear, deserialized after reload
-* **Private-Persistent**: cache cleared, lazy-loaded from database on next access
-* **Private-Temporary**: cache cleared, lost if not saved externally

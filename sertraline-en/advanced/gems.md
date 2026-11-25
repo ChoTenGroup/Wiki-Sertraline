@@ -142,10 +142,10 @@ gem_example_plain:
 | Command | Description |
 | --- | --- |
 | `/sertralinegem list` | List sockets and socketed gems of the held item |
-| `/sertralinegem socket <slotId> <gemId>` | Socket a gem with the given ID from your inventory or off hand |
+| `/sertralinegem socket <slotId> [gemId]` | Socket a gem with the given ID from your inventory or off hand. Omit the ID to use the off-hand gem |
 | `/sertralinegem unsocket <slotId>` | Extract the gem back to the player |
 
-Alias `/sgem`, permission `sertraline.command.gem` (OP by default). The command uses `GemSocketMethod.COMMAND`, so it **ignores** the click switches and `click: false` above — handy for admins and scripted socketing.
+The alias is `/sgem`. The permission is `sertraline.command.gem`, granted to operators by default. Command socketing works independently of the click settings.
 
 ### Where the effects go
 
@@ -172,7 +172,7 @@ The default `rebuild.keep-data` list includes `sertraline_gem`. Keep this entry 
 - empty socket → `◇ <name> — <desc>`
 - occupied socket → `◆ <name>: <gemId>`
 
-Keep it **inline with other text** (e.g. `<!i>${gem-slot:slot_red}$`). The tag pipeline substitutes the value straight into the item JSON, so a line consisting only of the placeholder would become an unquoted bare string.
+Use one line per socket, for example `<!i>${gem-slot:slot_red}$`. The `<!i>` prefix removes default italics.
 
 ## 6. FAQ
 

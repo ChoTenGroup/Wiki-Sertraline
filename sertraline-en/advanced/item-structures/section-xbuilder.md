@@ -2,11 +2,9 @@
 icon: hammer-war
 ---
 
-# Section: XBuilder
+# XBuilder
 
-## XBuilder Structure Usage
-
-### Item Example
+Use `xbuilder` to set an item's material, name, lore, and common properties. This example makes a diamond sword with Unbreaking III and Sharpness V. Save it to `plugins/Sertraline/workspace/cool_sword.yml`.
 
 ```yaml
 cool_sword:
@@ -14,29 +12,27 @@ cool_sword:
     material: DIAMOND_SWORD
     name: "&2Cool Sword"
     lore: |
-      You can tell from the name
-      that this sword is cool
-      because that's exactly what it says!
+      <!i><gray>A sword with two enchantments.
     enchants:
       UNBREAKING: 3
       SHARPNESS: 5
 ```
 
-{% hint style="info" %}
-The library used by XBuilder originally could not handle the Minimessage format, so we convert legacy color codes in the configuration.&#x20;
-{% endhint %}
+Run `/sertraline reload` and `/sertralineitem give cool_sword`. Hover over the sword to see its name, description, and enchantments. Under `enchants`, use the enchantment name as the key and its level as the value.
 
-This code provides an example of an XBuilder item. How does it work?
+## Change durability and attack damage
 
-* `material` - the item material
-* `name` - gives the item a name. The name uses the CUSTOM\_NAME component (not ITEM\_NAME)
-* `lore` - gives the item a description. A string or a list can be written here.
-* `enchants` - the item's enchantments&#x20;
+To make the sword unbreakable and give it a main-hand attack damage modifier, add these fields under `xbuilder`, at the same indentation as `material`.
 
-{% hint style="success" %}
-XBuilder is very useful when you are creating general item formats. To find more usages, please see [HERE](../../refrences/xbuilder.md).&#x20;
-{% endhint %}
+```yaml
+unbreakable: true
+attributes:
+  ATTACK_DAMAGE:
+    amount: 10
+    operation: ADD_NUMBER
+    slot: HAND
+```
 
-{% hint style="info" %}
-When xbuilder cannot meet your needs, you can look at the minecraft section, that is, the [data component section](section-minecraft-components.md), which provides everything from the vanilla data components, such as maximum stack size and equippable items.
-{% endhint %}
+On servers with data components, `name` sets the item's `custom_name`. Names and lore accept MiniMessage and legacy color codes. Write lore as a YAML list or a multiline string.
+
+See the [XBuilder reference](../../refrences/xbuilder.md) for more fields. Use [Minecraft data components](section-minecraft-components.md) for options such as stack size and equip behavior.

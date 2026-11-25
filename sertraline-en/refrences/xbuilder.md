@@ -75,7 +75,7 @@ material: Text
 amount: Number
 ```
 
-The item stack amount. Positive integer.
+Use a positive integer. Sertraline give commands use their own amount argument, and recipes use `result.count`.
 
 ***
 
@@ -128,7 +128,7 @@ custom-model-data: Text or Number or Color or Boolean or CustomModelDataComponen
 item-model: Text
 ```
 
-1.21+ item model component (`minecraft:item_model`), used for more granular control over the item model, such as `minecraft:iron_ingot`. Takes priority over the `custom-model-data` setting.
+1.21.2+ item model component (`minecraft:item_model`), used for more granular control over the item model, such as `minecraft:iron_ingot`. Takes priority over the `custom-model-data` setting.
 
 ***
 
@@ -180,7 +180,7 @@ flags: [HIDE_ATTRIBUTES, HIDE_POTION_EFFECTS]
 glow: Boolean
 ```
 
-Gives the item a glowing visual effect. This operation automatically adds `Durability I` enchantment and uses the `HIDE_ENCHANTS` flag to hide it.
+When `enchants` is absent, `glow: true` adds Unbreaking I for the glint and attempts to hide it with `HIDE_ENCHANTS`.
 
 ***
 
@@ -188,7 +188,7 @@ Gives the item a glowing visual effect. This operation automatically adds `Durab
 
 ```yaml
 attributes:
-  - AttributeName: ...     # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
+  AttributeName:     # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
     name: Text             # https://minecraft.gamepedia.com/Attribute
     amount: Decimal        # modifier value
     operation: Text        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
@@ -211,7 +211,7 @@ When material is any kind of banner:
 
 ```yaml
 patterns:
-  - pattern name: dye color
+  STRIPE_DOWNLEFT: RED
 ```
 
 #### 7.2 Leather Armor and Potions
@@ -245,7 +245,10 @@ pattern: TropicalFishPattern
 When material is any kind of shulker box:
 
 ```yaml
-contents: [Item]
+contents:
+  "0":
+    material: PAPER
+    amount: 2
 ```
 
 #### 7.6 Spawner
@@ -261,7 +264,9 @@ spawner: Text    # EntityType: https://hub.spigotmc.org/javadocs/spigot/org/bukk
 When material is `CROSSBOW`:
 
 ```yaml
-projectiles: [Item]    # loaded ammunition
+projectiles:
+  first:
+    material: ARROW    # loaded ammunition
 ```
 
 #### 7.8 Suspicious Stew
@@ -288,9 +293,10 @@ generation: ORIGINAL or COPY_OF_ORIGINAL or COPY_OF_COPY or TATTERED
 When material is `FILLED_MAP`:
 
 ```yaml
-scaling: Boolean
-location: Location
-color: Color
+map:
+  scaling: Boolean
+  location: Location
+  color: Color
 ```
 
 #### 7.11 Spawn Egg
@@ -314,16 +320,18 @@ lodestone: Location      # lodestone coordinates
 
 #### 7.13 Firework
 
-When material is `FIREWORK`:
+When material is `FIREWORK_ROCKET`:
 
 ```yaml
-power: Decimal           # flight height/duration
+power: Number           # flight height/duration
 firework:
-  flicker: Boolean       # whether the firework flickers
-  trial: Boolean         # whether the firework has a trail effect
-  colors: [Color]        # main explosion colors
-  fade-colors: [Color]   # fade colors
-  type: Text             # FireworkEffect.Type: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/FireworkEffect.Type.html
+  burst:
+    flicker: Boolean       # whether the firework flickers
+    trail: Boolean         # whether the firework has a trail effect
+    colors:
+      base: [Color]        # main explosion colors
+      fade: [Color]   # fade colors
+    type: Text           # FireworkEffect.Type: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/FireworkEffect.Type.html
 ```
 
 ***
@@ -348,11 +356,11 @@ enchantment name: Number    # enchantment name -> level
 #### 8.3 Attribute
 
 ```yaml
-AttributeName: Text        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
-name: Text                 # https://minecraft.gamepedia.com/Attribute
-amount: Decimal            # modifier value
-operation: Text            # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
-slot: Slot                 # HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
+AttributeName:             # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
+  name: Text
+  amount: Decimal            # modifier value
+  operation: Text          # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
+  slot: Slot               # HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
 ```
 
 #### 8.4 Location
@@ -415,22 +423,24 @@ enchants:
 
 ```yaml
 material: PLAYER_HEAD
-skull: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv..."}
+skull: "Notch"
 name: "&eCustom Head"
 ```
 
 #### Firework Rocket
 
 ```yaml
-material: FIREWORK
+material: FIREWORK_ROCKET
 name: "&dBoom Stick"
 power: 3
 firework:
-  flicker: true
-  trial: true
-  colors: ["#FF0000", "#00FF00"]
-  fade-colors: ["#0000FF"]
-  type: BALL_LARGE
+  burst:
+    type: BALL_LARGE
+    flicker: true
+    trail: true
+    colors:
+      base: ["#FF0000", "#00FF00"]
+      fade: ["#0000FF"]
 ```
 
 #### Colored Leather Armor
@@ -441,7 +451,7 @@ name: "&6Royal Vest"
 color: "255, 215, 0"
 unbreakable: true
 attributes:
-  - GENERIC_ARMOR:
+  ARMOR:
     name: "generic.armor"
     amount: 8
     operation: ADD_NUMBER

@@ -8,19 +8,6 @@
 
 示例中的 `atk` 是自定义变量：镶嵌后描述里的数字会变化，但这个示例没有把 `atk` 接到实际攻击伤害上。若要改变战斗效果，需要另外配置对应属性或动作。
 
-相关代码：
-
-| 位置 | 作用 |
-| --- | --- |
-| `data/GemData.kt` | 解析 `sertraline:gem` / `sertraline:gem-slots`，把 `modify-data` 编译成 alteration |
-| `item/gem/gemManager.kt` | 镶嵌 / 拆卸 / 读取槽位状态 |
-| `listener/gem/GemSocketListener.kt` | 手持宝石点击物品镶嵌 |
-| `command/gemSubCommand.kt` | `/sertralinegem`（别名 `/sgem`） |
-| `item/process/gemSlotTagProcessor.kt` | Lore 占位符 `${gem-slot:<slotId>}$` |
-| `workspace/default/default_gem.yml` | 可直接使用的示例物品 |
-
----
-
 ## 一、在物品上声明插槽
 
 插槽写在宿主物品的 `sertraline:gem-slots` 下，键名就是槽位 ID：
@@ -101,7 +88,7 @@ modify-data:
 
 ### 交互方式（可配置）
 
-点击镶嵌由 `config.yml` 的 `gem.interaction.click` 控制：
+在背包界面用鼠标拿起宝石，再右键点击待镶嵌的物品。插件会选择第一个可点击镶嵌且颜色匹配的空槽。可通过 `config.yml` 的 `gem.interaction.click` 调整操作。
 
 ```yaml
 gem:
@@ -146,10 +133,10 @@ gem_example_plain:
 | 命令 | 说明 |
 | --- | --- |
 | `/sertralinegem list` | 列出手持物品的槽位与已镶嵌的宝石 |
-| `/sertralinegem socket <slotId> <gemId>` | 把背包或副手中 ID 为 `gemId` 的宝石镶进指定槽位 |
+| `/sertralinegem socket <slotId> [gemId]` | 把背包或副手中 ID 为 `gemId` 的宝石镶进指定槽位。省略 ID 时使用副手宝石 |
 | `/sertralinegem unsocket <slotId>` | 取下指定槽位的宝石并归还玩家 |
 
-别名 `/sgem`，权限 `sertraline.command.gem`（默认 OP）。命令走 `GemSocketMethod.COMMAND`，**忽略**上面的点击开关与 `click: false`，方便管理员与剧情脚本强制镶嵌。
+命令别名为 `/sgem`，权限为 `sertraline.command.gem`，默认向管理员开放。命令镶嵌独立于上面的点击设置。
 
 ### 效果的去向
 
@@ -176,7 +163,7 @@ sertraline_gem:
 - 空槽位 → `◇ <槽位名> — <desc>`
 - 已镶嵌 → `◆ <槽位名>: <宝石ID>`
 
-请把它放在**带其他文字的行内**（例如 `<!i>${gem-slot:slot_red}$`），不要让它独占整行——标签管线是把值直接替换进物品 JSON 的，独占整行会得到没有引号的裸字符串。
+可以在每个插槽各放一行，例如 `<!i>${gem-slot:slot_red}$`。`<!i>` 会取消默认斜体。
 
 ## 六、常见问题
 

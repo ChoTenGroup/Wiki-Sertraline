@@ -53,7 +53,7 @@ The combat listeners require attributes and `script.graaljs.allow-java-type: tru
 
 ### Check the value in game
 
-On a test server with GraalJS, add this section inside `focus_wand` alongside `xbuilder`. Reload and right-click while holding the wand to see your current Focus in chat.
+On a test server with GraalJS, add this section inside `focus_wand` alongside `xbuilder`. Reload and get the wand, then switch to its hotbar slot and wait about a second before right-clicking. Chat should show a Focus value of 18.
 
 ```yaml
 sertraline:

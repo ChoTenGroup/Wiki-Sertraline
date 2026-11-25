@@ -53,7 +53,7 @@ focus_wand:
 
 ### 在游戏里核对数值
 
-在支持 GraalJS 的测试服中，将下面的动作加到 `focus_wand` 下，与 `xbuilder` 同级。重载、手持法杖并右键，聊天栏会显示当前玩家的专注值。
+在支持 GraalJS 的测试服中，将下面的动作加到 `focus_wand` 下，与 `xbuilder` 同级。重载并领取法杖后，切换到它所在的快捷栏槽位，等约一秒再右键。聊天栏应显示 18。
 
 ```yaml
 sertraline:

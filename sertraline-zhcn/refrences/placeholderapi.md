@@ -4,7 +4,7 @@ icon: percent
 
 # PlaceholderAPI
 
-安装 PlaceholderAPI 后，可以使用 `/papi parse me %sertraline_PREFIX:PARAM%` 测试占位符。例如，默认物品使用 `%sertraline_random:40to80%` 生成随机值。脚本工具也可在支持的 PAPI 脚本中使用。
+安装 PlaceholderAPI 后，可以使用 `/papi parse me %sertraline_PREFIX:PARAM%` 测试占位符。例如，在游戏里执行 `/papi parse me %sertraline_random:40to80%` 可测试随机数。脚本工具也可在支持的 PAPI 脚本中使用。
 
 | 参数前缀 | 用途 |
 | --- | --- |
@@ -12,7 +12,7 @@ icon: percent
 | `javascript:`、`js:` | 执行 JavaScript 脚本 |
 | `jexl:`、`je:` | 执行 JEXL 脚本 |
 | `fluxon:`、`fl:` | 执行 Fluxon 脚本 |
-| `graaljs:`、`gjs:` | 执行 GraalJS 脚本。当前实现可能不返回其结果 |
+| `graaljs:`、`gjs:` | 执行 GraalJS 脚本。3.13.2.2 会执行脚本，展示用文本请使用能返回结果的占位符 |
 | `config:` | 按键读取配置值 |
 | `random:`、`rand:` | 在指定范围生成随机数，如 `40to80` |
 | `data:` | 读取在线玩家数据 |
@@ -25,4 +25,4 @@ icon: percent
 
 脚本会获得相应上下文，具体可用变量取决于脚本类型和调用位置。
 
-例如，在游戏里执行 `/papi parse me %sertraline_random:40to80%` 可验证占位符是否已启用。`random:1.5to3.5:2` 则按两位小数舍入。部分占位符可用 `?:` 指定缺省文本，例如 `%sertraline_data:my_key?:未设置%`。
+例如，在游戏里执行 `/papi parse me %sertraline_random:40to80%` 可验证占位符是否已启用。`random:1.5to3.5:2` 则按最多两位小数显示，末尾的零会省略。部分占位符可用 `?:` 指定缺省文本，例如 `%sertraline_data:my_key?:未设置%`。

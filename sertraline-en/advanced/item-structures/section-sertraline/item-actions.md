@@ -4,226 +4,51 @@ icon: wave-pulse
 
 # Item Actions
 
-Item actions run scripts when a player interacts with an item, attacks, drops it, or logs in with it equipped. Save this compass in `plugins/Sertraline/workspace/hello_compass.yml`:
+Make an item run a script when a player right-clicks, attacks, or consumes it. Start by creating this compass in `plugins/Sertraline/workspace/hello_compass.yml`.
 
 ```yaml
 hello_compass:
   xbuilder:
     material: COMPASS
-    name: "<!i><gold>Greeting Compass"
+    name: "<!i><gold>Hello Compass"
   sertraline:
     actions:
       onRightClick:
         - async: false
-          kether: tell "You used the Greeting Compass!"
+          kether: tell "You used the Hello Compass!"
 ```
 
-Run `/sertraline reload`, then `/sertralineitem give hello_compass`. Hold the compass in your main hand and right-click to see the configured chat message.
+Save the file, run `/sertraline reload`, and use `/sertralineitem give hello_compass`. Hold the compass in your main hand and right-click in the air to see the message.
 
 ## Choose a trigger
 
 | Trigger | When it runs |
 | --- | --- |
-| `onClick`, `onRightClick`, `onLeftClick` | Main-hand interactions, including the named mouse buttons. Use slot-specific actions such as `onRightClick@off` for the off hand |
-| `onAttack`, `onShoot`, `onShootTrident` | Attacking an entity, firing a bow-type weapon, or using a Riptide trident |
-| `onMine`, `onConsume`, `onBreak` | Breaking a block, eating or drinking, or exhausting an item's durability |
-| `onDrop`, `onPickUp`, `onInventoryClick` | Dropping, picking up, or clicking an inventory item. Pickup support depends on the server version |
-| `onSwap`, `onSneak` | Swapping hands, starting to sneak, or stopping sneaking |
-| `onLogin` | Checks both hands and four armor slots at login. Use a suffix such as `onLogin@helmet` to restrict an action to one slot |
+| `onClick`, `onRightClick`, `onLeftClick` | Click interactions. Add `@off` for off-hand interactions |
+| `onAttack` | Melee hits and projectile hits that can be traced back to a weapon. Melee uses the main-hand weapon |
+| `onShoot`, `onShootTrident` | Firing a bow-like weapon or using a trident's Riptide |
+| `onMine`, `onConsume`, `onBreak` | Breaking a block, eating or drinking, or breaking an item by using up its durability |
+| `onDrop`, `onPickUp`, `onInventoryClick` | Dropping, picking up, or clicking an item in an inventory slot. Pickup needs a modern server with the matching event |
+| `onSwap`, `onSneak` | Swapping hands or starting and stopping sneaking |
+| `onLogin` | Checking both hands and all four armor slots on login |
 
-`onMine`, `onSwap`, and `onSneak` support `@main` and `@off`. If both the base trigger and a matching slot-specific trigger are configured, both can run. Use one list entry per action under the trigger.
+`onMine`, `onSwap`, `onSneak`, and `onLogin` support `@main` and `@off`. For `onSwap`, the suffix is the **destination slot**. For example, `onSwap@off` uses the item moving into the off hand. Login also supports `onLogin@helmet`, `onLogin@chestplate`, `onLogin@leggings`, and `onLogin@boots`. If you configure a base trigger and its slot-specific trigger, both can run. See [Custom Events and Global Listeners](../../event-listeners.md) to use other Bukkit events.
 
-## Add conditions or scripts
+## Add a condition or script
 
-- A `condition` accepts a Kether check. Put it in the same list entry as the script it should control.
-- Script fields include `kether`, `js`, `graaljs`, `jexl`, and `fluxon`. JavaScript can use context values such as `player`, `event`, and `bItem`.
-- Item actions run asynchronously by default. Set `async: false` for inventory, world, and event changes. For example, use `event.setCancelled(true)` on a cancellable event.
-- In `config.yml`, `action.throttle-time` sets the default interval in milliseconds. Set a per-trigger override under `action.throttle` or use `0` to disable throttling for that trigger.
-
-See [Custom Events and Global Listeners](../../event-listeners.md) for additional Bukkit events.
-
-### Action Structure in YAML <a href="#action-structure-in-yaml" id="action-structure-in-yaml"></a>
-
-Actions are defined within the `sertraline` section of an item YAML file under the `actions` key. The structure follows this pattern:
+List one or more actions under a trigger, starting each one with `-`. To use a Kether condition, add `condition` to the same list entry as the script. Here is another way to control when the compass sends a message. Replace its existing `onRightClick` entry, then compare a normal right-click with one while sneaking.
 
 ```yaml
-item_id:
-  sertraline:
-    actions:
-      <trigger_name>:
-        - condition: <kether_expression_list>
-          async: <boolean>
-          kether: <kether_script_list>
-          javascript: <javascript_string>
-          jexl: <jexl_string>
-          fluxon: <fluxon_string>
-          graaljs: <graaljs_string>
+onRightClick:
+  - async: false
+    graaljs: |
+      if (player.isSneaking()) {
+        player.sendMessage("You used the compass while sneaking!");
+      }
 ```
 
-Each trigger name maps to a list of action entries. Multiple actions can be defined for the same trigger, and they execute sequentially.
+This example uses GraalJS to check whether the player is sneaking. For other script languages, use `kether`, `js` (or `javascript`), `jexl`, or `fluxon`. JavaScript can access `player`, the current `event`, the item that triggered the action as `bItem`, and [item data](item-data.md).
 
-Example:
+Actions run asynchronously by default. Set `async: false` when accessing an inventory or the world, editing damage, or cancelling an event. For a cancellable event, you can call `event.setCancelled(true)`. Set the default interval in milliseconds with `action.throttle-time` in `config.yml`. To override one trigger, add it under `action.throttle`, for example `onRightClick: 1000`. Set it to `0` to disable throttling for that trigger.
 
-{% code expandable="true" %}
-```yaml
-book_of_multi_language:
-  xbuilder:
-    name: "<!i>&6Book of Multi Language"
-    lore: |
-      <!i><white>A book of multi-script language.
-    material: book
-  sertraline:
-    vals:
-      testvariable: 114514
-    actions:
-      onLeftClick:
-        - condition: check 1 == 1
-          gjs: |
-            player.sendMessage(mmUtil.deserialize("<gradient:yellow:#aaaa66>A welcome from GraalJS!"));
-          kether: |
-            minitell inline "<gradient:white:gray>Hello, kether with val {{ &val }} !"
-          js: |
-            var days = 1;
-            var base = 100;
-            var daily = days * 10;
-            var weekBonus = (days / 7) * 100;
-            var tag = ItemStackUtil.getItemTag(bItem);
-            tag.put("Javascript_Modifyed_NBT", "Hello, Javascript!");
-            ItemStackUtil.setItemTagDirect(bItem, tag);
-            player.sendMessage(mmUtil.deserialize("<gradient:red:gold>Hello, JavaScript with math " + weekBonus.toString() + " !"))
-          jexl: |
-            player.sendMessage(mmUtil.deserialize("<gradient:dark_aqua:blue>Hello, Jexl with math " + Math.max(1, 2) + " !"))
-          fluxon: |
-            import 'sertraline:bukkit'
-            import 'sertraline:component'
-            v = "Fluxon!";
-            &player::sendMessage("Hello, " + &v + "With insert a item variable " + &testvariable)
-```
-{% endcode %}
-
-### Triggers
-
-
-
-The following table lists all supported trigger types and their associated Bukkit events:
-
-| Trigger Name       | Bukkit Event                | Description                           | Cancellable | Available Items                            |
-| ------------------ | --------------------------- | ------------------------------------- | ----------- | ------------------------------------------ |
-| `onClick`          | `PlayerInteractEvent`       | Any click interaction (left or right) | Yes         | `bItem` (clicked item)                     |
-| `onRightClick`     | `PlayerInteractEvent`       | Right-click interaction only          | Yes         | `bItem` (clicked item)                     |
-| `onLeftClick`      | `PlayerInteractEvent`       | Left-click interaction only           | Yes         | `bItem` (clicked item)                     |
-| `onAttack`         | `EntityDamageByEntityEvent` | Player attacks entity with item       | Yes         | `bItem` (weapon/projectile)                |
-| `onMine`           | `BlockBreakEvent`           | Player breaks block                   | Yes         | Composite only (see below)                 |
-| `onConsume`        | `PlayerItemConsumeEvent`    | Player consumes food/potion           | Yes         | `bItem` (consumed), `abItem` (replacement) |
-| `onBreak`          | `PlayerItemBreakEvent`      | Item breaks from durability           | No          | `bItem` (broken item)                      |
-| `onDrop`           | `PlayerDropItemEvent`       | Player drops item                     | Yes         | `bItem` (dropped item)                     |
-| `onPickUp`         | `PlayerPickupItemEvent`     | Player picks up item                  | Yes         | `bItem` (picked up item)                   |
-| `onInventoryClick` | `InventoryClickEvent`       | Player clicks in inventory            | Yes         | `bItem` (current), `abItem` (cursor)       |
-| `onSwap`           | `PlayerSwapHandItemsEvent`  | Player swaps main/offhand (F key)     | Yes         | Composite only (see below)                 |
-| `onLogin`          | `PlayerLoginEvent`          | Player logs into server               | No          | Composite only (see below)                 |
-
-### Composite Triggers <a href="#composite-triggers" id="composite-triggers"></a>
-
-Some triggers support composite syntax using the `@` separator to target specific equipment slots or hands. The format is `trigger@slot`.
-
-#### Syntax <a href="#syntax" id="syntax"></a>
-
-`triggerName@slotName`
-
-#### Supported Composite Triggers <a href="#supported-composite-triggers" id="supported-composite-triggers"></a>
-
-**onLogin**
-
-Fires when a player logs in, checking all equipped items:
-
-* `onLogin@main` - Main hand item
-* `onLogin@off` - Offhand item
-* `onLogin@helmet` - Helmet slot
-* `onLogin@chestplate` - Chestplate slot
-* `onLogin@leggings` - Leggings slot
-* `onLogin@boots` - Boots slot
-
-**onMine**
-
-Fires when a player breaks a block:
-
-* `onMine@main` - Main hand item
-* `onMine@off` - Offhand item
-
-**onSwap**
-
-Fires when a player swaps hands (presses F):
-
-* `onSwap@main` - Item being moved to offhand
-* `onSwap@off` - Item being moved to main hand
-
-### Advanced
-
-The val, var and dynamic will be a variable into script.
-
-You can directly use it like:
-
-<pre class="language-yml"><code class="lang-yml">message_helper:
-  sertraline:
-    tier: S
-    vals:
-<strong>      message: "&#x3C;yellow>Hello, &#x3C;aqua>Cho &#x3C;#ff66ff>Ten &#x3C;red>Chan &#x3C;yellow>!"
-</strong>    actions:
-      onRightClick:
-        - async: false
-          js: |
-<strong>            player.sendMessage(mmUtil.deserialize(message)); 
-</strong>  xbuilder:
-    name: "&#x3C;!i>&#x3C;#cc99cc>Message Helper"
-    lore: |
-      &#x3C;!i>&#x3C;#aaaadd>Say hello for you!
-    material: PAPER
-</code></pre>
-
-<figure><img src="../../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
-
-You may also **use or modify** event's parameters like:
-
-<pre class="language-yaml"><code class="lang-yaml">sword_of_ultimate_damage:
-  sertraline:
-    tier: S
-    actions:
-      onAttack:
-<strong>        - async: false # If cancel event or modify event content, async must be false (default to true).
-</strong>          js: |
-<strong>            event.damage = 100
-</strong>  xbuilder:
-    name: "&#x3C;!i>&#x26;eGolden Sword Of &#x26;cOne hundred Damage"
-    lore: |
-      &#x3C;!i>&#x3C;gold>+100 Damage.
-    material: GOLDEN_SWORD
-</code></pre>
-
-To cancel a event, just use:
-
-```javascript
-event.setCancelled(true)
-// OR event.isCancelled = true
-```
-
-{% hint style="warning" %}
-If **cancel event or modify** event content, `async` must be `false`.
-{% endhint %}
-
-### Give Item Example
-
-```yaml
-a_pack_of_gum:
-  xbuilder:
-    name: "<!i><#ffcc66><bold>a pack of gum"
-    material: PAPER
-  sertraline:
-    tier: S
-    lore-format: default
-    actions:
-      onRightClick:
-        - async: false
-          gjs: |
-            bItem.amount--
-            player.give(SertralineAPI.buildItem("gum", player, null, 10, null))
-```
+Try `sword_of_ultimate_damage` in the bundled `workspace/default/default_weapon.yml` or `speed_potion_cookie` in `default_consumable.yml` for an item that gives a speed effect when eaten. See [Script Utilities](../../../refrences/script-util/README.md) for tools you can use in scripts.

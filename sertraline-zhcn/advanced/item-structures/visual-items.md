@@ -4,7 +4,7 @@ icon: network-wired
 
 # 视觉物品
 
-视觉物品改变客户端看到的显示，不改变服务器上的真实物品。此功能需要 PacketEvents；还应检查 `config.yml` 中的发包功能开关。大量物品需要处理时，客户端容器显示可能短暂延迟。
+视觉物品改变客户端看到的显示，不改变服务器上的真实物品。`visual` 需要支持数据组件的服务端、PacketEvents，以及 `config.yml` 中的 `packet.register: true` 和 `packet.packet-component: true`。大量物品需要处理时，客户端容器显示可能短暂延迟。
 
 ## 显示不同材质
 

@@ -38,9 +38,10 @@
 
 ## References
 
+* [Recipe API](refrences/api/recipe-api.md)
 * [Script Issues](refrences/script-issues.md)
 * [PlaceHolderAPI](refrences/placeholderapi.md)
 * [XBuilder](refrences/xbuilder.md)
 * [Script Util](refrences/script-util/README.md)
   * [Script Util Refs](refrences/script-util/script-util-refs.md)
-* [Universal Mythicmobs](refrences/universal-mythicmobs.md)
+* [MythicMobs Drops and Equipment](refrences/universal-mythicmobs.md)

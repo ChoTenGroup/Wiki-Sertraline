@@ -2,55 +2,39 @@
 icon: infinity
 ---
 
-# MythicLib/MMOItems Compat
+# MythicLib and MMOItems Compatibility
 
-### Use MMOItems Attributes
+On modern builds, use `mmo` to add MMO stats to Sertraline items. Install MythicLib together with MMOItems or MMOCore. Available stats depend on the versions you install.
 
-{% hint style="warning" %}
-Due to the loading mechanism of MMO plugins,\
-the attributes still do not work when only MythicLib is installed.\
-You need install MMOItems (or) MMOCore to let attributes work.
-{% endhint %}
+## Add attack damage to a main-hand weapon
 
-Just Use Attribute Name under mmo section.
+Save this as `plugins/Sertraline/workspace/practice_mmo_sword.yml`.
 
-```
+```yaml
+practice_mmo_sword:
+  xbuilder:
+    material: DIAMOND_SWORD
+    name: "<!i><green>Practice War Sword"
   mmo:
-    attack-damage: 2020
-    attack-speed: -5
-    max-health: 5%
+    attack-damage: 10
+    allowed: ["mainhand"]
 ```
 
-### Special Configuration Keys <a href="#configuration-keys" id="configuration-keys"></a>
+Reload and run `/sertralineitem give practice_mmo_sword`. Switch to its hotbar slot and check your MMO stats or attack a test target. The sword contributes 10 MMO attack damage in the main hand. The off hand does not apply this bonus.
 
-```
-mmo:
-  id: "custom_identifier"
-  source: "OTHER"
-  slot: "MAIN_HAND"
-  allowed:
-    - "hand"
-    - "helmet"
-  
-  # Regular attributes follow...
-```
+If you have PlaceholderAPI installed, hold a plain diamond sword and run `/papi parse me %mythiclib_raw_stat_attack_damage%`. Switch to the practice sword, wait about a second, and run the command again. The value should be 10 higher.
 
-<table><thead><tr><th>Key</th><th>Type</th><th>Description</th><th>Default</th></tr></thead><tbody><tr><td><code>id</code></td><td>String</td><td>Unique identifier for this item's modifiers. Used to generate UUID for StatModifier registration.</td><td>Item's key (e.g., <code>example_sword</code>)</td></tr><tr><td><code>source</code></td><td>String</td><td><p>MythicLib <code>ModifierSource</code> enum value:</p><pre><code>MELEE_WEAPON,
-RANGED_WEAPON,
-OFFHAND_ITEM,
-MAINHAND_ITEM,
-HAND_ITEM,
-ARMOR,
-ACCESSORY,
-ORNAMENT,
-OTHER,
-VOID;
-</code></pre></td><td><code>OTHER</code> (from defSource parameter)</td></tr><tr><td><code>slot</code></td><td>String</td><td>MythicLib <code>EquipmentSlot</code> enum value: <code>MAIN_HAND</code>, <code>OFF_HAND</code>, <code>HELMET</code>, <code>CHESTPLATE</code>, <code>LEGGINGS</code>, <code>BOOTS</code></td><td>Auto-detected from item material or <code>MAIN_HAND</code></td></tr><tr><td><code>allowed</code></td><td>List</td><td>Which equipment slots allow this item to apply attributes. See <a href="https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/5e320724/Equipment%20Slot%20Filtering">Equipment Slot Filtering</a></td><td>Auto-detected from item material suffix</td></tr></tbody></table>
+Use a number for a flat bonus, such as `attack-damage: 10`. Percentage bonuses can use values such as `max-health: "5%"`. See the bundled `workspace/default/default_mmoitem.yml` for more examples.
 
-### Fix Attack speed
+<a id="configuration-keys"></a>
 
-Have issues with rebound attack-speed?&#x20;
+## Equipment restrictions and advanced settings
 
-<pre class="language-yaml"><code class="lang-yaml">  mmo:
-<strong>    fix-attack-speed: true
-</strong></code></pre>
+| Field | Use |
+| --- | --- |
+| `allowed` | Positions in which the bonus applies. Use lowercase `mainhand`, `offhand`, `helmet`, `chestplate`, `leggings`, and `boots`, or use `hand` to accept either hand. An empty list uses the matching armor slot or defaults to the main hand for other materials |
+| `slot` | The equipment slot reported to MythicLib. To override it, use `MAIN_HAND`, `OFF_HAND`, `HEAD`, `CHEST`, `LEGS`, or `FEET`. The default follows the actual equipped slot |
+| `source` | The modifier source reported to MythicLib. Defaults to `MAINHAND_ITEM`, `OFFHAND_ITEM`, or `ARMOR` based on where the item is equipped. Available sources depend on the MythicLib version |
+| `id` | The identifier for the item's modifier. Defaults to the item ID |
+
+If you encounter an attack-speed rebound, try `fix-attack-speed: true` under `mmo`. To undo that setting, remove the field, reload, and get a fresh copy of the item.

@@ -4,45 +4,37 @@ icon: infinity
 
 # MythicLib / MMOItems 兼容
 
-物品的 `mmo` 段可以配置 MMO 属性。请同时启用 MythicLib 与 MMOItems 或 MMOCore，让 MMO 属性能够生效。实际可用属性取决于安装的插件及版本。
+在现代构建中，可以用 `mmo` 给 Sertraline 物品添加 MMO 属性。服务器需要同时安装 MythicLib 与 MMOItems 或 MMOCore。实际可用属性取决于这些插件的版本。
+
+## 给主手武器增加攻击伤害
+
+把下面的配置保存到 `plugins/Sertraline/workspace/practice_mmo_sword.yml`。
 
 ```yaml
-example_sword:
+practice_mmo_sword:
   xbuilder:
     material: DIAMOND_SWORD
-    name: "<!i><green>示例剑"
+    name: "<!i><green>练习战剑"
   mmo:
     attack-damage: 10
-    attack-speed: -1
-    max-health: 5%
+    allowed: ["mainhand"]
 ```
+
+重载后用 `/sertralineitem give practice_mmo_sword` 领取。切到剑所在的快捷栏槽位，再查看 MMO 属性或攻击测试目标。剑的 MMO 攻击伤害加成为 10，副手不应用这条加成。
+
+如果安装了 PlaceholderAPI，手持普通钻石剑时执行 `/papi parse me %mythiclib_raw_stat_attack_damage%` 记下数值。切换到练习战剑，等约一秒再执行一次，数值应增加 10。
+
+普通数字表示固定加成，例如 `attack-damage: 10`。支持百分比写法的加成可写为 `max-health: "5%"`。更多配置见随附的 `workspace/default/default_mmoitem.yml`。
 
 <a id="configuration-keys"></a>
 
-## 特殊字段
+## 装备限制与进阶设置
 
-| 字段 | 用途 | 默认值 |
-| --- | --- | --- |
-| `id` | 属性修改器的标识 | 物品 ID |
-| `source` | MythicLib 的修改器来源，如 `OTHER`、`MELEE_WEAPON` | `OTHER` |
-| `slot` | 装备槽位，如 `MAIN_HAND`、`OFF_HAND`、`HELMET` | 根据物品材质检测，或使用主手 |
-| `allowed` | 允许属性生效的装备槽位列表 | 根据物品材质检测 |
+| 字段 | 用途 |
+| --- | --- |
+| `allowed` | 实际允许触发 MMO 加成的位置。用小写 `mainhand`、`offhand`、`helmet`、`chestplate`、`leggings`、`boots`，或用 `hand` 允许双手。留空时按材质推断护甲位置，其他材质默认主手 |
+| `slot` | 向 MythicLib 报告的装备槽。如需覆盖，填 `MAIN_HAND`、`OFF_HAND`、`HEAD`、`CHEST`、`LEGS` 或 `FEET`。省略时跟随实际装备槽 |
+| `source` | 向 MythicLib 报告的来源。默认根据佩戴位置使用 `MAINHAND_ITEM`、`OFFHAND_ITEM` 或 `ARMOR`。可用值取决于 MythicLib 版本 |
+| `id` | 这件物品的修改器标识。省略时使用物品 ID |
 
-```yaml
-mmo:
-  id: "custom_identifier"
-  source: "OTHER"
-  slot: "MAIN_HAND"
-  allowed:
-    - "hand"
-    - "helmet"
-  fix-attack-speed: true
-```
-
-`fix-attack-speed` 可用于处理攻击速度回弹问题。请在测试服务器验证实际效果，更多示例见插件自带的 `workspace/default/default_mmoitem.yml`。
-
-## 来源与装备槽可选值
-
-- `source` 使用 MythicLib 定义的来源，例如 `MELEE_WEAPON`、`RANGED_WEAPON`、`MAINHAND_ITEM`、`OFFHAND_ITEM`、`HAND_ITEM`、`ARMOR`、`ACCESSORY`、`ORNAMENT`、`OTHER`、`VOID`。可用值取决于服务器上的 MythicLib 版本。
-- `slot` 可使用 `MAIN_HAND`、`OFF_HAND`、`HELMET`、`CHESTPLATE`、`LEGGINGS` 或 `BOOTS`。
-- 如果 `allowed` 没有设置或为空，插件按材质推断生效位置。例如钻石靴默认对应靴子槽。需要多个位置时，在 `allowed` 中逐行填写。
+如果遇到攻击速度回弹，可在 `mmo` 下添加 `fix-attack-speed: true` 测试。要撤销这个设置，移除该字段后重载并重新领取物品。

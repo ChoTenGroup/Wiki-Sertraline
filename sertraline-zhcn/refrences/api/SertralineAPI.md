@@ -4,6 +4,8 @@
 
 所有同步 API 若涉及玩家背包/数据，调用方须在玩家所属线程（主线程或区域线程）内调用。
 
+查询或注册工作台、熔炉等配方，见[配方 API](recipe-api.md)。
+
 ## 多来源物品 API
 
 SertralineItemAPI 通过 AbstractSItem 提供查询、构建和注册操作。物品 ID 可使用 id、minecraft::id 或 provider::id。兼容接口 Sertraline.api() 仍提供背包、重建、管理器和模板操作。

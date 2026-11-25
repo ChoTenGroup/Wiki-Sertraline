@@ -8,7 +8,7 @@ icon: square-x-twitter
 
 > **来源**: [XItemStack Wiki](https://github.com/CryptoMorin/XSeries/wiki/XItemStack) — Crypto Morin, 最后更新于 2025 年 8 月 29 日
 >
-> **格式**：YAWORD 是结合 YAML 和 Ruby 语法的文档格式，用于紧凑地展示配置。
+> 将完整示例缩进到物品的 `xbuilder` 段下。`Text`、`Boolean` 等类型名称仅用于说明。配置结构以 Sertraline 3.13.2.2 随附的 XItemStack 为准。
 
 ***
 
@@ -75,7 +75,7 @@ material: Text
 amount: Number
 ```
 
-物品堆叠数量，使用正整数。
+XItemStack 使用正整数表示数量。Sertraline 的发放命令使用命令里的数量，配方使用 `result.count`。
 
 ***
 
@@ -83,7 +83,7 @@ amount: Number
 damage: Decimal
 ```
 
-物品损伤值或耐久值。
+已经损耗的耐久值。数值越大，剩余耐久越少。
 
 ***
 
@@ -128,7 +128,7 @@ custom-model-data: Text or Number or Color or Boolean or CustomModelDataComponen
 item-model: Text
 ```
 
-1.21 及以上版本的物品模型组件（`minecraft:item_model`），例如 `minecraft:iron_ingot`；其优先级高于 `custom-model-data`。
+1.21.2 及以上版本的物品模型组件（`minecraft:item_model`），例如 `minecraft:iron_ingot`；其优先级高于 `custom-model-data`。
 
 ***
 
@@ -180,7 +180,7 @@ flags: [HIDE_ATTRIBUTES, HIDE_POTION_EFFECTS]
 glow: Boolean
 ```
 
-为物品添加发光效果；该操作会自动添加耐久 I 附魔，并用 `HIDE_ENCHANTS` 隐藏。
+当未配置 `enchants` 时，可用 `glow: true` 添加发光效果。该写法会添加耐久 I 附魔，并尝试用 `HIDE_ENCHANTS` 隐藏。
 
 ***
 
@@ -188,7 +188,7 @@ glow: Boolean
 
 ```yaml
 attributes:
-  - AttributeName: ...     # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
+  AttributeName:     # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
     name: Text             # https://minecraft.gamepedia.com/Attribute
     amount: Decimal        # 修饰值
     operation: Text        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
@@ -197,7 +197,7 @@ attributes:
 
 物品属性控制描述下方显示的数值修饰符，可使用 `HIDE_ATTRIBUTES` 标记隐藏。
 
-**槽位可选值：** `HEAD`, `CHEST`, `LEGS`, `FEET`, `HAND`, `OFF_HAND`
+`attributes` 下用属性名称作键，无需列表符号。**槽位可选值：** `HEAD`, `CHEST`, `LEGS`, `FEET`, `HAND`, `OFF_HAND`
 
 ***
 
@@ -211,7 +211,7 @@ attributes:
 
 ```yaml
 patterns:
-  - pattern name: dye color
+  STRIPE_DOWNLEFT: RED
 ```
 
 #### 7.2 皮革盔甲与药水
@@ -245,7 +245,10 @@ pattern: TropicalFishPattern
 材质为任意潜影盒:
 
 ```yaml
-contents: [Item]
+contents:
+  "0":
+    material: PAPER
+    amount: 2
 ```
 
 #### 7.6 刷怪笼
@@ -261,7 +264,9 @@ spawner: Text    # EntityType: https://hub.spigotmc.org/javadocs/spigot/org/bukk
 当材质为 `CROSSBOW`:
 
 ```yaml
-projectiles: [Item]    # 已装填的弹药
+projectiles:
+  first:
+    material: ARROW    # 已装填的弹药
 ```
 
 #### 7.8 迷之炖菜
@@ -288,9 +293,10 @@ generation: ORIGINAL or COPY_OF_ORIGINAL or COPY_OF_COPY or TATTERED
 当材质为 `FILLED_MAP`:
 
 ```yaml
-scaling: Boolean
-location: Location
-color: Color
+map:
+  scaling: Boolean
+  location: Location
+  color: Color
 ```
 
 #### 7.11 刷怪蛋
@@ -314,16 +320,18 @@ lodestone: Location      # 磁石坐标
 
 #### 7.13 烟花
 
-当材质为 `FIREWORK`:
+当材质为 `FIREWORK_ROCKET`:
 
 ```yaml
-power: Decimal           # 飞行高度或持续时间
+power: Number           # 飞行高度或持续时间
 firework:
-  flicker: Boolean       # 烟花是否闪烁
-  trial: Boolean         # 烟花是否带有轨迹
-  colors: [Color]        # 主要爆炸颜色
-  fade-colors: [Color]   # 渐变颜色
-  type: Text             # FireworkEffect.Type: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/FireworkEffect.Type.html
+  burst:
+    flicker: Boolean       # 烟花是否闪烁
+    trail: Boolean         # 烟花是否带有轨迹
+    colors:
+      base: [Color]        # 主要爆炸颜色
+      fade: [Color]   # 渐变颜色
+    type: Text           # FireworkEffect.Type: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/FireworkEffect.Type.html
 ```
 
 ***
@@ -348,11 +356,11 @@ enchantment name: Number    # 附魔名称 → 等级
 #### 8.3 属性（Attribute）
 
 ```yaml
-AttributeName: Text        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
-name: Text                 # https://minecraft.gamepedia.com/Attribute
-amount: Decimal            # 修饰值
-operation: Text            # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
-slot: Slot                 # HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
+AttributeName:             # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
+  name: Text
+  amount: Decimal            # 修饰值
+  operation: Text          # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
+  slot: Slot               # HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
 ```
 
 #### 8.4 位置（Location）
@@ -415,22 +423,24 @@ enchants:
 
 ```yaml
 material: PLAYER_HEAD
-skull: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv..."}
+skull: "Notch"
 name: "&eCustom Head"
 ```
 
 #### 烟花火箭
 
 ```yaml
-material: FIREWORK
+material: FIREWORK_ROCKET
 name: "&dBoom Stick"
 power: 3
 firework:
-  flicker: true
-  trial: true
-  colors: ["#FF0000", "#00FF00"]
-  fade-colors: ["#0000FF"]
-  type: BALL_LARGE
+  burst:
+    type: BALL_LARGE
+    flicker: true
+    trail: true
+    colors:
+      base: ["#FF0000", "#00FF00"]
+      fade: ["#0000FF"]
 ```
 
 #### 染色皮革盔甲
@@ -441,7 +451,7 @@ name: "&6Royal Vest"
 color: "255, 215, 0"
 unbreakable: true
 attributes:
-  - GENERIC_ARMOR:
+  ARMOR:
     name: "generic.armor"
     amount: 8
     operation: ADD_NUMBER
