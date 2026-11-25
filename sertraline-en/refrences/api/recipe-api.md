@@ -143,4 +143,4 @@ For crafting-table result callbacks, `RecipeFunction.Kether` runs with the craft
 
 `SertralineRecipeFileLoadPreEvent` fires before candidate parsing and can run off the main thread. `SertralineRecipeFileLoadPostEvent` fires after the candidate registration attempt. Its `candidateCount` counts entries submitted for registration. Use `getRecipeData(key)` to confirm that a specific recipe was registered. Both events extend the TabooLib `BukkitProxyEvent` used by Sertraline.
 
-For item construction, inventory operations, and templates, see the [Sertraline API reference](https://github.com/ChoTenGroup/Sertraline-Hydrochloride/blob/ce82896b6ed87dd859d8370289d56a79e962d418/docs/SertralineAPI-en.md).
+For item construction, inventory operations, and templates, see the [Sertraline API reference](SertralineAPI.md).
