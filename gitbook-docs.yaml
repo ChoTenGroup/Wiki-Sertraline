@@ -9,3 +9,10 @@ site:
       default: true
       content:
         directory: ./akacandy-plugins
+    - type: space
+      key: space-2
+      title: Copy of AkaCandy Plugins
+      path: copy-of-akacandy-plugins
+      draft: true
+      content:
+        directory: ./copy-of-akacandy-plugins
