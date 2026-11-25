@@ -4,40 +4,40 @@ icon: square-x-twitter
 
 # XBuilder
 
-## XItemStack YAML Syntax Reference
+## XItemStack YAML 语法参考
 
-> **Source**: [XItemStack Wiki](https://github.com/CryptoMorin/XSeries/wiki/XItemStack) — Crypto Morin, last updated on August 29, 2025
+> **来源**: [XItemStack Wiki](https://github.com/CryptoMorin/XSeries/wiki/XItemStack) — Crypto Morin, 最后更新于 2025 年 8 月 29 日
 >
-> **Format**: YAWORD (Yet Another Way Of Reading Documentations) — a hybrid YAML and Ruby syntax format used to write configuration documentation on GitHub in a compact, highlighted way.
+> **格式**：YAWORD 是结合 YAML 和 Ruby 语法的文档格式，用于紧凑地展示配置。
 
 ***
 
-### Type System
+### 类型说明
 
-| Type                | Description                                                                                                                                                          |
+| 类型                | 说明                                                                                                                                                          |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text**            | String. Can be free text, or restricted to values in linked references.                                                                                              |
-| **Boolean**         | `true` or `false`.                                                                                                                                                   |
-| **Number**          | Positive integer (such as `0`, `1`, `2`). Often used to represent game ticks (20 ticks = 1 second). May be followed by `; min - max` to indicate an inclusive range. |
-| **Decimal**         | Positive decimal number (such as `0`, `1`, `1.455`, `4.5`). May be followed by `; min - max`.                                                                        |
-| \*\*\[\*\***Type]** | A list of the given type (YAML list format).                                                                                                                         |
-| **Type or Type**    | The option accepts multiple types.                                                                                                                                   |
+| **Text**            | 字符串，可以是自由文本，也可能仅接受参考文档列出的值。                                                                                              |
+| **Boolean**         | `true` 或 `false`。                                                                                                                                                   |
+| **Number**          | 非负整数，如 `0`、`1`、`2`；常用于游戏刻（20 tick = 1 秒）。`; min - max` 表示包含端点的范围。 |
+| **Decimal**         | 非负小数，如 `0`、`1`、`1.455`；可以使用 `; min - max` 表示范围。                                                                        |
+| \*\*\[\*\***Type]** | 指定类型的列表（YAML 列表格式）。                                                                                                                         |
+| **类型或类型**    | 该选项接受多种类型。                                                                                                                                   |
 
-**Conditional options**: The following options are only valid when the item material matches the specified conditions.
+**条件选项**：只有物品材质满足指定条件时才生效。
 
-**Classifications** (such as `class Attribute`) define reusable groups of fields. When a classification name appears as a type, its fields are substituted into that position.
+**分类**（如 `class Attribute`）定义可复用的字段组；分类名作为类型出现时，在该位置填写对应字段。
 
-**Aliases** (such as `alias Color: for Text`) are named constraints on a base type—they only accept specific formats or values.
+**别名**（如 `alias Color: for Text`）对基础类型添加限制，只接受指定格式或值。
 
 ***
 
-### 1. Basic Item Properties
+### 1. 物品基础属性
 
 ```yaml
 name: Text
 ```
 
-The item's display name. Supports color codes.
+物品显示名称，支持颜色代码。
 
 ***
 
@@ -45,16 +45,16 @@ The item's display name. Supports color codes.
 lore: Text or [Text]
 ```
 
-The item's lore (description text).
+物品描述文本。
 
-* A single string -> one line of lore.
-* A YAML string list -> multiple lines of lore.
-* Newline characters (`\n`) in the string also produce line breaks.
+* 单个字符串表示一行描述。
+* YAML 字符串列表表示多行描述。
+* 字符串中的换行符（`\n`）也会产生换行。
 
-Example:
+示例：
 
 ```yaml
-name: "<blue>Cool Sword" # Legacy color codes can also be used
+name: "<blue>Cool Sword" # 也可使用传统颜色代码
 lore: |
   You can tell from the name
   that this sword is cool
@@ -67,7 +67,7 @@ lore: |
 material: Text
 ```
 
-[Bukkit Material](https://cryptomorin.github.io/Javadocs-Simplifier/api/v1?url=https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html) identifier (such as `DIAMOND_SWORD`, `STONE`).
+[Bukkit Material](https://cryptomorin.github.io/Javadocs-Simplifier/api/v1?url=https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html) 标识符，例如 `DIAMOND_SWORD`, `STONE`。
 
 ***
 
@@ -75,7 +75,7 @@ material: Text
 amount: Number
 ```
 
-The item stack amount. Positive integer.
+物品堆叠数量，使用正整数。
 
 ***
 
@@ -83,36 +83,36 @@ The item stack amount. Positive integer.
 damage: Decimal
 ```
 
-The item's damage value/durability value.
+物品损伤值或耐久值。
 
 ***
 
-### 2. Heads (Player Heads)
+### 2. 玩家头颅
 
 ```yaml
 skull: Text
 ```
 
-**Required material**: `PLAYER_HEAD`
+**所需材质**: `PLAYER_HEAD`
 
-Head texture. Accepted formats (from highest to lowest priority):
+头颅纹理。支持以下格式，按优先级从高到低排列：
 
-1. **Base64** (recommended) — no encoding or concatenation issues
-2. **URL** — `textures.minecraft.com` link
-3. **UUID** — player UUID
-4. **Name** — player name
+1. **Base64** （推荐）——无需处理编码或拼接
+2. **URL** — `textures.minecraft.com` 链接
+3. **UUID** — 玩家 UUID
+4. **名称** — 玩家名称
 
-> 💡 A great resource for obtaining head textures: [minecraft-heads.com/custom-heads](https://minecraft-heads.com/custom-heads), which also supports Base64 format.
+> 💡 可以从以下网站获取头颅纹理: [minecraft-heads.com/custom-heads](https://minecraft-heads.com/custom-heads), 该网站也支持 Base64 格式。
 
 ***
 
-### 3. Item Behavior and Appearance
+### 3. 物品行为和外观
 
 ```yaml
 unbreakable: Boolean
 ```
 
-Whether the item has the unbreakable property (prevents durability loss).
+是否设置为无法损坏（不消耗耐久）。
 
 ***
 
@@ -120,7 +120,7 @@ Whether the item has the unbreakable property (prevents durability loss).
 custom-model-data: Text or Number or Color or Boolean or CustomModelDataComponent
 ```
 
-1.14+ custom model data feature. Used to change the item's appearance through resource packs.
+1.14 及以上版本的自定义模型数据，可通过资源包改变物品外观。
 
 ***
 
@@ -128,18 +128,18 @@ custom-model-data: Text or Number or Color or Boolean or CustomModelDataComponen
 item-model: Text
 ```
 
-1.21+ item model component (`minecraft:item_model`), used for more granular control over the item model, such as `minecraft:iron_ingot`. Takes priority over the `custom-model-data` setting.
+1.21 及以上版本的物品模型组件（`minecraft:item_model`），例如 `minecraft:iron_ingot`；其优先级高于 `custom-model-data`。
 
 ***
 
-### 4. Enchantments
+### 4. 附魔
 
 ```yaml
 enchants:
   enchantment name: level
 ```
 
-**Example:**
+**示例：**
 
 ```yaml
 enchants:
@@ -147,11 +147,11 @@ enchants:
   DURABILITY: 3
 ```
 
-Each enchantment uses a [Bukkit Enchantment](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html) name as the key and the level as the value.
+每个附魔使用 [Bukkit Enchantment](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html) 名称作为键，等级作为值。
 
 ***
 
-**Stored enchantments** (for enchanted books) — when material is `ENCHANTED_BOOK`:
+**存储的附魔**（用于附魔书），材质为 `ENCHANTED_BOOK`:
 
 ```yaml
 stored-enchants:
@@ -160,15 +160,15 @@ stored-enchants:
 
 ***
 
-### 5. Item Flags and Glow
+### 5. 物品标记与发光
 
 ```yaml
 flags: Flag or [Flag]
 ```
 
-Item flags are used to hide certain properties in the item tooltip. See [Bukkit ItemFlag](https://cryptomorin.github.io/Javadocs-Simplifier/api/v1?url=https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/inventory/ItemFlag.html).
+物品标记可隐藏物品提示中的某些属性，参见 [Bukkit ItemFlag](https://cryptomorin.github.io/Javadocs-Simplifier/api/v1?url=https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/inventory/ItemFlag.html).
 
-**Example:**
+**示例：**
 
 ```yaml
 flags: [HIDE_ATTRIBUTES, HIDE_POTION_EFFECTS]
@@ -180,59 +180,59 @@ flags: [HIDE_ATTRIBUTES, HIDE_POTION_EFFECTS]
 glow: Boolean
 ```
 
-Gives the item a glowing visual effect. This operation automatically adds `Durability I` enchantment and uses the `HIDE_ENCHANTS` flag to hide it.
+为物品添加发光效果；该操作会自动添加耐久 I 附魔，并用 `HIDE_ENCHANTS` 隐藏。
 
 ***
 
-### 6. Attributes
+### 6. 属性
 
 ```yaml
 attributes:
   - AttributeName: ...     # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
     name: Text             # https://minecraft.gamepedia.com/Attribute
-    amount: Decimal        # modifier value
+    amount: Decimal        # 修饰值
     operation: Text        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
-    slot: Slot             # the slot where this attribute takes effect
+    slot: Slot             # 属性生效的槽位
 ```
 
-Item attributes control the numeric modifiers displayed in the item description (below the lore). They can be hidden using the `HIDE_ATTRIBUTES` flag.
+物品属性控制描述下方显示的数值修饰符，可使用 `HIDE_ATTRIBUTES` 标记隐藏。
 
-**Slot values:** `HEAD`, `CHEST`, `LEGS`, `FEET`, `HAND`, `OFF_HAND`
+**槽位可选值：** `HEAD`, `CHEST`, `LEGS`, `FEET`, `HAND`, `OFF_HAND`
 
 ***
 
-### 7. Material-Conditional Options
+### 7. 按材质生效的选项
 
-The following options are only available when the item material matches the specified conditions.
+以下选项仅在物品材质满足相应条件时可用。
 
-#### 7.1 Banners
+#### 7.1 旗帜
 
-When material is any kind of banner:
+材质为任意旗帜:
 
 ```yaml
 patterns:
   - pattern name: dye color
 ```
 
-#### 7.2 Leather Armor and Potions
+#### 7.2 皮革盔甲与药水
 
-When material is any kind of leather armor or potion:
+材质为任意皮革盔甲或药水:
 
 ```yaml
 color: Color
 ```
 
-#### 7.3 Axolotl Bucket
+#### 7.3 美西螈桶
 
-When material is `AXOLOTL_BUCKET`:
+当材质为 `AXOLOTL_BUCKET`:
 
 ```yaml
 color: LUCY or WILD or GOLD or CYAN or BLUE
 ```
 
-#### 7.4 Tropical Fish Bucket
+#### 7.4 热带鱼桶
 
-When material is `TROPICAL_FISH_BUCKET`:
+当材质为 `TROPICAL_FISH_BUCKET`:
 
 ```yaml
 color: DyeColor
@@ -240,41 +240,41 @@ pattern-color: DyeColor
 pattern: TropicalFishPattern
 ```
 
-#### 7.5 Shulker Box
+#### 7.5 潜影盒
 
-When material is any kind of shulker box:
+材质为任意潜影盒:
 
 ```yaml
 contents: [Item]
 ```
 
-#### 7.6 Spawner
+#### 7.6 刷怪笼
 
-When material is `SPAWNER`:
+当材质为 `SPAWNER`:
 
 ```yaml
 spawner: Text    # EntityType: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html
 ```
 
-#### 7.7 Crossbow
+#### 7.7 弩
 
-When material is `CROSSBOW`:
+当材质为 `CROSSBOW`:
 
 ```yaml
-projectiles: [Item]    # loaded ammunition
+projectiles: [Item]    # 已装填的弹药
 ```
 
-#### 7.8 Suspicious Stew
+#### 7.8 迷之炖菜
 
-When material is `SUSPICIOUS_STEW`:
+当材质为 `SUSPICIOUS_STEW`:
 
 ```yaml
 effects: [Potion]
 ```
 
-#### 7.9 Written Book
+#### 7.9 成书
 
-When material is `WRITTEN_BOOK`:
+当材质为 `WRITTEN_BOOK`:
 
 ```yaml
 author: Text
@@ -283,9 +283,9 @@ pages: [Text]
 generation: ORIGINAL or COPY_OF_ORIGINAL or COPY_OF_COPY or TATTERED
 ```
 
-#### 7.10 Filled Map
+#### 7.10 地图
 
-When material is `FILLED_MAP`:
+当材质为 `FILLED_MAP`:
 
 ```yaml
 scaling: Boolean
@@ -293,42 +293,42 @@ location: Location
 color: Color
 ```
 
-#### 7.11 Spawn Egg
+#### 7.11 刷怪蛋
 
-> ⚠️ Only used in legacy Minecraft versions.
+> ⚠️ 仅用于旧版 Minecraft。
 
-When material is `SPAWN_EGG`:
+当材质为 `SPAWN_EGG`:
 
 ```yaml
 creature: EntityType
 ```
 
-#### 7.12 Compass (1.16+)
+#### 7.12 指南针 (1.16+)
 
-When material is `COMPASS` (and version > 1.15):
+当材质为 `COMPASS`（版本高于 1.15）:
 
 ```yaml
 tracked: Boolean         # whether it tracks a lodestone
-lodestone: Location      # lodestone coordinates
+lodestone: Location      # 磁石坐标
 ```
 
-#### 7.13 Firework
+#### 7.13 烟花
 
-When material is `FIREWORK`:
+当材质为 `FIREWORK`:
 
 ```yaml
-power: Decimal           # flight height/duration
+power: Decimal           # 飞行高度或持续时间
 firework:
-  flicker: Boolean       # whether the firework flickers
-  trial: Boolean         # whether the firework has a trail effect
-  colors: [Color]        # main explosion colors
-  fade-colors: [Color]   # fade colors
+  flicker: Boolean       # 烟花是否闪烁
+  trial: Boolean         # 烟花是否带有轨迹
+  colors: [Color]        # 主要爆炸颜色
+  fade-colors: [Color]   # 渐变颜色
   type: Text             # FireworkEffect.Type: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/FireworkEffect.Type.html
 ```
 
 ***
 
-### 8. Helper Structures
+### 8. 辅助结构
 
 #### 8.1 CustomModelDataComponent
 
@@ -339,23 +339,23 @@ colors: [Color]
 flags: [Boolean]
 ```
 
-#### 8.2 Enchant
+#### 8.2 附魔（Enchant）
 
 ```yaml
-enchantment name: Number    # enchantment name -> level
+enchantment name: Number    # 附魔名称 → 等级
 ```
 
-#### 8.3 Attribute
+#### 8.3 属性（Attribute）
 
 ```yaml
 AttributeName: Text        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
 name: Text                 # https://minecraft.gamepedia.com/Attribute
-amount: Decimal            # modifier value
+amount: Decimal            # 修饰值
 operation: Text            # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/AttributeModifier.Operation.html
 slot: Slot                 # HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
 ```
 
-#### 8.4 Location
+#### 8.4 位置（Location）
 
 ```yaml
 world: Text
@@ -364,7 +364,7 @@ y: Decimal
 z: Decimal
 ```
 
-#### 8.5 Color
+#### 8.5 颜色（Color）
 
 ```yaml
 # Format: "red, green, blue" or "hex color"
@@ -373,21 +373,21 @@ z: Decimal
 #   "#FF0000"
 ```
 
-#### 8.6 DyeColor
+#### 8.6 染料颜色（DyeColor）
 
 ```
 WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK,
 GRAY, LIGHT_GRAY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK
 ```
 
-#### 8.7 TropicalFishPattern
+#### 8.7 热带鱼花纹（TropicalFishPattern）
 
 ```
 KOB, SUNSTREAK, SNOOPER, DASHER, BRINELY, SPOTTY,
 FLOPPER, STRIPEY, GLITTER, BLOCKFISH, BETTY, CLAYFISH
 ```
 
-#### 8.8 Slot
+#### 8.8 槽位（Slot）
 
 ```
 HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
@@ -395,9 +395,9 @@ HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
 
 ***
 
-### 9. Complete Examples
+### 9. 完整示例
 
-#### Basic Sword
+#### 基础剑
 
 ```yaml
 name: "&2Cool Sword"
@@ -411,7 +411,7 @@ enchants:
   SHARPNESS: 5
 ```
 
-#### Player Head
+#### 玩家头颅
 
 ```yaml
 material: PLAYER_HEAD
@@ -419,7 +419,7 @@ skull: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQub
 name: "&eCustom Head"
 ```
 
-#### Firework Rocket
+#### 烟花火箭
 
 ```yaml
 material: FIREWORK
@@ -433,7 +433,7 @@ firework:
   type: BALL_LARGE
 ```
 
-#### Colored Leather Armor
+#### 染色皮革盔甲
 
 ```yaml
 material: LEATHER_CHESTPLATE
@@ -450,7 +450,7 @@ attributes:
 
 ***
 
-> **Reference Links:**
+> **参考链接：**
 >
 > * [Bukkit Material](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html)
 > * [Bukkit ItemFlag](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/inventory/ItemFlag.html)
@@ -460,9 +460,9 @@ attributes:
 > * [Bukkit FireworkEffect.Type](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/FireworkEffect.Type.html)
 > * [Minecraft Wiki: Attribute](https://minecraft.gamepedia.com/Attribute)
 > * [Minecraft Wiki: Tick](https://minecraft.fandom.com/wiki/Tick)
-> * [Minecraft Heads (Head Textures)](https://minecraft-heads.com/custom-heads) \[file content end]
+> * [Minecraft Heads (Head Textures)](https://minecraft-heads.com/custom-heads)
 
 
 
-XBuilder supports formula info in [HERE](https://github.com/CryptoMorin/XSeries/wiki/XItemStack).
+XBuilder 支持的配置格式可参见[此处](https://github.com/CryptoMorin/XSeries/wiki/XItemStack).
 

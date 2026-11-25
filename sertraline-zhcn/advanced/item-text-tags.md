@@ -2,15 +2,15 @@
 icon: sensor-cloud
 ---
 
-# Item Text Tags
+# 物品文本标签
 
-Item Text Tags allows you use Tag in item's anywhere.
+物品文本标签允许你在物品配置中使用标签。
 
-### Usage
+### 用法
 
-just use `${tag:param}$` in your item.
+在物品配置中使用 `${tag:param}$` 格式。
 
-For example:
+例如：
 
 <pre><code>sword_of_lucky:
   sertraline:
@@ -29,13 +29,13 @@ For example:
         slot: HAND
 </code></pre>
 
-Then when item building, the `${var:damage}$` will be replaced.
+构建物品时，`${var:damage}$` 会被替换为变量值。
 
-### Advanced
+### 进阶
 
-#### Non-Null & Default
+#### 非空值与默认值
 
-Use non-null suffix to avoid "null". Use `?:` to get default value. Example:
+使用非空后缀以避免“null”。使用 `?:` 以获取默认值。示例：
 
 ```
 vars:
@@ -43,27 +43,27 @@ vars:
 ```
 
 * `"${var:test}$"` - `null`&#x20;
-* `"${var:test!!}$"` -   (Empty String)
-* `"${var:test?:DEF}$"` - `DEF` (Default Value)            &#x20;
+* `"${var:test!!}$"` -   空字符串
+* `"${var:test?:DEF}$"` - `DEF` （默认值）            &#x20;
 
-#### As\<Type>
+#### 类型转换 As\<Type>
 
-You can use As\<Type> Suffix to change a tag's type:
+可以使用 As\<Type> 后缀转换标签的值类型：
 
-**Available Type Conversions:**
+**可用的类型转换：**
 
-| Modifier | Code | Description                  | Example                                             |
+| 修饰符 | 代码 | 说明                  | 示例                                             |
 | -------- | ---- | ---------------------------- | --------------------------------------------------- |
-| `AsSt`   | `St` | Convert to String            | `${val:numberAsSt}$` → `"42"`                       |
-| `AsIn`   | `In` | Convert to Integer (rounded) | `${val:priceAsIn}$` → `100`                         |
-| `AsDo`   | `Do` | Convert to Double            | `${val:multiplierAsDo}$` → `1.5`                    |
-| `AsFl`   | `Fl` | Convert to Float             | `${val:ratioAsFl}$` → `0.75f`                       |
-| `AsBy`   | `By` | Convert to Byte              | `${val:flagAsByByte}$` → `1`                        |
-| `AsLo`   | `Lo` | Convert to Long              | `${val:timestampAsLo}$` → `1234567890`              |
-| `AsBo`   | `Bo` | Convert to Boolean           | `${val:enabledAsBo}$` → `true`                      |
-| `AsBd`   | `Bd` | Convert to BigDecimal        | `${val:preciseAsBd}$` → `123.456789`                |
-| `AsLi`   | `Li` | Convert List to String       | `${val:enchantmentsAsLi}$` → `"Fire,Ice,Lightning"` |
-| `AsMa`   | `Ma` | Convert Map to String        | `${val:statsAsMa}$` → `"STR,50,DEX,30"`             |
+| `AsSt`   | `St` | 转换为字符串            | `${val:numberAsSt}$` → `"42"`                       |
+| `AsIn`   | `In` | 转换为整数（四舍五入） | `${val:priceAsIn}$` → `100`                         |
+| `AsDo`   | `Do` | 转换为双精度浮点数            | `${val:multiplierAsDo}$` → `1.5`                    |
+| `AsFl`   | `Fl` | 转换为单精度浮点数             | `${val:ratioAsFl}$` → `0.75f`                       |
+| `AsBy`   | `By` | 转换为字节              | `${val:flagAsByByte}$` → `1`                        |
+| `AsLo`   | `Lo` | 转换为长整数              | `${val:timestampAsLo}$` → `1234567890`              |
+| `AsBo`   | `Bo` | 转换为布尔值           | `${val:enabledAsBo}$` → `true`                      |
+| `AsBd`   | `Bd` | 转换为高精度小数        | `${val:preciseAsBd}$` → `123.456789`                |
+| `AsLi`   | `Li` | 将列表转换为字符串       | `${val:enchantmentsAsLi}$` → `"Fire,Ice,Lightning"` |
+| `AsMa`   | `Ma` | 将映射转换为字符串        | `${val:statsAsMa}$` → `"STR,50,DEX,30"`             |
 
 ```
 vars:
@@ -72,43 +72,43 @@ vars:
 
 * `"${var:testAsIn}$"` - `2`
 
-### SplitBy Modifiers for Collections <a href="#splitby-modifiers-for-collections" id="splitby-modifiers-for-collections"></a>
+### 集合的 SplitBy 修饰符 <a href="#splitby-modifiers-for-collections" id="splitby-modifiers-for-collections"></a>
 
-The `SplitBy` modifier controls how collections (Lists and Maps) are joined into strings. It must be used together with `AsLi` or `AsMa` modifiers.
+`SplitBy` 修饰符控制列表和映射拼接成字符串时使用的分隔符，必须与 `AsLi` 或 `AsMa` 一起使用。
 
-**Syntax:**
+**语法：**
 
 ```
-${prefix:keyAsLiSplitBySeparator}$     # For lists
-${prefix:keyAsMaSplitByKV`entry}$      # For maps
+${prefix:keyAsLiSplitBySeparator}$     # 用于列表
+${prefix:keyAsMaSplitByKV`entry}$      # 用于映射
 ```
 
-**List Examples:**
+**列表示例：**
 
-| Tag                              | Input List                 | Output                           |
+| Tag                              | 输入列表                 | 输出                           |
 | -------------------------------- | -------------------------- | -------------------------------- |
-| `${val:colorsAsLi}$`             | `["Red", "Blue", "Green"]` | `"Red,Blue,Green"` (default `,`) |
-| `${val:colorsAsLiSplitBy }$`     | `["Red", "Blue", "Green"]` | `"Red Blue Green"` (space)       |
-| `${val:colorsAsLiSplitBy-}$`     | `["Red", "Blue", "Green"]` | `"Red-Blue-Green"` (dash)        |
-| `${val:colorsAsLiSplitByBLANK}$` | `["Red", "Blue", "Green"]` | `"RedBlueGreen"` (no separator)  |
+| `${val:colorsAsLi}$`             | `["Red", "Blue", "Green"]` | `"Red,Blue,Green"` （默认分隔符为 `,`） |
+| `${val:colorsAsLiSplitBy }$`     | `["Red", "Blue", "Green"]` | `"Red Blue Green"` （空格）       |
+| `${val:colorsAsLiSplitBy-}$`     | `["Red", "Blue", "Green"]` | `"Red-Blue-Green"` （短横线）        |
+| `${val:colorsAsLiSplitByBLANK}$` | `["Red", "Blue", "Green"]` | `"RedBlueGreen"` （无分隔符）  |
 
-**Map Examples:**
+**映射示例：**
 
-Maps use a two-part separator split by `` ` ``(3.8.2 below is  `|)`:
+映射使用两个部分的分隔符，以 `` ` `` 分开（3.8.2 及更早版本使用 `|`）：
 
-* First part: separates key from value
-* Second part: separates entries
+* 第一部分：将键与值分开
+* 第二部分：分隔条目
 
-| Tag                              | Input Map            | Output                                   |
+| Tag                              | 输入映射            | 输出                                   |
 | -------------------------------- | -------------------- | ---------------------------------------- |
-| `${val:statsAsMa}$`              | `{STR: 50, DEX: 30}` | `"STR,50,DEX,30"` (default `,` for both) |
+| `${val:statsAsMa}$`              | `{STR: 50, DEX: 30}` | `"STR,50,DEX,30"` （两个分隔符默认为 `,`） |
 | ``${val:statsAsMaSplitBy=`}$``   | `{STR: 50, DEX: 30}` | ``"STR=50`DEX=30"``                      |
 | ``${val:statsAsMaSplitBy:`\n}$`` | `{STR: 50, DEX: 30}` | `"STR:50\nDEX:30"`                       |
 
-**Special Values:**
+特殊值：
 
-* `SplitByBLANK` - Use empty string (no separator)
-* `SplitBy` - Use single space
+* `SplitByBLANK` - 使用空字符串（无分隔符）
+* `SplitBy` - 使用单空格
 
 ```
                 "St" -> input.toString()

@@ -2,35 +2,23 @@
 icon: percent
 ---
 
-# PlaceHolderAPI
+# PlaceholderAPI
 
-### Usage
+安装 PlaceholderAPI 后，可以使用 `/papi parse me %sertraline_PREFIX:PARAM%` 测试占位符。例如，默认物品使用 `%sertraline_random:40to80%` 生成随机值。脚本工具也可在支持的 PAPI 脚本中使用。
 
-{% hint style="success" %}
-Siece `3.6.3`, The Script Utils can use in PAPI scripts, too.
-{% endhint %}
+| 参数前缀 | 用途 |
+| --- | --- |
+| `kether:`、`ke:` | 执行 Kether 脚本 |
+| `javascript:`、`js:` | 执行 JavaScript 脚本 |
+| `jexl:`、`je:` | 执行 JEXL 脚本 |
+| `fluxon:`、`fl:` | 执行 Fluxon 脚本 |
+| `graaljs:`、`gjs:` | 执行 GraalJS 脚本 |
+| `config:` | 按键读取配置值 |
+| `random:`、`rand:` | 在指定范围生成随机数，如 `40to80` |
+| `data:` | 读取玩家数据 |
+| `cdleftmil:` | 获取剩余冷却时间，单位为毫秒 |
+| `cdleftsec:` | 获取剩余秒数，四舍五入为整数 |
+| `cdleftsec1:`、`cdleftsec2:` | 获取剩余秒数，分别保留一位和两位小数 |
+| `cdleftsec1a:`、`cdleftsec2a:` | 同上，去除末尾的 `.0` |
 
-<figure><img src="../.gitbook/assets/image (8).png" alt=""><figcaption></figcaption></figure>
-
-{% hint style="info" %}
-You can use `/papi parse me %sertraline_PREFIX:PARAM%` to test Placeholders.
-{% endhint %}
-
-### PlaceHolders
-
-| PAPI Parameter Prefix      | Description                                       | Notes                                                                                      |
-| -------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| kether: / ke:              | Execute Kether script                             | Root variables include player data, Player passed as CommandSender, executes kether script |
-| javascript: / js:          | Execute JavaScript script                         | Root variables include player data, Includes script compilation and caching                |
-| jexl: / je:                | Execute JEXL script                               | Root variables include player data, Compiled and cached via prodJexlCompiler               |
-| fluxon: / fl:              | Execute Fluxon script                             | Root variables include player data                                                         |
-| graaljs: / gjs: (`3.6.3+`) | Execute GraalJS script                            | Root variables include player data, execute scripts                                        |
-| config:                    | Read value from configuration by key              | Directly returns config entry                                                              |
-| random: / rand:            | Generate random number (supports ints and floats) | Parameter format example: `min to max`                                                     |
-| data: (`3.6.3+`)           | Get raw player data                               | Uses DataUtil to get raw data                                                              |
-| cdleftmil: (`3.6.3+`)      | Get cooldown left in milliseconds                 | Uses DataUtil to get cooldown time in milliseconds                                         |
-| cdleftsec: (`3.6.3+`)      | Get cooldown left in seconds (rounded integer)    | Converts ms to seconds, rounded                                                            |
-| cdleftsec1: (`3.6.3+`)     | Get cooldown left in seconds (1 decimal place)    | Converts ms to seconds, rounded to 1 decimal place                                         |
-| cdleftsec2: (`3.6.3+`)     | Get cooldown left in seconds (2 decimal places)   | Converts ms to seconds, rounded to 2 decimal places                                        |
-| cdleftsec1a: (`3.6.3+`)    | Variant of cdleftsec1, trims trailing ".0"        | One decimal place with trailing ".0" removed                                               |
-| cdleftsec2a: (`3.6.3+`)    | Variant of cdleftsec2, trims trailing ".0"        | Two decimal places with trailing ".0" removed                                              |
+脚本会获得相应上下文，具体可用变量取决于脚本类型和调用位置。

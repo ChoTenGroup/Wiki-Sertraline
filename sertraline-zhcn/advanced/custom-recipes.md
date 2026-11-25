@@ -26,31 +26,31 @@ star_from_vanilla:
 重载后，在工作台将一块金锭放在中央，周围放八张纸。`pattern` 表示摆放形状，`ingredients` 将字符对应到材料，`result` 是产物。`minecraft:` 表示原版物品，`sertraline:` 表示 Sertraline 物品；显式前缀可以避免同名歧义。这是插件自带的配方；如果想修改它，请直接编辑该条目，避免再创建一个相同配方。
 
 {% hint style="info" %}
-以下为尚待翻译和逐项核对的原参考内容。配置请优先参照安装版本自带的 `recipes/sample.yml`；其中 `COMPLEX` 示例被注释并标为尚未支持。
+以下参考内容请结合安装版本核对。配置请优先参照安装版本自带的 `recipes/sample.yml`；其中 `COMPLEX` 示例被注释并标为尚未支持。
 {% endhint %}
 
 
-Custom Recipes Let you can customize recipes for your Sertraline Item!
+自定义配方让您可以为Sertraline物品自定义配方！
 
-## Recipe System
+## 配方系统
 
-### Overview
+### 概述
 
-The recipe system registers custom Minecraft recipes using vanilla mechanics — crafting table, furnace, blast furnace, smoker, campfire, stonecutter, and smithing table. It does **not** use the custom GUI from the crafting station system.
+配方系统使用原版机制（工作台、熔炉、高炉、烟熏炉、篝火、切石机和锻造台）来注册自定义的Minecraft配方。它**不**使用合成台系统的自定义GUI。
 
-Key features:
+主要特点
 
-* **8 recipe types**: Crafting (shaped/shapeless), Furnace, Blasting, Smoking, Campfire, Stonecutting, Smithing Transform, Smithing Trim
-* **Dual provider modes**: `SIMPLE` (Bukkit API) or `COMPLEX` (direct NMS injection)
-* **Multi-source ingredients**: Sertraline custom items, vanilla items, Bukkit tags, external plugin items
-* **Post-craft functions**: Kether scripts, JavaScript, or console commands
-* **Player-aware results**: Sertraline custom item results are rebuilt with player context on preview
+* **8种配方类型**：合成（有序/无序）、熔炉、烧炼、熏制、篝火、切石、锻造转化、锻造装饰
+* **双提供商模式**： `SIMPLE` （Bukkit API）或 `COMPLEX` （直接NMS 注入）
+* **多来源物品**：Sertraline自定义物品、原版物品、Bukkit标签、外部插件物品
+* **合成后函数**：Kether 脚本、JavaScript 或控制台命令
+* **按玩家生成的结果**：在预览时，根据玩家上下文重新生成Sertraline 自定义物品结果
 
 ***
 
-### File Location
+### 文件位置
 
-Configuration files are placed under `recipes/` in the plugin data folder:
+配置文件位于插件数据目录的 `recipes/` 文件夹中：
 
 ```
 plugins/Sertraline/recipes/
@@ -58,11 +58,11 @@ plugins/Sertraline/recipes/
   └── ... (any filename, supports yaml/yml/toml/json)
 ```
 
-On first startup (if the folder does not exist), `recipes/sample.yml` is auto-extracted as a reference.
+在首次启动时（如果文件夹不存在）， `recipes/sample.yml` 会自动释放，供参考。
 
 ***
 
-### Configuration Structure
+### 配置结构
 
 ```yaml
 <recipe_id>:
@@ -75,7 +75,7 @@ On first startup (if the folder does not exist), `recipes/sample.yml` is auto-ex
     - "SSS"
     - "SWS"
     - "SSS"
-  ingredients:                  # Maps char → ingredient
+  ingredients:                  # 字符对应材料
     S: "sertraline:star_of_recall"
     W: "sertraline:sword_of_skyline"
 
@@ -85,7 +85,7 @@ On first startup (if the folder does not exist), `recipes/sample.yml` is auto-ex
     - "minecraft:diamond"
 
   # --- Cooking (FURNACE / BLASTING / SMOKING / CAMPFIRE) ---
-  ingredient: "sertraline:doe_card"  # Single ingredient
+  ingredient: "sertraline:doe_card"  # 单一材料
   experience: 0.5               # XP granted (float)
   cookingTime: 200              # Ticks (200 = 10s)
 
@@ -99,8 +99,8 @@ On first startup (if the folder does not exist), `recipes/sample.yml` is auto-ex
 
   # --- Result ---
   result:
-    id: sertraline:sword_of_eternal_frozen   # Output item ID
-    count: 1                                  # Output amount
+    id: sertraline:sword_of_eternal_frozen   # 产物 ID
+    count: 1                                  # 产物数量
     function:                                 # Post-craft functions (optional)
       - type: kether
         kether: tell "&aCraft successful!"
@@ -116,56 +116,56 @@ On first startup (if the folder does not exist), `recipes/sample.yml` is auto-ex
         - "minecraft:enchantments"
 
   # --- Optional ---
-  group: "my_group"             # Recipe book group
-  showNotification: true        # Show advancement-style notification (CRAFTING only)
+  group: "my_group"             # 配方书分组
+  showNotification: true        # 显示进度样式通知（仅 CRAFTING）
 ```
 
 ***
 
-### Recipe Types
+### 配方类型
 
-| Type                 | Station        | Description                                                                  |
+| 类型                 | 工作设施        | 说明                                                                  |
 | -------------------- | -------------- | ---------------------------------------------------------------------------- |
-| `CRAFTING`           | Crafting Table | Shaped (grid pattern) or shapeless. Requires `format: SHAPED` or `SHAPELESS` |
-| `FURNACE`            | Furnace        | Smelting with XP. `cookingTime` in ticks (20 = 1s)                           |
-| `BLASTING`           | Blast Furnace  | Faster smelting. `cookingTime` in ticks                                      |
-| `SMOKING`            | Smoker         | Food smelting. `cookingTime` in ticks                                        |
-| `CAMPFIRE`           | Campfire       | Slow cooking. `cookingTime` in ticks                                         |
-| `STONECUTTING`       | Stonecutter    | 1 ingredient → 1 result, no XP                                               |
-| `SMITHING_TRANSFORM` | Smithing Table | Template + Base + Addition → Result                                          |
-| `SMITHING_TRIM`      | Smithing Table | Template + Base + Addition → Trimmed item                                    |
+| `CRAFTING`           | 工作台 | 有形状（网格图案）或无形状。需要 `format: SHAPED`或 `SHAPELESS` |
+| `FURNACE`            | 熔炉        | 用经验值冶炼。 `cookingTime` 单位为 tick（20 tick = 1 秒）                           |
+| `BLASTING`           | 高炉  | 更快地冶炼。 `cookingTime` 单位为 tick                                      |
+| `SMOKING`            | 烟熏炉         | 食物熔炼。 `cookingTime` 单位为 tick                                        |
+| `CAMPFIRE`           | 营火       | 慢速烹调 `cookingTime` 单位为 tick                                         |
+| `STONECUTTING`       | 切石机    | 一种材料 → 一种产物，无经验值                                               |
+| `SMITHING_TRANSFORM` | 锻造台 | 模板 + 基础物品 + 附加材料 → 产物                                          |
+| `SMITHING_TRIM`      | 锻造台 | 模板 + 基准 + 附加项 → 修整后的物品                                    |
 
 ***
 
-### Providers
+### 配方提供方式
 
-#### SIMPLE (Bukkit API)
+#### 简单（Bukkit API）
 
-Default mode. Registers recipes via `Bukkit.addRecipe()`. Works with all standard Bukkit recipe mechanics and is compatible with other plugins that interact with Bukkit's recipe manager.
+默认模式。通过以下方式注册配方： `Bukkit.addRecipe()`. 适用于所有标准的Bukkit配方机制，并兼容与其他与Bukkit配方管理器交互的插件。
 
-#### COMPLEX (NMS Injection)
+#### 复杂（NMS 注入）
 
-Injects recipes directly into Minecraft's native `RecipeManager.recipes` map via reflection. Use when:
+将配方直接注入《我的世界》原生 `RecipeManager.recipes` 通过反射映射。使用时机：
 
-* Sertraline custom items as ingredients need precise NBT/component matching
-* Bukkit API matching is insufficient for custom item data
-* Need to bypass other plugins' Bukkit recipe interception
+* 作为成分的Sertraline自定义物品需要精确的NBT/组件匹配
+* Bukkit API 匹配对于自定义物品数据来说不足够
+* 需要绕过其他插件的Bukkit配方拦截
 
-**Note:** COMPLEX provider examples are commented out in sample.yml. Use at your own risk.
+**注意**：COMPLEX 提供商示例在 sample.yml 中被注释掉。使用需自行承担风险。
 
 ***
 
-### Ingredients
+### 材料
 
-#### Formats
+#### 格式
 
-**1. String format (simple)**
+**1. 字符串格式（简单）**
 
 ```yaml
 ingredient: "sertraline:doe_card"
 ```
 
-**2. Object format (with amount)**
+**2. 对象格式（带数量）**
 
 ```yaml
 ingredient:
@@ -173,14 +173,14 @@ ingredient:
   amount: 2
 ```
 
-**3. Tag format**
+**3. 标签格式**
 
 ```yaml
-ingredient: "#minecraft:planks"     # Bukkit tag
+ingredient: "#minecraft:planks"     # Bukkit 标签
 ingredient: "tag:planks"            # Shorthand (assumes minecraft namespace)
 ```
 
-Tag object format:
+标签对象格式：
 
 ```yaml
 ingredient:
@@ -188,7 +188,7 @@ ingredient:
   amount: 2
 ```
 
-**4. Multi-choice (OR logic)**
+**4. 多选材料（或逻辑）**
 
 ```yaml
 ingredient:
@@ -198,45 +198,45 @@ ingredient:
     - "sertraline:sword_of_soulbound"
 ```
 
-#### Item Sources
+#### 物品来源
 
-| Source            | Identifier             | Example                       |
+| 来源            | 标识符             | 示例                       |
 | ----------------- | ---------------------- | ----------------------------- |
-| Vanilla Minecraft | `minecraft:<material>` | `minecraft:diamond`           |
-| Sertraline custom | `sertraline:<id>`      | `sertraline:doe_card`         |
+| 原版《我的世界》 | `minecraft:<material>` | `minecraft:diamond`           |
+| Sertraline定制 | `sertraline:<id>`      | `sertraline:doe_card`         |
 | ItemsAdder        | `itemsadder:<id>`      | `itemsadder:ruby`             |
 | Oraxen            | `oraxen:<id>`          | `oraxen:sapphire`             |
 | Nexo              | `nexo:<id>`            | `nexo:mythril_ingot`          |
 | MythicMobs        | `mythicmobs:<id>`      | `mythicmobs:some_item`        |
 | MMOItems          | `mmoitems:<type>/<id>` | `mmoitems:SWORD/flame_katana` |
 
-Omitting the source defaults to `minecraft:`.
+省略源将默认为 `minecraft:`.
 
-#### Resolution Logic
+#### 解决逻辑
 
-| Ingredient Type                         | Resolves To                              | Matching                                   |
+| 成分类型                         | 解析为                              | 匹配方式                                   |
 | --------------------------------------- | ---------------------------------------- | ------------------------------------------ |
-| Vanilla item (`minecraft:stone`)        | `MaterialChoice`                         | Matches by material                        |
-| Sertraline item (`sertraline:doe_card`) | `ExactChoice`                            | Matches by exact ItemStack (including NBT) |
-| External plugin item                    | `ExactChoice`                            | Matches by exact ItemStack                 |
-| Tag (`#minecraft:planks`)               | `MaterialChoice(Tag)`                    | Matches any material in tag                |
-| Choice (`options: [...]`)               | Merged `ExactChoice` or `MaterialChoice` | Matches any option (OR logic)              |
+| 普通物品（`minecraft:stone`)        | `MaterialChoice`                         | 按材质匹配                        |
+| Sertraline物品（`sertraline:doe_card`) | `ExactChoice`                            | 按完全相同的物品堆（包括NBT）匹配 |
+| 外部插件物品                    | `ExactChoice`                            | 按确切的物品堆栈匹配                 |
+| Tag (`#minecraft:planks`)               | `MaterialChoice(Tag)`                    | 与标签中的任何材质匹配                |
+| 多选 (`options: [...]`)               | 合并的 `ExactChoice` 或 `MaterialChoice` | 匹配任何选项（“或”逻辑）              |
 
 ***
 
-### Result
+### 产物
 
-#### Fields
+#### 字段
 
-| Field      | Type   | Required | Description                                                                      |
+| 字段      | 类型   | 必填 | 说明                                                                      |
 | ---------- | ------ | -------- | -------------------------------------------------------------------------------- |
-| `id`       | String | Yes      | Output item ID (e.g., `sertraline:sword_of_eternal_frozen`, `minecraft:diamond`) |
-| `count`    | Int    | No       | Output amount (default: 1)                                                       |
-| `function` | List   | No       | Post-craft function list (see below)                                             |
+| `id`       | String | 是      | 输出物品 ID（例如， `sertraline:sword_of_eternal_frozen`, `minecraft:diamond`) |
+| `count`    | Int    | 否       | 输出数量（默认值：1）                                                       |
+| `function` | List   | 否       | 合成后函数列表（见下文）                                             |
 
-#### Post-Craft Functions
+#### 制作后功能
 
-Executed when the player takes the result from the crafting table. Three types:
+当玩家从工作台中取出结果时执行。有三种类型：
 
 ```yaml
 result:
@@ -251,15 +251,15 @@ result:
       command: "say %player% crafted a legendary sword!"
 ```
 
-**Function Types**
+**函数类型**
 
-| Type                | Field                | Description                                           |
+| 类型                | 字段                | 说明                                           |
 | ------------------- | -------------------- | ----------------------------------------------------- |
-| `kether`            | `kether: "<script>"` | Executes a Kether script with the player as sender    |
-| `javascript` / `js` | `script: "<js>"`     | Executes a JavaScript snippet                         |
-| `command`           | `command: "<cmd>"`   | Executes a console command (`%player%` → player name) |
+| `kether`            | `kether: "<script>"` | 以玩家为发送者执行Kether脚本    |
+| `javascript` / `js` | `script: "<js>"`     | 执行 JavaScript 代码段                         |
+| `command`           | `command: "<cmd>"`   | 执行控制台命令（`%player%` 表示玩家名） |
 
-Short form (just the script string, defaults to Kether):
+短格式（仅脚本字符串，默认为Kether）：
 
 ```yaml
 function:
@@ -268,9 +268,9 @@ function:
 
 ***
 
-### Input Options
+### 输入选项
 
-Controls how input item data is handled during crafting:
+控制在合成过程中如何处理输入物品数据：
 
 ```yaml
 input-options:
@@ -283,41 +283,41 @@ input-options:
       - "minecraft:enchantments"
 ```
 
-#### Fields
+#### 字段
 
-| Field                 | Type               | Description                                                             |
+| 字段                 | 类型               | 说明                                                             |
 | --------------------- | ------------------ | ----------------------------------------------------------------------- |
-| `data-filter`         | List\<String>      | NBT data keys to filter (REMOVE or KEEP depending on `components.mode`) |
-| `components.mode`     | `REMOVE` or `KEEP` | Whether to remove or keep listed components                             |
-| `components.elements` | List\<String>      | Data component namespaces (e.g., `minecraft:enchantments`)              |
+| `data-filter`         | List\<String>      | 要筛选的 NBT 数据键（根据 `components.mode`) |
+| `components.mode`     | `REMOVE` 或 `KEEP` | 是否移除或保留列出的组件                             |
+| `components.elements` | List\<String>      | 数据组件命名空间（例如， `minecraft:enchantments`)              |
 
 ***
 
-### Player-Aware Result Preview
+### 玩家感知结果预览
 
-When a player opens a crafting table with a Sertraline recipe, the `onPrepareCraft` event listener rebuilds the result item with the player's context — replacing placeholders, applying player-specific variables, and updating dynamic lore.
+当玩家打开带有Sertraline配方的合成台时， `onPrepareCraft` 事件监听器使用玩家的上下文重建结果项——替换占位符、应用玩家特定变量并更新动态说明。
 
-This means:
+限制措施包括：
 
-* Sertraline custom items as results show correct player-specific data in the preview slot
-* Items with `sertraline:vars` are rebuilt per-player
-* The preview updates in real-time as the player changes
+* Sertraline自定义物品，结果显示预览栏中显示了正确的玩家特定数据
+* 带有 `sertraline:vars` 的物品会按玩家重建
+* 随着玩家的变化，预览会实时更新
 
 ***
 
-### Commands
+### 命令
 
-| Command              | Description                           |
+| 命令              | 说明                           |
 | -------------------- | ------------------------------------- |
-| `/sertraline reload` | Reloads all configs including recipes |
+| `/sertraline reload` | 重新加载所有配置，包括配方 |
 
-Recipes are re-loaded from disk and re-registered on each reload.
+每次重新加载时，配方都会从磁盘重新加载并重新注册。
 
 ***
 
-### Complete Examples
+### 完整示例
 
-#### Shaped Crafting — 9 cards → 1 star
+#### 定型合成 — 9 张卡牌 → 1 星
 
 ```yaml
 star_from_cards:
@@ -336,7 +336,7 @@ star_from_cards:
     count: 1
 ```
 
-#### Shapeless — Mix two items
+#### 无形状 — 混合两件物品
 
 ```yaml
 mixed_sugar:
@@ -352,7 +352,7 @@ mixed_sugar:
     count: 2
 ```
 
-#### Furnace — Smelt item with XP
+#### 熔炉 — 用经验值熔炼物品
 
 ```yaml
 smelt_pills_from_cookie:
@@ -367,7 +367,7 @@ smelt_pills_from_cookie:
   cookingTime: 200
 ```
 
-#### Blast Furnace — Faster smelting
+#### 高炉 — 更快的冶炼速度
 
 ```yaml
 blast_pills_from_card:
@@ -382,7 +382,7 @@ blast_pills_from_card:
   cookingTime: 100
 ```
 
-#### Smithing — Upgrade item
+#### 锻造 — 升级物品
 
 ```yaml
 mythic_sword_upgrade:
@@ -397,7 +397,7 @@ mythic_sword_upgrade:
     count: 1
 ```
 
-#### Stonecutter — 1 input → multiple output
+#### 石匠 — 1 个输入 → 多个输出
 
 ```yaml
 cut_pickaxe_to_wands:
@@ -410,7 +410,7 @@ cut_pickaxe_to_wands:
     count: 2
 ```
 
-#### Multi-choice ingredient (OR) + command function
+#### 多选配料（或）+指令功能
 
 ```yaml
 any_sword_to_star:
@@ -433,17 +433,17 @@ any_sword_to_star:
 
 ***
 
-### Comparison: Recipe System vs. Crafting Station System
+### 比较：配方系统与合成站系统
 
-| Aspect                | Recipe System                                     | Crafting Station System               |
+| 比较项                | 配方系统                                     | 合成站系统               |
 | --------------------- | ------------------------------------------------- | ------------------------------------- |
-| **Config folder**     | `recipes/`                                        | `crafting-stations/`                  |
-| **UI**                | Vanilla Minecraft (crafting table, furnace, etc.) | Custom GUI (6-row Chest)              |
-| **Crafting time**     | Instant                                           | Configurable timed (seconds)          |
-| **Conditions**        | None (anyone can use if ingredients match)        | Kether/Scaled/Permission checks       |
-| **Lifecycle scripts** | Post-craft only (via `result.function`)           | onStart/onCancel/onClaim agents       |
-| **Persistence**       | None                                              | DataContainer (survives quit/restart) |
-| **Pagination**        | N/A (vanilla recipe book)                         | Built-in page browsing                |
-| **Item sources**      | Sertraline, vanilla, external plugins             | Same (via OmniItem)                   |
-| **Use case**          | Standard Minecraft crafting                       | Custom timed progression systems      |
+| 配置文件夹(&C)     | `recipes/`                                        | `crafting-stations/`                  |
+| **UI**                | 原版《我的世界》（工作台、熔炉等） | 自定义 GUI（6 行箱子）              |
+| **制作时间**     | 即时                                           | 可配置的定时（秒）          |
+| **条件**        | 无（如果成分相符，任何人都可以使用）        | Kether/分级/权限检查       |
+| **生命周期脚本** | 仅限后期制作（通过 `result.function`)           | onStart/onCancel/onClaim 代理       |
+| **持久化**       | 无                                              | DataContainer（退出/重启后仍存在） |
+| **分页**        | 不适用（原味配方书）                         | 内置页面浏览功能                |
+| 物品来源      | Sertraline、原版、外部插件             | 相同（通过 OmniItem）                   |
+| **用途**          | 标准《我的世界》合成                       | 自定义计时进度系统      |
 

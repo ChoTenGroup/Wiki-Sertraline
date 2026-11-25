@@ -2,33 +2,33 @@
 icon: binary-circle-check
 ---
 
-# Item Data
+# 物品数据
 
-### Requirements
+### 数据类型
 
-**Sertraline** have 3 types of item data.
+**Sertraline** 提供三种物品数据。
 
-| Data Type | Stored Type                                                         | Description                                               |
+| 数据类型 | 存储位置                                                         | 说明                                               |
 | --------- | ------------------------------------------------------------------- | --------------------------------------------------------- |
-| Val       | <mark style="background-color:yellow;">**Memory**</mark>            | This data in unmodifible.                                 |
-| Var       | <mark style="background-color:purple;">**In Item NBT**</mark>       | This data will stored in item NBT node `sertraline_data`. |
-| Dynamic   | <mark style="background-color:blue;">**Instantly generated**</mark> | Instant generation on get.                                |
+| Val       | <mark style="background-color:yellow;">**内存**</mark>            | 固定数据。                                 |
+| Var       | <mark style="background-color:purple;">**物品 NBT**</mark>       | 存储在物品的 `sertraline_data` 节点中。 |
+| Dynamic   | <mark style="background-color:blue;">**即时生成**</mark> | 读取时生成。                                |
 
-### What's the difference between them?
+### 它们有什么区别？
 
-For example:
+例如：
 
-* Val is a fixed value that is suitable for use with Lore generators. For example, define a val under vals and then specify this val in the lore generator.
-* Var is a variable value stored persistently in item NBT, which is very suitable for making variant items, such as a sword that randomizes damage during generation.
-* Dynamic is an executable Kether list that executes when data is needed and returns the script value as the result. _Not recommended for use, as this may result in some performance overhead._
+* Val 是固定值，适合用于描述生成器：可以在 `vals` 中定义，再在描述格式中引用。
+* Var 是持久存储在物品中的变量，适合制作生成时具有随机数值的物品。
+* Dynamic 是在需要数据时执行的 Kether 列表，以脚本结果作为值；使用时需考虑性能开销。
 
-_NOTE: Var data will be keep on rebuild by default. We will talk rebuild later._
+默认重建配置会保留 Var 数据。
 
-### Good Examples
+### 示例
 
-#### Random Damage Sword (VAR)
+#### 随机伤害剑（Var）
 
-A sword. When generation it will randomly generate damage.
+生成这把剑时会随机产生伤害值；此示例使用 PlaceholderAPI。
 
 <pre class="language-yaml" data-expandable="true"><code class="lang-yaml">sword_of_lucky:
   sertraline:
@@ -49,9 +49,9 @@ A sword. When generation it will randomly generate damage.
 
 <figure><img src="../../../.gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
 
-#### Auto Lore & Attribute Sword
+#### 自动描述和属性剑
 
-Item File:
+物品文件：
 
 <pre class="language-yaml" data-title="ITEM SECTION" data-expandable="true"><code class="lang-yaml">sword_of_autolore:
   mmo:
@@ -76,7 +76,7 @@ Item File:
         slot: HAND
 </code></pre>
 
-Lore Format:
+描述格式：
 
 {% code title="LORE FORMAT SECTION" expandable="true" %}
 ```yaml
@@ -97,6 +97,6 @@ example:
 ```
 {% endcode %}
 
-ShowCase:
+效果展示：
 
 <figure><img src="../../../.gitbook/assets/image (7).png" alt=""><figcaption></figcaption></figure>

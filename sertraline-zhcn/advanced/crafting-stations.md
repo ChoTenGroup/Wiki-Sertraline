@@ -2,35 +2,35 @@
 icon: plug-circle-plus
 ---
 
-# Crafting Stations \[Expr]
+# 合成站\[Expr]
 
-Crafting station allows players to create items through recipes in the GUI interface, and you can freely define conditions such as Kether and Javascript.&#x20;
+合成站让玩家在图形界面中通过配方制作物品，你可以使用 Kether 和 JavaScript 定义条件。
 
-In addition, the crafting station draws inspiration from `MMOItems`, but our crafting station is more scalable, maintainable ~~and has fewer bugs~~ (such as bugs in `MMOItems` where canceling a recipe will refresh the properties of synthetic materials...)
+此外，合成站的灵感源自 `MMOItems`，但我们的合成站更具可扩展性、更易于维护~~并且漏洞更少~~（例如， `MMOItems` 取消配方将刷新合成材料的属性……）
 
 {% hint style="warning" %}
-WORK IN PROGRESS
+正在完善中
 {% endhint %}
 
-## Crafting Station System
+## 合成站系统
 
-### Overview
+### 概述
 
-The crafting station system provides a GUI-based crafting mechanism with the following features:
+合成站系统提供基于GUI的合成机制，具有以下功能：
 
-* Custom GUI layouts (6-row Chest interface)
-* Paginated recipe browsing
-* Multi-condition checks (Kether scripts, numeric comparison, permissions)
-* Asynchronous crafting timers
-* Lifecycle scripts (agents) — Kether / GraalJS / JSR 223 JavaScript
-* Multiple item sources (vanilla, Sertraline custom items, ItemsAdder / Oraxen / Nexo / CraftEngine, etc.)
-* Crafting progress persistence (recoverable on player quit / server restart)
+* 自定义 GUI 布局（6 行箱子界面）
+* 分页浏览配方
+* 多条件检查（Kether脚本、数值比较、权限）
+* 异步制作计时器
+* 生命周期脚本（代理）— Kether / GraalJS / JSR 223 JavaScript
+* 多种物品来源（原版、Sertraline自定义物品、ItemsAdder/Oraxen/Nexo/CraftEngine等）
+* 合成进度持久性（玩家退出/服务器重启时可恢复）
 
 ***
 
-### File Location
+### 文件位置
 
-Configuration files are placed under `crafting-stations/` in the server directory:
+配置文件位于 `crafting-stations/` 在服务器目录中：
 
 ```
 plugins/Sertraline/crafting-stations/
@@ -38,24 +38,24 @@ plugins/Sertraline/crafting-stations/
   └── ... (any filename, supports yaml/yml/toml/json)
 ```
 
-If the folder does not exist on first startup, a sample file is generated automatically.
+如果首次启动时该文件夹不存在，则会自动生成一个示例文件。
 
 ***
 
-### Configuration Structure
+### 配置结构
 
-#### Top-Level Structure
+#### 顶级结构
 
 ```yaml
 <station_id>:
-  option:                          # Station options
+  option:                          # 合成站选项
     enable-tracker: true
-  display:                         # GUI layout config
+  display:                         # GUI 布局配置
     title: "..."
     layout: [...]
     key: "..."
     elements: {...}
-  recipes:                         # Recipe list
+  recipes:                         # 配方列表
     <recipe_id>: {...}
   agents:                          # Station-level lifecycle scripts
     onStart: |-
@@ -68,18 +68,18 @@ If the folder does not exist on first startup, a sample file is generated automa
 
 ***
 
-### Display — GUI Layout
+### 显示配置 — GUI 布局
 
-#### Fields
+#### 字段
 
-| Field      | Type          | Description                                                 |
+| 字段      | 类型          | 说明                                                 |
 | ---------- | ------------- | ----------------------------------------------------------- |
-| `title`    | String        | GUI title, supports MiniMessage format                      |
-| `layout`   | List\<String> | Row string array, 9 chars per row, N rows (N-row Chest GUI) |
-| `key`      | String        | Single character marking recipe item display positions      |
-| `elements` | Map           | Background/navigation element definitions                   |
+| `title`    | String        | GUI标题，支持MiniMessage格式                      |
+| `layout`   | List\<String> | 行字符串数组，每行9个字符，N行（N行宝箱GUI） |
+| `key`      | String        | 单字符标记配方物品显示位置      |
+| `elements` | Map           | 背景/导航元素定义                   |
 
-#### layout Example
+#### 布局示例
 
 ```yaml
 layout:
@@ -92,47 +92,47 @@ layout:
 key: "I"
 ```
 
-* `#` — Maps to the `background` element in `elements`
-* `I` — Defined by the `key` field, marks recipe item fill positions (auto-paginated)
-* `<`, `>` — Maps to page navigation elements
+* `#` — 对应 `background` 中的元素 `elements`
+* `I` — 由 `key` 字段指定，用于标记配方物品填充位置（自动分页）
+* `<`, `>` — 映射到页面导航元素
 
-#### Elements
+#### 界面元素
 
-| Field      | Type                 | Description                                                              |
+| 字段      | 类型                 | 说明                                                              |
 | ---------- | -------------------- | ------------------------------------------------------------------------ |
-| `char`     | String (single char) | Character used in layout (for background-type elements)                  |
-| `slot`     | Int                  | Raw slot index (0-53), for elements not positioned via layout characters |
-| `material` | String               | Item material name (Bukkit Material)                                     |
-| `name`     | String               | Display name, supports MiniMessage                                       |
-| `lore`     | String               | Lore text, `\n` for line breaks, supports MiniMessage                    |
-| `roll`     | Boolean              | Whether page buttons wrap around (back to first page from last)          |
-| `agents`   | Map                  | Click scripts, keyed by `onLeft` etc.                                    |
+| `char`     | 字符串（单个字符） | 布局中使用的字符（用于背景型元素）                  |
+| `slot`     | Int                  | 原始槽位索引（0-53），用于未通过布局字符定位的元素 |
+| `material` | String               | 物品材质名称（Bukkit材质）                                     |
+| `name`     | String               | 显示名称，支持 MiniMessage                                       |
+| `lore`     | String               | 描述文本， `\n` 用于换行，支持 MiniMessage                    |
+| `roll`     | Boolean              | 页面按钮是否环绕（从最后一页返回到第一页）          |
+| `agents`   | Map                  | 点击脚本，排序依据： `onLeft` 等                                    |
 
-**Placeholders** (usable in name / lore):
+**占位符**（可用于名称和描述）：
 
-| Placeholder       | Description                   |
+| 占位符       | 说明                   |
 | ----------------- | ----------------------------- |
-| `{page}`          | Current page number (1-based) |
-| `{total_pages}`   | Total page count              |
-| `{next_page}`     | Next page number              |
-| `{previous_page}` | Previous page number          |
+| `{page}`          | 当前页码（从 1 开始） |
+| `{total_pages}`   | 总页数              |
+| `{next_page}`     | 下一页页码              |
+| `{previous_page}` | 上一页页码          |
 
 ***
 
-### Recipes
+### 配方
 
 ```yaml
 recipes:
   <recipe_id>:
-    displayName: "..."            # Recipe display name
-    plural: "..."                 # Plural form (for messages)
-    displayTime: "1~10s"         # Display time in GUI (leave empty to use actual `time`)
-    time: "{{ random 1 to 10 }}" # Crafting time, supports Kether expression evaluation
+    displayName: "..."            # 配方显示名称
+    plural: "..."                 # 复数形式（用于消息）
+    displayTime: "1~10s"         # 界面显示的时间（留空使用实际 time）
+    time: "{{ random 1 to 10 }}" # 合成时间，支持 Kether 表达式
 
     options:
       cancellable: false          # Whether it can be cancelled (default true)
 
-    conditions:                   # Condition list (optional)
+    conditions:                   # 条件列表（可选）
       - name: "..."
         type: Scaled              # Type: Scaled / boolean / kether / permission
         amount: "%player_health%"
@@ -144,19 +144,19 @@ recipes:
           onFail: |-
             ...
 
-    messages:                     # Condition failure message overrides (optional)
+    messages:                     # 条件失败消息覆盖（可选）
       ConditionNotMetScaled: "..."
 
-    display:                      # Display item in GUI (optional, defaults to first output)
+    display:                      # 界面显示物品（可选，默认使用第一个产物）
       item: "..."                 # OmniItem
       parameters: {...}
 
-    inputs:                       # Input item list
+    inputs:                       # 输入材料列表
       - item: "minecraft:paper"
         displayName: "Paper"
         plural: "Papers"
 
-    outputs:                      # Output item list
+    outputs:                      # 产物列表
       - item: "sertraline:doe_card"
         parameters:
           name: "..."
@@ -170,26 +170,26 @@ recipes:
         ...
 ```
 
-#### Crafting Time
+#### 制作时间
 
-The `time` field supports two formats:
+`time` 字段支持两种格式：
 
-1. **Kether expression** (recommended): `"{{ random 1 to 10 }}"` — random 1\~10 seconds per craft
-2. **Numeric**: `"30"` — fixed 30 seconds
+1. **Kether 表达式**（推荐）： `"{{ random 1 to 10 }}"` — 每次合成随机 1\~10 秒
+2. **数字**： `"30"` — 固定 30 秒
 
-The system attempts Kether evaluation first, falling back to `toDouble()` on failure.
+系统先尝试计算 Kether 表达式，失败时再尝试用 `toDouble()` 转换数字。
 
-#### Condition Types
+#### 条件类型
 
-| Type                 | Description                                                                                                      |
+| 类型                 | 说明                                                                                                      |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `Scaled`             | Numeric comparison. `amount` and `required` are both evaluated via Kether, then compared as `amount >= required` |
-| `boolean` / `kether` | Executes `condition` as a Kether expression, expects true/false                                                  |
-| `permission`         | Checks player permission: `player.hasPermission(condition)`                                                      |
+| `Scaled`             | 数字比较。 `amount`和 `required` 都通过 Kether 计算，然后按 `amount >= required` |
+| `boolean` / `kether` | 将 `condition` 作为 Kether 表达式执行，结果应为 true 或 false                                                  |
+| `permission`         | 检查玩家权限： `player.hasPermission(condition)`                                                      |
 
-#### Condition Message Overrides
+#### 条件消息覆盖
 
-Failure messages can be overridden per type in the recipe's `messages` section:
+可在配方的 `messages` 段按类型覆盖失败消息：
 
 ```yaml
 messages:
@@ -197,15 +197,15 @@ messages:
   ConditionNotMetPermission: "Missing permission: {condition_condition}"
 ```
 
-If not overridden, defaults from `config.yml` are used.
+如果没有覆盖，则使用 `config.yml` 中的默认消息。
 
-Available placeholders: `{condition_name}`, `{condition_amount}`, `{condition_required}`, `{condition_type}`
+可用的占位符： `{condition_name}`, `{condition_amount}`, `{condition_required}`, `{condition_type}`
 
 ***
 
-### Item References (OmniItem)
+### 物品参考（OmniItem）
 
-Items in inputs, outputs, and display use the unified `OmniItem` format:
+输入、输出和显示中的物品使用统一的 `OmniItem` 格式：
 
 ```yaml
 item: "<source>:<id>"
@@ -219,59 +219,59 @@ components:       # 1.20.5+ Data Component
 amount: "1"
 ```
 
-#### Item Sources
+#### 物品来源
 
-| Source                                                | Description             | Example                       |
+| 来源                                                | 说明             | 示例                       |
 | ----------------------------------------------------- | ----------------------- | ----------------------------- |
-| `mc` / `minecraft` / `vanilla`                        | Vanilla items           | `item: "minecraft:diamond"`   |
-| `sertraline` / `depazitems`                           | Sertraline custom items | `item: "sertraline:doe_card"` |
-| Other (`itemsadder`, `oraxen`, `nexo`, `craftengine`) | External plugin items   | `item: "itemsadder:ruby"`     |
+| `mc` / `minecraft` / `vanilla`                        | 原版物品           | `item: "minecraft:diamond"`   |
+| `sertraline` / `depazitems`                           | Sertraline定制物品 | `item: "sertraline:doe_card"` |
+| Other (`itemsadder`, `oraxen`, `nexo`, `craftengine`) | 外部插件物品   | `item: "itemsadder:ruby"`     |
 
-Omitting source defaults to `mc`.
+省略来源时默认为 `mc`。
 
 ***
 
-### Agents — Script System
+### 代理（Agents）— 脚本系统
 
-Agents support three script languages, auto-detected by prefix:
+代理支持三种脚本语言，通过前缀自动检测：
 
-| Prefix                | Engine                                           | Example                            |
+| 前缀                | 引擎                                           | 示例                            |
 | --------------------- | ------------------------------------------------ | ---------------------------------- |
-| No prefix             | **Kether** (default, backward compatible)        | `player.sendMessage("hello")`      |
+| 无前缀             | **Kether**（默认，向后兼容）        | `player.sendMessage("hello")`      |
 | `gjs:` / `graaljs:`   | **GraalJS** (GraalVM Polyglot, ES2023+)          | `gjs: player.sendMessage("hello")` |
-| `js:` / `javascript:` | **Standard JSR 223** (Nashorn / GraalVM JSR 223) | `js: player.sendMessage("hello")`  |
+| `js:` / `javascript:` | **标准 JSR 223**（Nashorn / GraalVM JSR 223） | `js: player.sendMessage("hello")`  |
 
-#### Available Variables
+#### 可用变量
 
-| Variable                  | Type                 | Scope                                |
+| 变量                  | 类型                 | 作用范围                                |
 | ------------------------- | -------------------- | ------------------------------------ |
-| `player` / `bukkitPlayer` | `Player`             | All agents                           |
-| `recipe`                  | String (displayName) | Recipe-level / station-level agents  |
-| `station_id`              | String               | Station-level / element-level agents |
-| `page`                    | Int                  | Element-level agents                 |
-| `total_pages`             | Int                  | Element-level agents                 |
+| `player` / `bukkitPlayer` | `Player`             | 所有代理                           |
+| `recipe`                  | String (displayName) | 配方级/合成站级代理  |
+| `station_id`              | String               | 合成站级/元件级代理 |
+| `page`                    | Int                  | 元素级代理                 |
+| `total_pages`             | Int                  | 元素级代理                 |
 
-#### JS Utility Classes
+#### JS 实用程序类
 
-The GraalJS and JSR 223 JS environments additionally inject a `defaultData` global, including:
+GraalJS 和 JSR 223 JS 环境还会额外注入一个 `defaultData` 全局对象，包括：
 
 * `PlayerUtil`, `ItemStackUtil`, `EventUtil`, `ThreadUtil`
 * `Bukkit`, `Math`, `System`, `Gson`
 * `SertralineAPI`, `ExternalItemHelper`, `FluxonShell`
 * `UUIDUtil`, `scheduler`, `bukkitPlugin`
 
-#### Lifecycle Hooks
+#### 生命周期钩子
 
-| Hook               | Trigger                                  | Available At                 |
+| 钩子               | 触发时机                                  | 适用范围                 |
 | ------------------ | ---------------------------------------- | ---------------------------- |
-| `onStart`          | After craft begins (before timer starts) | Recipe-level → Station-level |
-| `onClaim`          | After craft completes, outputs given     | Recipe-level → Station-level |
-| `onCancel`         | Craft cancelled or interrupted           | Recipe-level → Station-level |
-| `onSuccess`        | Condition check passes                   | Condition-level              |
-| `onFail`           | Condition check fails                    | Condition-level              |
-| `onLeft` / any key | GUI element clicked                      | Element-level                |
+| `onStart`          | 合成开始后（计时器开始前） | 配方级 → 合成站级 |
+| `onClaim`          | 合成完成、领取产物时     | 配方级 → 合成站级 |
+| `onCancel`         | 合成取消或中断           | 配方级 → 合成站级 |
+| `onSuccess`        | 条件检查通过                   | 条件级              |
+| `onFail`           | 条件检查失败                    | 条件级              |
+| `onLeft` 任意键 | 已点击 GUI 元素                      | 元素级                |
 
-**Execution order** (normal craft flow):
+**执行顺序**（正常合成流程）：
 
 ```
 Click recipe → condition check → onSuccess/onFail → consume items
@@ -280,7 +280,7 @@ Click recipe → condition check → onSuccess/onFail → consume items
   → execute onClaim (recipe-level → station-level)
 ```
 
-**Cancel flow**:
+**取消流程**：
 
 ```
 → onCancel agents execute (recipe-level → station-level)
@@ -290,26 +290,26 @@ Click recipe → condition check → onSuccess/onFail → consume items
 
 ***
 
-### Commands
+### 命令
 
-| Command                           | Description                             |
+| 命令                           | 说明                             |
 | --------------------------------- | --------------------------------------- |
-| `/sertraline station <stationId>` | Open crafting station GUI               |
-| `/sertraline debug getStations`   | View all loaded station configs         |
-| `/sertraline reload`              | Reload all configs (including stations) |
+| `/sertraline station <stationId>` | 打开合成站界面               |
+| `/sertraline debug getStations`   | 查看所有已加载的工作站配置         |
+| `/sertraline reload`              | 重新加载所有配置（包括工作站） |
 
 ***
 
-### Data Persistence
+### 数据持久性
 
-The crafting station system uses TabooLib DataContainer to persist player crafting progress.
+合成站系统使用TabooLib DataContainer来持久化玩家的合成进度。
 
-#### Stored Data
+#### 存储数据
 
-* `crafting.session` — Session metadata: `stationId|recipeId|startTime|totalSeconds`
-* `crafting.items.0`, `crafting.items.1`, ... — Base64 serialized consumed items
+* `crafting.session` — 会话元数据： `stationId|recipeId|startTime|totalSeconds`
+* `crafting.items.0`, `crafting.items.1`, ... — Base64 序列化的已消耗物品
 
-#### Recovery Flow
+#### 恢复流程
 
 ```
 Player quits → cancelPlayerSession() cancels in-memory tasks, DB preserved
@@ -320,7 +320,7 @@ Player joins → onJoin → restoreSession():
   → Clear DB session
 ```
 
-#### Reload Flow
+#### 重新加载流程
 
 ```
 /sertraline reload:
@@ -331,9 +331,9 @@ Player joins → onJoin → restoreSession():
 
 ***
 
-### Examples
+### 示例
 
-#### Basic Crafting Station
+#### 基础合成站
 
 ```yaml
 simple_workbench:
@@ -380,7 +380,7 @@ simple_workbench:
           player.sendMessage("&aConversion complete! Got Diamond x1")
 ```
 
-#### GraalJS Crafting Station
+#### GraalJS 合成站
 
 ```yaml
 advanced_station:
@@ -444,18 +444,18 @@ advanced_station:
 
 ***
 
-### Debugging
+### 调试
 
-Enable `debug: true` in `config.yml` for detailed load logs.
+在 `config.yml` 中设置 `debug: true`，查看详细调试日志。
 
-Use `/sertraline debug getStations` to inspect all loaded station configs.
+使用 `/sertraline debug getStations` 检查已加载的合成站配置。
 
-#### Common Issues
+#### 常见问题
 
-| Symptom                      | Diagnosis                                                                    |
+| 现象                      | 排查方法                                                                    |
 | ---------------------------- | ---------------------------------------------------------------------------- |
-| GUI shows air items          | Check `material` spelling in `elements`                                      |
-| Recipes not showing          | Check if `key` character conflicts with element `char` (warning on startup)  |
-| Craft won't start            | Check if all `conditions` are met, verify input items match                  |
-| JS scripts not executing     | Verify prefix is `gjs:` or `js:`, confirm GraalJS / Nashorn engine is loaded |
-| Materials lost after restart | Check `restoreSession` logs, verify DataContainer storage is functioning     |
+| GUI 显示空气物品          | 检查 `elements` 中的 `material` 拼写                                      |
+| 配方未显示          | 检查 `key` 字符是否与元素的 `char` 冲突，启动时查看警告  |
+| 合成无法启动            | 检查所有 `conditions` 是否满足，以及输入材料是否匹配                  |
+| JS 脚本未执行     | 验证前缀为 `gjs:`或 `js:`，确认已加载 GraalJS/Nashorn 引擎 |
+| 重启后材料丢失 | 检查 `restoreSession` 日志及 DataContainer 存储状态     |

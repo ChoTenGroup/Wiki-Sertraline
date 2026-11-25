@@ -22,19 +22,19 @@ my_template_sword:
 保存后执行 `/sertraline reload`，再用 `/sertraline item give my_template_sword` 领取。`use` 是模板 ID；`arguments` 只会替换模板中对应的 `%{参数名}`，因此传入模板未使用的参数不会改变物品。模板默认值及更多可运行示例请看 `templates/basic_gear.yml` 和 `workspace/default/example_templated_items.yml`。
 
 {% hint style="info" %}
-以下为尚待翻译和逐项核对的原参考内容。高级用法请同时对照安装版本自带的模板和示例。
+以下参考内容请结合安装版本核对。高级用法请同时对照安装版本自带的模板和示例。
 {% endhint %}
 
 
-## Template System
+## 模板系统
 
-Sertraline's template system allows reusable YAML fragments with parameter substitution, value transformation (`$t`), and type casting (`$c`). Templates are loaded from the `templates/` folder and can be referenced from any config file using the `$template` directive.
+Sertraline 的模板系统允许使用可重用的 YAML 片段，并支持参数替换、值转换（`$t`），以及类型转换（`$c`）。模板从 `templates/` 文件夹中，并且可以使用以下方式从任何配置文件中引用： `$template` 指令引用。
 
 ***
 
-### Defining Templates
+### 定义模板
 
-Place YAML files in the `templates/` directory. Each top-level key is a template name.
+将 YAML 文件放置在 `templates/` 目录。每个顶级键都是一个模板名称。
 
 ```yaml
 # templates/example.yml
@@ -56,7 +56,7 @@ my_weapon_template:
         slot: HAND
 ```
 
-Templates can reference other templates (chaining):
+模板可以引用其他模板（链式）：
 
 ```yaml
 # templates/tiers.yml
@@ -72,9 +72,9 @@ iron_melee:
 
 ***
 
-### Using Templates
+### 使用模板
 
-In any config file (items, recipes, etc.), use the `$template` directive:
+在任何配置文件（物品、配方等）中，使用 `$template` 指令：
 
 ```yaml
 my_custom_sword:
@@ -86,11 +86,11 @@ my_custom_sword:
     tier: C
 ```
 
-Fields outside `$template` are merged into the resolved result, overriding template defaults.
+外部字段 `$template` 合并到解析结果中，覆盖模板默认值。
 
-#### Auto `_ID` Parameter
+#### 自动参数 `_ID`
 
-Every entry automatically receives `_ID` set to its root key:
+每个根条目都会自动获得 `_ID`，其值为该条目的 ID：
 
 ```yaml
 flame_sword:
@@ -104,16 +104,16 @@ flame_sword:
 
 ***
 
-### Parameter Substitution
+### 参数替换
 
-#### Syntax
+#### 语法
 
-| Pattern             | Description                                              |
+| 格式             | 说明                                              |
 | ------------------- | -------------------------------------------------------- |
-| `%{param}`          | Replaces with argument `param`. If missing, kept as-is.  |
-| `%{param?:default}` | Replaces with argument `param`, or `default` if missing. |
+| `%{param}`          | 替换为参数 `param`. 缺失时保留原样。  |
+| `%{param?:default}` | 替换为参数 `param`, 缺失时使用 `default`。 |
 
-#### Default Values
+#### 默认值
 
 ```yaml
 name: "%{name?:Unnamed Weapon}"     # default: "Unnamed Weapon"
@@ -121,19 +121,19 @@ color: "%{color?:WHITE}"            # default: "WHITE"
 lore: "%{lore?:}"                   # default: empty string
 ```
 
-#### Escape Sequences
+#### 转义序列
 
-| Escape | Output       |
+| 转义 | 输出       |
 | ------ | ------------ |
-| `\{`   | Literal `{`  |
-| `\}`   | Literal `}`  |
-| `\?:`  | Literal `?:` |
+| `\{`   | 字面值 `{`  |
+| `\}`   | 字面值 `}`  |
+| `\?:`  | 字面值 `?:` |
 
 ***
 
-### Transformers (`$t`)
+### 转换器（`$t`）
 
-Transformers process argument values before substitution. Place them in `$template.arguments` under any key:
+转换器在替换之前处理参数值。请将它们放在 `$template.arguments` 在任何键下：
 
 ```yaml
 arguments:
@@ -143,17 +143,17 @@ arguments:
       value: "sword"
 ```
 
-#### Short Form
+#### 缩写
 
 ```yaml
 $t: upper
 ```
 
-When the value is a string (not a map), it is used as the type directly.
+当值为字符串（而非映射）时，其将直接用作类型。
 
 #### `$t: when`
 
-Maps a source value through a lookup table:
+通过查找表映射源值：
 
 ```yaml
 $t:
@@ -167,24 +167,24 @@ $t:
 
 #### `$t: upper` / `$t: lower`
 
-Case conversion:
+大小写转换：
 
 ```yaml
 $t:
   type: upper
   value: "%{name}"
-  locale: en             # optional locale
+  locale: en             # 可选语言区域
 
 $t:
   type: lower
   value: "HELLO"
 ```
 
-Aliases: `uppercase`, `to_upper_case` / `lowercase`, `to_lower_case`
+别名： `uppercase`, `to_upper_case` / `lowercase`, `to_lower_case`
 
 #### `$t: condition`
 
-Boolean conditional selection:
+布尔条件选择：
 
 ```yaml
 $t:
@@ -196,7 +196,7 @@ $t:
 
 #### `$t: self_increase`
 
-Auto-incrementing counter evaluated on each resolution:
+在每次展开中评估的自动递增计数器：
 
 ```yaml
 $t:
@@ -207,24 +207,24 @@ $t:
   step_interval: 1
 ```
 
-* `step_interval`: number of calls between increments (e.g., 2 means 0, 0, 1, 1, ...)
+* `step_interval`：增量之间的调用次数（例如，2 表示 0、0、1、1……）
 
 #### `$t: kether`
 
-Evaluate a Kether expression. The `shell` value supports `%{...}` parameter substitution before evaluation.
+评估 Kether 表达式。 `shell` 价值支持 `%{...}` 评估前的参数替换。
 
 ```yaml
 $t:
   type: kether
   shell: |
     random 1 to 10
-  sandbox: true # Ignore exception
+  sandbox: true # 忽略异常
   fallback: 1
   nullfallback: 2
   unitfallback: 3
 ```
 
-**Using parameters inside Kether:**
+**在 Kether 中使用参数：**
 
 ```yaml
 arguments:
@@ -242,13 +242,13 @@ arguments:
         if check "%{_ID}" == "super_sword" then "Legendary" else "Normal"
 ```
 
-The Kether expression runs via `KetherShell.eval` with the console sender as context. Use `sandbox: false` to throw exceptions instead of falling back.
+Kether的表达方式是通过 `KetherShell.eval` 以控制台发送者为上下文。使用 `sandbox: false` 抛出异常，而不是回退。
 
-**Fallback priority:** `nullfallback` > `unitfallback` > `fallback` — matched against the Kether return type (null, Unit, or exception).
+**备用优先事项：** `nullfallback` > `unitfallback` > `fallback` — 与 Kether 返回类型（null、Unit 或异常）进行匹配。
 
 #### `$t: js` / `$t: graaljs` / `$t: fluxon` / `$t: jexl`
 
-Evaluate script expressions with the same config shape:
+使用相同配置形状评估脚本表达式：
 
 ```yaml
 $t:
@@ -265,9 +265,9 @@ $t:
 
 ***
 
-### Type Casts (`$c`)
+### 类型转换 (`$c`)
 
-Type converters cast string values to specific types with optional rounding:
+类型转换器将字符串值转换为特定类型，并可选择是否进行四舍五入：
 
 ```yaml
 arguments:
@@ -277,21 +277,21 @@ arguments:
       round: ceil
 ```
 
-#### Short Form
+#### 缩写
 
 ```yaml
 $c: double
 ```
 
-#### Types
+#### 类型
 
-| Type     | Options                                              | Description                          |
+| 类型     | 选项                                              | 说明                          |
 | -------- | ---------------------------------------------------- | ------------------------------------ |
-| `int`    | `round`: `ceil` / `cell`, `round`, `floor`           | Integer conversion with rounding     |
-| `double` | —                                                    | Double conversion                    |
-| `string` | `case`: `uppercase` / `upper`, `lowercase` / `lower` | String with optional case conversion |
+| `int`    | `round`: `ceil` / `cell`, `round`, `floor`           | 带四舍五入的整数转换     |
+| `double` | —                                                    | 双精度浮点转换                    |
+| `string` | `case`: `uppercase` / `upper`, `lowercase` / `lower` | 带可选大小写转换的字符串 |
 
-#### Case Conversion (any type)
+#### 大小写转换（任何类型）
 
 ```yaml
 $c:
@@ -302,9 +302,9 @@ $c:
 
 ***
 
-### Combined `$t` + `$c`
+### 组合使用 `$t` 与 `$c`
 
-Transform first, then cast:
+先转换值，再转换类型：
 
 ```yaml
 arguments:
@@ -329,19 +329,19 @@ arguments:
 
 ***
 
-### Argument Resolution Priority
+### 参数解析优先级
 
-When templates chain (A → B → C), outer arguments take priority over inner defaults:
+当模板串联（A → B → C）时，外部参数优先于内部默认值：
 
-1. `_ID` is always injected from the root entry key
-2. Arguments from the outermost `$template.arguments` are applied first
-3. Inner template arguments only apply for keys not already provided by outer layers
+1. `_ID` 始终从根条目 ID注入
+2. 从最外层开始的参数 `$template.arguments` 将首先应用
+3. 内部模板参数仅适用于外部层尚未提供的键
 
 ***
 
-### API (Programmatic Access)
+### API（编程访问）
 
-#### Template Access (via `SertralineAPI`)
+#### 模板访问（通过 `SertralineAPI`)
 
 ```kotlin
 val api = Sertraline.api()
@@ -356,9 +356,9 @@ val count: Int = api.getTemplateCount()
 val resolved = api.resolveTemplate("my_weapon_template", mapOf("name" to "Test"))
 ```
 
-#### Custom Processor Registration
+#### 自定义处理器注册
 
-Register custom `$t` transformer types:
+注册自定义 `$t` 转换器类型：
 
 ```kotlin
 api.registerTransformer("my_type") { type, config, resolveCtx ->
@@ -371,7 +371,7 @@ api.registerTransformer("my_type") { type, config, resolveCtx ->
 api.unregisterTransformer("my_type")
 ```
 
-Register custom `$c` converter types:
+注册自定义 `$c` 转换器类型：
 
 ```kotlin
 api.registerConverter("my_format") { type, config, value, resolveCtx ->
@@ -382,7 +382,7 @@ api.registerConverter("my_format") { type, config, value, resolveCtx ->
 api.unregisterConverter("my_format")
 ```
 
-Register custom argument directives (same level as `$t`/`$c`):
+注册自定义参数指令（与 `$t`/`$c`):
 
 ```kotlin
 api.registerDirective("\$myDirective") { name, config, key, currentArgs, dynamicArgs, resolveCtx ->
@@ -392,7 +392,7 @@ api.registerDirective("\$myDirective") { name, config, key, currentArgs, dynamic
 api.unregisterDirective("\$myDirective")
 ```
 
-The functional interfaces (defined in `TemplateManager`):
+功能接口（定义于 `TemplateManager`):
 
 ```kotlin
 fun interface TransformerProvider {
@@ -410,11 +410,11 @@ fun interface DirectiveProvider {
 
 ***
 
-### Kether Integration
+### Kether 集成
 
-#### Template Arguments in Kether Actions
+#### Kether 操作中的模板参数
 
-Template-resolved values flow into item actions. Any `%{...}` in action scripts is substituted before execution.
+模板解析的值将用于物品操作。任何 `%{...}` 在执行前，操作脚本中的  会被替换。
 
 ```yaml
 my_sword:
@@ -435,7 +435,7 @@ my_sword:
             if check %{power} > 30 then give %{material} 1
 ```
 
-#### Using `%{...}` in All Script Types
+#### 在所有脚本类型中使用 `%{...}`
 
 ```yaml
 actions:
@@ -448,9 +448,9 @@ actions:
         player.sendMessage("Heal value: " + Math.max(%{heal?:5}, 0))
 ```
 
-#### Template in Kether `$t` Chains
+#### 在 Kether `$t` 链中使用模板
 
-You can combine `$t: kether` with other transformers:
+您可以将 `$t: kether` 与其他转换器：
 
 ```yaml
 arguments:
@@ -475,9 +475,9 @@ arguments:
 
 ***
 
-### Misc
+### 其他
 
-Templates are loaded from `plugins/Sertraline/templates/` during reload. The folder is auto-created if missing. Template loading happens **before** all other configs, so templates are available for items, recipes, etc.
+模板加载自 `plugins/Sertraline/templates/` 在重新加载期间。如果文件夹不存在，则会自动创建。模板加载在所有其他配置**之前**进行，因此模板可用于物品、配方等。
 
 ```
 plugins/Sertraline/

@@ -2,42 +2,21 @@
 icon: square-minus
 ---
 
-# Script Issues
+# 脚本常见问题
 
-### Cannot use return in NashornJS
+## Nashorn 顶层 return
 
-This is Nashorn's known limitation. In Nashorn, the top-level scope cannot use return - return can only appear inside the function body. Both GraalJS and standard JavaScript engines allow top-level returns during eval().\
-Nashorn's eval() top-level does not allow returns, while GraalJS allows them.
+Nashorn 的顶层脚本不能直接使用 `return`，应将它放进函数体。例如：
 
-To solve that, just change:&#x20;
-
-```
-return 111
-```
-
-to:
-
-```
+```javascript
 sampleFunction(111)
 function sampleFunction(result) {
     return result
 }
 ```
 
+不同引擎对顶层返回值的处理可能不同，切换引擎时请检查脚本的执行结果。
 
+## GraalJS 和 JVMCI 错误
 
-### GraalJS Errors
-
-When running GraalJS scripts on a higher version of GraalVM, the following error may occur.
-
-```
-LibGraal.initializeLibgraal(LibGraal.java:204)
-→ java.lang.reflect.InvocationTargetException
-This is a compatibility issue caused by the JVMCI interface change in JDK 25.
-```
-
-Add the following to the JVM startup parameters:\
-`-XX:-EnableJVMCI`\
-This will disable the JVMCI compiler backend, and GraalJS will revert back to pure interpreted execution mode (Truffle's BFS/partial evaluation still works, just without libgraal's AOT compilation acceleration), without affecting functionality.
-
-If you have `-XX:+EagerJVMCI` you need to remove it
+原手册记录，在某些高版本 GraalVM / JDK 25 环境中可能出现 `LibGraal.initializeLibgraal` 和 `InvocationTargetException`。遇到该问题时，可检查启动参数：移除 `-XX:+EagerJVMCI`，并尝试添加 `-XX:-EnableJVMCI` 后重启。具体效果取决于使用的 JVM 和版本，修改前请保存原启动参数。

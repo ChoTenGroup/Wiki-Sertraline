@@ -2,49 +2,49 @@
 icon: tent-double-peak
 ---
 
-# Lore Format
+# 描述格式
 
-#### LoreSetting Properties <a href="#loresetting-properties" id="loresetting-properties"></a>
+#### LoreSetting 属性 <a href="#loresetting-properties" id="loresetting-properties"></a>
 
-| Property    | Type      | Default | Description                                                                           |
+| 属性    | 类型      | 默认值 | 说明                                                                           |
 | ----------- | --------- | ------- | ------------------------------------------------------------------------------------- |
-| `overwrite` | `Boolean` | `true`  | If true, replaces existing lore; if false, appends to it                              |
-| `visual`    | `Boolean` | `true`  | If true, applies during s2c (visual) transform; if false, applies to server-side item |
-| `skipBlank` | `Boolean` | `true`  | If true, merges consecutive empty lines into single blank line                        |
+| `overwrite` | `Boolean` | `true`  | 为 true 时覆盖原描述；为 false 时追加到原描述                              |
+| `visual`    | `Boolean` | `true`  | 为 true 时应用于服务端到客户端的视觉转换；为 false 时应用于服务端物品 |
+| `skipBlank` | `Boolean` | `true`  | 如果为 true，则将连续的空行合并为单个空行                        |
 
-#### Key Iteration Examples <a href="#key-iteration-examples" id="key-iteration-examples"></a>
+#### 关键迭代示例 <a href="#key-iteration-examples" id="key-iteration-examples"></a>
 
-**Without Key (Static Line):**
+**不指定键（静态行）：**
 
 ```
 content: "<gray>═══════════════════"
 ```
 
-Produces a single static line.
+生成一行固定文本。
 
-**With Key (Dynamic Lines):**
+**指定键（动态行）：**
 
 ```
 key: "sertraline:vals.test"
 content: "<green>{plus}{value} {name}"
 ```
 
-If `sertraline:attributes` contains `[10, 20, 30]`, produces three lines with placeholder substitution for each value.
+如果 `sertraline:attributes` 包含 `[10, 20, 30]`，生成三行，每行都使用占位符替换值。
 
 {% hint style="warning" %}
-Some key is different with config's section. for example is MMO Attributes: `attack-damage` -> `ATTACK_DAMAGE`
+有些键与配置的区块不同。例如，MMO属性： `attack-damage` -> `ATTACK_DAMAGE`
 {% endhint %}
 
-**With Config Key:**
+**使用配置键：**
 
 ```
 key: "*xbuilder.lore"
 content: "{value}"
 ```
 
-Retrieves lore from the item's `config section` instead of runtime data.
+从物品配置段而非运行时数据中读取描述。
 
-### Examples
+### 示例
 
 ```yaml
 default:
@@ -89,57 +89,57 @@ wooden_sword:
     attack-speed: 1.6
 ```
 
-### Advanced
+### 进阶
 
-### Conditional Line Rendering <a href="#conditional-line-rendering" id="conditional-line-rendering"></a>
+### 条件行渲染 <a href="#conditional-line-rendering" id="conditional-line-rendering"></a>
 
-The `LineMode` enum determines how multiple required keys are evaluated. The system uses `handleLoreExists()` to check if a `LoreElement` should be displayed based on its `lineRequire` list.
+`LineMode` 决定如何判断多个必需键；系统使用 `handleLoreExists()` 根据 `lineRequire` 列表判断是否显示 `LoreElement`。
 
-#### LineMode Behavior Table <a href="#linemode-behavior-table" id="linemode-behavior-table"></a>
+#### 行模式行为表 <a href="#linemode-behavior-table" id="linemode-behavior-table"></a>
 
 | LineMode  | Condition                                        | Result       |
 | --------- | ------------------------------------------------ | ------------ |
-| `ANY`     | At least one key in `lineRequire` exists         | Display line |
-| `ALL`     | All keys in `lineRequire` exist                  | Display line |
-| `NOT`     | No keys in `lineRequire` exist                   | Display line |
-| `NOT_ALL` | At least one key in `lineRequire` does not exist | Display line |
+| `ANY`     | `lineRequire` 中至少有一个键存在         | 显示该行 |
+| `ALL`     | `lineRequire` 中所有键均存在                  | 显示该行 |
+| `NOT`     | `lineRequire` 中没有键存在                   | 显示该行 |
+| `NOT_ALL` | 至少一个键在 `lineRequire` 不存在 | 显示该行 |
 
-The `handleExistLore()` function checks key existence. If the key starts with `*`, it queries the item's config section; otherwise, it queries the item's data via `getDeepData()`.
+`handleExistLore()` 检查键是否存在：以 `*` 开头时查询物品配置段，否则通过 `getDeepData()` 查询物品数据。
 
-### Placeholder Processing System <a href="#placeholder-processing-system" id="placeholder-processing-system"></a>
+### 占位符处理系统 <a href="#placeholder-processing-system" id="placeholder-processing-system"></a>
 
-The lore formatting system supports three layers of placeholder processing applied in sequence.
+Lore 格式化系统支持按顺序应用三层占位符处理。
 
 ```
 ```
 
-**Sources:** [project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt54-101](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/7fbdc299/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt#L54-L101)
+**源码：** [project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt54-101](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/7fbdc299/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt#L54-L101)
 
-#### Built-in Placeholder Types <a href="#built-in-placeholder-types" id="built-in-placeholder-types"></a>
+#### 内置占位符类型 <a href="#built-in-placeholder-types" id="built-in-placeholder-types"></a>
 
-The `performNormalPlaceholders()` function processes special placeholders based on the iterated value:
+`performNormalPlaceholders()` 函数根据迭代值处理特殊占位符：
 
-| Placeholder | Behavior                                | Example                           |
+| 占位符 | 行为                                | 示例                           |
 | ----------- | --------------------------------------- | --------------------------------- |
-| `{plus}`    | Shows `+` if value > 0, empty otherwise | `15` → `+`                        |
-| `{minus}`   | Shows `-` if value < 0, empty otherwise | `-5` → `-`                        |
-| `{value}`   | Raw string value                        | `15.5` → `15.5`                   |
-| `{auto}`    | Removes `.0` suffix from integers       | `15.0` → `15`                     |
-| `{round:N}` | Formats to N decimal places             | `{round:2}` on `15.567` → `15.57` |
+| `{plus}`    | 显示 `+` 如果值 > 0，则为空 | `15` → `+`                        |
+| `{minus}`   | 显示 `-` 如果值 < 0，则为空，否则不为空 | `-5` → `-`                        |
+| `{value}`   | 字符串值                        | `15.5` → `15.5`                   |
+| `{auto}`    | 移除 `.0` 整数的后缀       | `15.0` → `15`                     |
+| `{round:N}` | 格式化为 N 位小数             | 对 `15.567` 使用 `{round:2}` → `15.57` |
 
-The `plus` and `minus` symbols can be customized in `config.yml` under `placeholders.plus` and `placeholders.minus`.
+可在 `config.yml` 中通过 `placeholders.plus` 和 `placeholders.minus` 自定义加减号。
 
-#### PlaceholderAPI Integration <a href="#placeholderapi-integration" id="placeholderapi-integration"></a>
+#### PlaceholderAPI 集成 <a href="#placeholderapi-integration" id="placeholderapi-integration"></a>
 
-After built-in placeholders, the `performPlaceholders()` function applies PlaceholderAPI replacements if a player context is available.
+内置占位符之后， `performPlaceholders()` 如果玩家上下文可用，则函数应用PlaceholderAPI替换。
 
-This allows standard PAPI placeholders like `%player_name%`, `%player_health%`, etc.
+这允许使用标准的 PAPI 占位符，例如 `%player_name%`, `%player_health%`, etc.
 
-#### Inline Kether Evaluation <a href="#inline-kether-evaluation" id="inline-kether-evaluation"></a>
+#### 内嵌 Kether 求值 <a href="#inline-kether-evaluation" id="inline-kether-evaluation"></a>
 
-If the content contains `{{`, the system treats text within `{{...}}` as inline Kether scripts.
+内容部分包含： `{{`，系统会将以下内容中的文本视为 `{{...}}` 作为内联Kether脚本。
 
-Like:  `{{ player name }}`&#x20;
+例如：  `{{ player name }}`&#x20;
 
-This allows dynamic computation in lore templates.&#x20;
+这样可以在描述模板中动态计算。
 

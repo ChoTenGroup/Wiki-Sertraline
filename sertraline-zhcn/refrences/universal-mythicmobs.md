@@ -5,16 +5,16 @@ icon: square-github
 # Universal Mythicmobs
 
 {% hint style="info" %}
-This feature required `Mythicmobs` and `Sertraline 3.8.4+`
+此功能需要 `MythicMobs` 和 `Sertraline 3.8.4+`。
 {% endhint %}
 
 {% hint style="warning" %}
-This feature is `Experiential` ! If you have any issues please open issue or contact me at discord/QQ.
+此功能属于实验性功能；遇到问题可提交 issue，或通过 Discord / QQ 联系项目方。
 {% endhint %}
 
-Use _`UMAPI`_ for `Mythic.API`.&#x20;
+使用 `UMAPI` 访问 Mythic API。
 
-From Sertraline 3.8.19.3 You can use this to hook mythicmobs, let mythicmobs drop Sertraline item or equip Sertraline item:
+从 Sertraline 3.8.19.3 起，可以在 MythicMobs 配置中让怪物掉落或装备 Sertraline 物品：
 
 ```
 MMMobName:
@@ -23,17 +23,17 @@ MMMobName:
   Health: 20
   Damage: 4
   Sertraline:
-    drops: # or Equippments
+    drops: # 也可使用 Equippments
       - ITEMID 1 1
 ```
 
-(Item id is Case sensitive)
+物品 ID 区分大小写。
 
-### Examples
+### 方法示例
 
 ```
 UMAPI.getItem("example_sword").generateItemStack(5)
-UMAPI.getItemStack("example_sword", player) // directly
+UMAPI.getItemStack("example_sword", player) // 直接获取物品
 var mob = UMAPI.getMob(entity)
 if (mob != null) {
     player.sendMessage("MONSTER ID: " + mob.id)
@@ -49,7 +49,7 @@ UMAPI.getSkillMechanic("message{m=\"Hello World\"}").execute(
     )
 ```
 
-### Item Examples
+### 物品示例
 
 ```
 lightningbottle_blue:
@@ -66,7 +66,7 @@ lightningbottle_blue:
             var emptySet = new HashSet();
             UMAPI.castSkill(
               caster = player,
-              skillName = "LightningProjectile", // SKILL NAME
+              skillName = "LightningProjectile", // 技能名称
               trigger = player,
               origin = player.location,
               et = emptySet,
@@ -75,7 +75,7 @@ lightningbottle_blue:
               )
 ```
 
-### More Info
+### 更多信息
 
 {% embed url="https://taboolib.maplex.top/docs/expanding-technology/universal-mythic/" %}
 

@@ -2,28 +2,33 @@
 icon: infinity
 ---
 
-# MythicLib/MMOItems Compat
+# MythicLib / MMOItems 兼容
 
-### Use MMOItems Attributes
+物品的 `mmo` 段可以配置 MMO 属性。原手册提示，仅安装 MythicLib 时属性可能不会生效，还需要 MMOItems 或 MMOCore。实际可用属性取决于安装的插件及版本。
 
-{% hint style="warning" %}
-Due to the loading mechanism of MMO plugins,\
-the attributes still do not work when only MythicLib is installed.\
-You need install MMOItems (or) MMOCore to let attributes work.
-{% endhint %}
-
-Just Use Attribute Name under mmo section.
-
-```
+```yaml
+example_sword:
+  xbuilder:
+    material: DIAMOND_SWORD
+    name: "<!i><green>示例剑"
   mmo:
-    attack-damage: 2020
-    attack-speed: -5
+    attack-damage: 10
+    attack-speed: -1
     max-health: 5%
 ```
 
-### Special Configuration Keys <a href="#configuration-keys" id="configuration-keys"></a>
+<a id="configuration-keys"></a>
 
-```
+## 特殊字段
+
+| 字段 | 用途 | 默认值 |
+| --- | --- | --- |
+| `id` | 属性修改器的标识 | 物品 ID |
+| `source` | MythicLib 的修改器来源，如 `OTHER`、`MELEE_WEAPON` | `OTHER` |
+| `slot` | 装备槽位，如 `MAIN_HAND`、`OFF_HAND`、`HELMET` | 根据物品材质检测，或使用主手 |
+| `allowed` | 允许属性生效的装备槽位列表 | 根据物品材质检测 |
+
+```yaml
 mmo:
   id: "custom_identifier"
   source: "OTHER"
@@ -31,26 +36,7 @@ mmo:
   allowed:
     - "hand"
     - "helmet"
-  
-  # Regular attributes follow...
+  fix-attack-speed: true
 ```
 
-<table><thead><tr><th>Key</th><th>Type</th><th>Description</th><th>Default</th></tr></thead><tbody><tr><td><code>id</code></td><td>String</td><td>Unique identifier for this item's modifiers. Used to generate UUID for StatModifier registration.</td><td>Item's key (e.g., <code>example_sword</code>)</td></tr><tr><td><code>source</code></td><td>String</td><td><p>MythicLib <code>ModifierSource</code> enum value:</p><pre><code>MELEE_WEAPON,
-RANGED_WEAPON,
-OFFHAND_ITEM,
-MAINHAND_ITEM,
-HAND_ITEM,
-ARMOR,
-ACCESSORY,
-ORNAMENT,
-OTHER,
-VOID;
-</code></pre></td><td><code>OTHER</code> (from defSource parameter)</td></tr><tr><td><code>slot</code></td><td>String</td><td>MythicLib <code>EquipmentSlot</code> enum value: <code>MAIN_HAND</code>, <code>OFF_HAND</code>, <code>HELMET</code>, <code>CHESTPLATE</code>, <code>LEGGINGS</code>, <code>BOOTS</code></td><td>Auto-detected from item material or <code>MAIN_HAND</code></td></tr><tr><td><code>allowed</code></td><td>List</td><td>Which equipment slots allow this item to apply attributes. See <a href="https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/5e320724/Equipment%20Slot%20Filtering">Equipment Slot Filtering</a></td><td>Auto-detected from item material suffix</td></tr></tbody></table>
-
-### Fix Attack speed
-
-Have issues with rebound attack-speed?&#x20;
-
-<pre class="language-yaml"><code class="lang-yaml">  mmo:
-<strong>    fix-attack-speed: true
-</strong></code></pre>
+`fix-attack-speed` 可用于处理攻击速度回弹问题。请在测试服务器验证实际效果，更多示例见插件自带的 `workspace/default/default_mmoitem.yml`。

@@ -2,15 +2,15 @@
 icon: cursor
 ---
 
-# Item Manager System
+# 物品管理器系统
 
-## Item Manager System
+## 物品管理器系统
 
-Sertraline's item manager provides four storage modes for items: **Public** / **Private** × **Persistent** / **Temporary**. The manager handles item creation, retrieval, deletion, and lifecycle management across reloads.
+Sertraline 的物品管理器为物品提供四种存储模式：**公开** / **私有** × **持久** / **临时**。管理器处理物品的创建、检索、删除以及跨重载的生命周期管理。
 
 ***
 
-### Architecture
+### 架构
 
 ```
 ItemManager
@@ -23,16 +23,16 @@ ItemManager
     └── TEMPORARY          (in-memory only)
 ```
 
-#### Storage Types
+#### 存储类型
 
-| Type                  | `SubManagerType` | Scope       | Persistence                                         |
+| 类型                  | `SubManagerType` | 范围       | 持久性                                         |
 | --------------------- | ---------------- | ----------- | --------------------------------------------------- |
-| **Public Persistent** | `PERSISTENT`     | All players | itemMap (memory), cleared & reloaded from workspace |
-| Public Temporary      | `TEMPORARY`      | All players | Serialized to buffer during reload, restored after  |
-| Private Persistent    | `PERSISTENT`     | Per UUID    | Database                                            |
-| Private Temporary     | `TEMPORARY`      | Per UUID    | In-memory, lost on shutdown                         |
+| **公开持久** | `PERSISTENT`     | 所有玩家 | itemMap（内存），已清除并从工作区重新加载 |
+| 公共临时      | `TEMPORARY`      | 所有玩家 | 在重新加载期间序列化到缓冲区，之后恢复  |
+| 私有持久    | `PERSISTENT`     | 按 UUID    | 数据库                                            |
+| 私有临时     | `TEMPORARY`      | 按 UUID    | 仅内存，关闭后丢失                         |
 
-#### Enums
+#### 枚举
 
 ```kotlin
 enum class ManagerType(val alias: Set<String>) {
@@ -48,79 +48,79 @@ enum class SubManagerType(val alias: Set<String>) {
 
 ***
 
-### Configuration (`manager.yml`)
+### 配置（`manager.yml`）
 
 ```yaml
-# Default manager type and sub type
+# 默认管理器类型和子类型
 defaults:
   scope: "public"          # public / private
   sub: "persistent"        # persistent / temporary
 
-# Allow deleting public-persistent items
+# 允许删除公共持久物品
 allow-delete-public-persistent: false
 
-# Also remove the file when deleting public-persistent items
+# 删除公共持久物品时同时删除文件
 delete-file: false
 
-# Private manager settings
+# 私有管理器设置
 private:
-  # Auto UUID fallback when no player context available
+  # 没有玩家上下文时的自动 UUID
   auto-uuid: ""
 ```
 
 ***
 
-### Public Items
+### 公共物品
 
-Public items are shared across all players. They are the standard item type loaded from `workspace/`.
+公共物品由所有玩家共享。它们是从以下位置加载的标准物品类型： `workspace/`.
 
-#### Behavior
+#### 行为
 
-| Operation | PERSISTENT                         | TEMPORARY                                    |
+| 操作 | PERSISTENT                         | TEMPORARY                                    |
 | --------- | ---------------------------------- | -------------------------------------------- |
-| Create    | Not supported via manager          | `createTemporary(id, item)`                  |
-| Read      | `getItem(id)` → itemMap            | `getItem(id)` → temporary → itemMap fallback |
-| Delete    | Remove from itemMap (config-gated) | Remove from temporary + itemMap              |
-| Reload    | Cleared, reloaded from workspace   | Serialized → buffer → restore                |
+| 创建    | 不支持通过管理平台操作          | `createTemporary(id, item)`                  |
+| 读取      | `getItem(id)` → itemMap            | `getItem(id)` → 临时 → itemMap 备用方案 |
+| 删除    | 从 itemMap 中移除（受配置限制） | 从临时 + itemMap 中移除              |
+| 重载    | 已清除，已从工作区重新加载   | 序列化 → 缓冲 → 恢复                |
 
-#### Creation Restriction
+#### 创建限制
 
-Creating public-persistent items through the manager is blocked (`UnsupportedOperationException`). These items are loaded from YAML workspace files only. For runtime registration, use `SertralineAPI.registerItem(id, item)` or the public-temporary path.
+通过管理器创建公共持久物品已被阻止（`UnsupportedOperationException`）。这些物品仅从 YAML 工作区文件加载。对于运行时注册，请使用 `SertralineAPI.registerItem(id, item)` 或公共临时路径。
 
 ***
 
-### Private Items
+### 私有物品
 
-Private items are scoped to a UUID (player or custom namespace). They support database persistence.
+私有项的范围限定为 UUID（玩家或自定义命名空间）。它们支持数据库持久性。
 
-#### Behavior
+#### 行为
 
-| Operation | PERSISTENT                       | TEMPORARY      |
+| 操作 | PERSISTENT                       | TEMPORARY      |
 | --------- | -------------------------------- | -------------- |
-| Create    | Cache + database insert          | In-memory only |
-| Read      | Cache → database fallback        | In-memory      |
-| Delete    | Cache + database delete          | In-memory only |
-| Reload    | Cache cleared, lazy-load from DB | Cleared        |
-| Shutdown  | Cleared                          | Cleared        |
+| 创建    | 缓存 + 数据库插入          | 仅限内存中 |
+| 读取      | 缓存 → 数据库回退        | 仅内存      |
+| 删除    | 缓存 + 数据库删除          | 仅限内存中 |
+| 重载    | 缓存已清除，从数据库懒加载 | 已清除        |
+| 关闭  | 已清除                          | 已清除        |
 
-#### UUID Resolution
+#### UUID 解析
 
-When no UUID is provided, the manager resolves one in this order:
+如果未提供 UUID，则管理器将按以下顺序解析一个 UUID：
 
-1. Explicit UUID parameter
-2. Player UUID context
-3. `manager.yml` `private.auto-uuid` setting
-4. Throws `IllegalStateException` if none available
+1. 显式 UUID 参数
+2. 玩家 UUID 上下文
+3. `manager.yml` `private.auto-uuid` 设置
+4. 不可用时抛出 `IllegalStateException`
 
 ***
 
-### API (via `SertralineAPI`)
+### API（通过 `SertralineAPI`）
 
 ```kotlin
 val api = Sertraline.api()
 ```
 
-#### Public Item Operations
+#### 公开物品操作
 
 ```kotlin
 // Create a public-temporary item
@@ -138,7 +138,7 @@ val allPersistent = api.getAllPublicItems(SubManagerType.PERSISTENT)
 val allTemporary = api.getAllPublicItems(SubManagerType.TEMPORARY)
 ```
 
-#### Private Item Operations
+#### 私有物品操作
 
 ```kotlin
 // Create
@@ -155,7 +155,7 @@ api.deletePrivateItem("uuid-here", "my_private_item", SubManagerType.TEMPORARY)
 val all = api.getAllPrivateItems("uuid-here", SubManagerType.PERSISTENT)
 ```
 
-#### General Operations
+#### 通用操作
 
 ```kotlin
 // Register/remove items directly in itemMap (public-persistent)
@@ -171,7 +171,7 @@ val total: Int = api.getItemCount()
 val uuid = api.resolvePrivateUuid(null, player.uniqueId.toString())
 ```
 
-#### Internal Manager Access
+#### 内部管理器访问
 
 ```kotlin
 // Direct access to the underlying managers
@@ -181,30 +181,30 @@ val privateMgr = Sertraline.manager.privateManager
 
 ***
 
-### Commands
+### 命令
 
 #### `/sertraline manager` (`/mgr`)
 
-Manage items across public/private, persistent/temporary scopes.
+管理公共/私有、永久/临时范围内的物品。
 
-| Subcommand                                      | Description                              |
+| 子命令                                      | 说明                              |
 | ----------------------------------------------- | ---------------------------------------- |
-| `help`                                          | Show command usage                       |
-| `use <public\|private> [persistent\|temporary]` | Set manager scope                        |
-| `switch <uuid>`                                 | Switch private manager UUID              |
-| `create <id> <json>`                            | Create item in current scope (JSON body) |
-| `clone <templateId> <newId>`                    | Clone an existing item                   |
-| `delete <id>`                                   | Delete an item by ID                     |
-| `list`                                          | List items in current scope              |
-| `info <id>`                                     | Show item details                        |
+| `help`                                          | 显示命令用法                       |
+| `use <public\|private> [persistent\|temporary]` | 设置管理器范围                        |
+| `switch <uuid>`                                 | 切换私有管理器 UUID              |
+| `create <id> <json>`                            | 在当前范围内创建物品（JSON 正文） |
+| `clone <templateId> <newId>`                    | 克隆现有物品                   |
+| `delete <id>`                                   | 按 ID 删除物品                     |
+| `list`                                          | 列出当前范围内的物品              |
+| `info <id>`                                     | 显示物品详细信息                        |
 
-**Examples:**
+**示例：**
 
 ```
-# Use public-temporary scope
+# 使用公共临时范围
 /manager use public temp
 
-# Use private-persistent scope
+# 使用私有持久范围
 /manager use private persistent
 
 # Switch to a specific UUID for private operations
@@ -216,10 +216,10 @@ Manage items across public/private, persistent/temporary scopes.
 # Clone an existing item
 /manager clone sword_of_skyline my_cloned_sword
 
-# List items in current scope
+# 列出当前范围内的物品
 /manager list
 
-# Show item details
+# 显示物品详情
 /manager info my_item
 
 # Delete an item
@@ -228,16 +228,16 @@ Manage items across public/private, persistent/temporary scopes.
 
 #### `/sertraline item give`
 
-Give Sertraline items to players.
+将Sertraline物品交给玩家。
 
 ```
 /sertraline item give [player] [amount] [silent]
 ```
 
-**Examples:**
+**示例：**
 
 ```
-# Give yourself 1 sword_of_skyline
+# 给自己一把 sword_of_skyline
 /sertraline item give sword_of_skyline
 
 # Give a player 5 of the item silently
@@ -246,11 +246,11 @@ Give Sertraline items to players.
 
 ***
 
-### Kether Integration
+### Kether 集成
 
-#### Kether Variables in Items
+#### 物品中的Kether变量
 
-Item variables (`vars` section) support inline Kether expressions using the `${kether:...}$` syntax:
+物品变量（`vars` 部分）支持使用 `${kether:...}$` 语法：
 
 ```yaml
 my_item:
@@ -263,7 +263,7 @@ my_item:
       power_level: 1
 ```
 
-#### Conditional Actions with Kether
+#### 使用 Kether 执行条件操作
 
 ```yaml
 my_item:
@@ -282,7 +282,7 @@ my_item:
             tell inline "&aYou used the item!"
 ```
 
-## Structure
+## 结构
 
 ```
 reloadCustomConfig()
@@ -298,9 +298,9 @@ reloadCustomConfig()
 └── Reload recipes, scripts, etc.
 ```
 
-During reload:
+重新加载期间：
 
-* **Public-Persistent**: wiped and reloaded from workspace YAML files
-* **Public-Temporary**: serialized to string buffer before clear, deserialized after reload
-* **Private-Persistent**: cache cleared, lazy-loaded from database on next access
-* **Private-Temporary**: cache cleared, lost if not saved externally
+* **公开-持久**：从工作空间的 YAML 文件中擦除并重新加载
+* **公共-临时**：在清除之前序列化为字符串缓冲区，在重新加载后反序列化
+* **私有-持久**：缓存已清除，下次访问时从数据库懒加载
+* **私有-临时**：缓存已清除，如果不另行保存，则会丢失

@@ -2,13 +2,13 @@
 icon: wave-pulse
 ---
 
-# Item Actions
+# 物品动作
 
-**Sertraline** supports you run action when interact the item.
+**Sertraline** 支持您在与物品互动时执行动作。
 
-### Action Structure in YAML <a href="#action-structure-in-yaml" id="action-structure-in-yaml"></a>
+### YAML 中的操作结构 <a href="#action-structure-in-yaml" id="action-structure-in-yaml"></a>
 
-Actions are defined within the `sertraline` section of an item YAML file under the `actions` key. The structure follows this pattern:
+动作定义在物品 YAML 的 `sertraline.actions` 下，结构如下：
 
 ```yaml
 item_id:
@@ -24,9 +24,9 @@ item_id:
           graaljs: <graaljs_string>
 ```
 
-Each trigger name maps to a list of action entries. Multiple actions can be defined for the same trigger, and they execute sequentially.
+每个触发器名称都映射到一个操作条目列表。可以为同一个触发器定义多个操作，这些操作将按顺序执行。
 
-Example:
+示例：
 
 {% code expandable="true" %}
 ```yaml
@@ -65,67 +65,67 @@ book_of_multi_language:
 ```
 {% endcode %}
 
-### Triggers
+### 触发器
 
 
 
-The following table lists all supported trigger types and their associated Bukkit events:
+下表列出了所有受支持的触发器类型及其关联的Bukkit事件：
 
-| Trigger Name       | Bukkit Event                | Description                           | Cancellable | Available Items                            |
+| 触发名称       | Bukkit 事件                | 说明                           | 可取消 | 可用物品                            |
 | ------------------ | --------------------------- | ------------------------------------- | ----------- | ------------------------------------------ |
-| `onClick`          | `PlayerInteractEvent`       | Any click interaction (left or right) | Yes         | `bItem` (clicked item)                     |
-| `onRightClick`     | `PlayerInteractEvent`       | Right-click interaction only          | Yes         | `bItem` (clicked item)                     |
-| `onLeftClick`      | `PlayerInteractEvent`       | Left-click interaction only           | Yes         | `bItem` (clicked item)                     |
-| `onAttack`         | `EntityDamageByEntityEvent` | Player attacks entity with item       | Yes         | `bItem` (weapon/projectile)                |
-| `onMine`           | `BlockBreakEvent`           | Player breaks block                   | Yes         | Composite only (see below)                 |
-| `onConsume`        | `PlayerItemConsumeEvent`    | Player consumes food/potion           | Yes         | `bItem` (consumed), `abItem` (replacement) |
-| `onBreak`          | `PlayerItemBreakEvent`      | Item breaks from durability           | No          | `bItem` (broken item)                      |
-| `onDrop`           | `PlayerDropItemEvent`       | Player drops item                     | Yes         | `bItem` (dropped item)                     |
-| `onPickUp`         | `PlayerPickupItemEvent`     | Player picks up item                  | Yes         | `bItem` (picked up item)                   |
-| `onInventoryClick` | `InventoryClickEvent`       | Player clicks in inventory            | Yes         | `bItem` (current), `abItem` (cursor)       |
-| `onSwap`           | `PlayerSwapHandItemsEvent`  | Player swaps main/offhand (F key)     | Yes         | Composite only (see below)                 |
-| `onLogin`          | `PlayerLoginEvent`          | Player logs into server               | No          | Composite only (see below)                 |
+| `onClick`          | `PlayerInteractEvent`       | 任意点击交互（左键或右键） | 是         | `bItem` （点击的物品）                     |
+| `onRightClick`     | `PlayerInteractEvent`       | 仅右键交互          | 是         | `bItem` （点击的物品）                     |
+| `onLeftClick`      | `PlayerInteractEvent`       | 仅左键交互           | 是         | `bItem` （点击的物品）                     |
+| `onAttack`         | `EntityDamageByEntityEvent` | 玩家持物品攻击实体       | 是         | `bItem` （武器或投射物）                |
+| `onMine`           | `BlockBreakEvent`           | 玩家破坏方块                   | 是         | 仅支持复合触发器（见下文）                 |
+| `onConsume`        | `PlayerItemConsumeEvent`    | 玩家食用食物或饮用药水           | 是         | `bItem` （消耗的物品）， `abItem` （替代物品） |
+| `onBreak`          | `PlayerItemBreakEvent`      | 物品耐久耗尽损坏           | 否          | `bItem` （损坏的物品）                      |
+| `onDrop`           | `PlayerDropItemEvent`       | 玩家丢弃物品                     | 是         | `bItem` （丢弃的物品）                     |
+| `onPickUp`         | `PlayerPickupItemEvent`     | 玩家拾取物品                  | 是         | `bItem` （拾取的物品）                   |
+| `onInventoryClick` | `InventoryClickEvent`       | 玩家点击背包            | 是         | `bItem` （当前槽位）， `abItem` （光标物品）       |
+| `onSwap`           | `PlayerSwapHandItemsEvent`  | 玩家交换主副手（F 键）     | 是         | 仅支持复合触发器（见下文）                 |
+| `onLogin`          | `PlayerLoginEvent`          | 玩家登录服务器               | 否          | 仅支持复合触发器（见下文）                 |
 
-### Composite Triggers <a href="#composite-triggers" id="composite-triggers"></a>
+### 复合触发器 <a href="#composite-triggers" id="composite-triggers"></a>
 
-Some triggers support composite syntax using the `@` separator to target specific equipment slots or hands. The format is `trigger@slot`.
+部分触发器支持用 `@` 指定装备槽位或手，格式为 `trigger@slot`。
 
-#### Syntax <a href="#syntax" id="syntax"></a>
+#### 语法 <a href="#syntax" id="syntax"></a>
 
 `triggerName@slotName`
 
-#### Supported Composite Triggers <a href="#supported-composite-triggers" id="supported-composite-triggers"></a>
+#### 支持的复合触发器 <a href="#supported-composite-triggers" id="supported-composite-triggers"></a>
 
 **onLogin**
 
-Fires when a player logs in, checking all equipped items:
+玩家登录时触发，检查装备的物品：
 
-* `onLogin@main` - Main hand item
-* `onLogin@off` - Offhand item
-* `onLogin@helmet` - Helmet slot
-* `onLogin@chestplate` - Chestplate slot
-* `onLogin@leggings` - Leggings slot
-* `onLogin@boots` - Boots slot
+* `onLogin@main` - 主手物品
+* `onLogin@off` - 副手物品
+* `onLogin@helmet` - 头盔槽
+* `onLogin@chestplate` - 胸甲槽
+* `onLogin@leggings` - 护腿槽
+* `onLogin@boots` - 靴子槽
 
 **onMine**
 
-Fires when a player breaks a block:
+玩家破坏方块时触发：
 
-* `onMine@main` - Main hand item
-* `onMine@off` - Offhand item
+* `onMine@main` - 主手物品
+* `onMine@off` - 副手物品
 
 **onSwap**
 
-Fires when a player swaps hands (presses F):
+玩家交换主副手（按 F）时触发：
 
-* `onSwap@main` - Item being moved to offhand
-* `onSwap@off` - Item being moved to main hand
+* `onSwap@main` - 移至副手的物品
+* `onSwap@off` - 移至主手的物品
 
-### Advanced
+### 进阶
 
-The val, var and dynamic will be a variable into script.
+Val、Var 和 Dynamic 可作为变量传入脚本。
 
-You can directly use it like:
+例如，可以直接使用：
 
 <pre class="language-yml"><code class="lang-yml">message_helper:
   sertraline:
@@ -146,7 +146,7 @@ You can directly use it like:
 
 <figure><img src="../../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
-You may also **use or modify** event's parameters like:
+也可以读取或修改事件参数，例如：
 
 <pre class="language-yaml"><code class="lang-yaml">sword_of_ultimate_damage:
   sertraline:
@@ -163,7 +163,7 @@ You may also **use or modify** event's parameters like:
     material: GOLDEN_SWORD
 </code></pre>
 
-To cancel a event, just use:
+取消事件可以使用：
 
 ```javascript
 event.setCancelled(true)
@@ -171,10 +171,10 @@ event.setCancelled(true)
 ```
 
 {% hint style="warning" %}
-If **cancel event or modify** event content, `async` must be `false`.
+如果需要**取消事件或修改事件内容**，必须设置 `async: false`。
 {% endhint %}
 
-### Give Item Example
+### 给予物品示例
 
 ```yaml
 a_pack_of_gum:
