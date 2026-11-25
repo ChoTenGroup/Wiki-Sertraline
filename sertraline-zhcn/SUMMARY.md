@@ -1,42 +1,43 @@
-# Table of contents
+# 目录
 
-* [Welcome](README.md)
+* [欢迎使用](README.md)
 
-## Description
+## 介绍
 
-* [Intro](description/intro.md)
-* [Services](description/services.md)
+* [简介](description/intro.md)
+* [服务与项目故事](description/services.md)
 
-## Basics
+## 基础
 
-* [Installation](basics/installation.md)
-* [My First Item](basics/my-first-item.md)
-* [Item Structure](basics/item-structure.md)
+* [安装与配置](basics/installation.md)
+* [创建第一个物品](basics/my-first-item.md)
+* [物品结构](basics/item-structure.md)
 
-## ADVANCED
+## 进阶
 
-* [Item Structures](advanced/item-structures/README.md)
-  * [Section: XBuilder](advanced/item-structures/section-xbuilder.md)
-  * [Section: Sertraline](advanced/item-structures/section-sertraline/README.md)
-    * [Item Actions](advanced/item-structures/section-sertraline/item-actions.md)
-    * [Item Data](advanced/item-structures/section-sertraline/item-data.md)
-  * [Section: Minecraft / Components](advanced/item-structures/section-minecraft-components.md)
-  * [Section: Visual Items](advanced/item-structures/visual-items.md)
-  * [Section: Custom Data](advanced/item-structures/section-custom-data.md)
-* [Item Text Tags](advanced/item-text-tags.md)
-* [MythicLib/MMOItems Compat](advanced/mythiclib-mmoitems-compat.md)
-* [Lore Format](advanced/lore-format.md)
-* [Crafting Stations \[Expr\]](advanced/crafting-stations.md)
-* [Custom Recipes](advanced/custom-recipes.md)
-* [Item Tier \[WIP\]](advanced/item-tier.md)
-* [Item Manager System](advanced/item-manager-system.md)
-* [Templates](advanced/templates.md)
+* [物品配置段](advanced/item-structures/README.md)
+  * [XBuilder](advanced/item-structures/section-xbuilder.md)
+  * [Sertraline](advanced/item-structures/section-sertraline/README.md)
+    * [物品动作](advanced/item-structures/section-sertraline/item-actions.md)
+    * [物品数据](advanced/item-structures/section-sertraline/item-data.md)
+  * [Minecraft 数据组件](advanced/item-structures/section-minecraft-components.md)
+  * [视觉物品](advanced/item-structures/visual-items.md)
+  * [自定义数据](advanced/item-structures/section-custom-data.md)
+* [物品文本标签](advanced/item-text-tags.md)
+* [MythicLib / MMOItems 兼容](advanced/mythiclib-mmoitems-compat.md)
+* [描述格式](advanced/lore-format.md)
+* [合成站（实验性）](advanced/crafting-stations.md)
+* [自定义配方](advanced/custom-recipes.md)
+* [宝石系统](advanced/gems.md)
+* [物品品级](advanced/item-tier.md)
+* [物品管理器](advanced/item-manager-system.md)
+* [模板](advanced/templates.md)
 
-## REFRENCES
+## 参考
 
-* [Script Issues](refrences/script-issues.md)
-* [PlaceHolderAPI](refrences/placeholderapi.md)
-* [XBuilder](refrences/xbuilder.md)
-* [Script Util](refrences/script-util/README.md)
-  * [Script Util Refs](refrences/script-util/script-util-refs.md)
-* [Universal Mythicmobs](refrences/universal-mythicmobs.md)
+* [脚本问题](refrences/script-issues.md)
+* [PlaceholderAPI](refrences/placeholderapi.md)
+* [XBuilder 参考](refrences/xbuilder.md)
+* [脚本工具](refrences/script-util/README.md)
+  * [脚本工具和 API 参考](refrences/script-util/script-util-refs.md)
+* [Universal MythicMobs](refrences/universal-mythicmobs.md)

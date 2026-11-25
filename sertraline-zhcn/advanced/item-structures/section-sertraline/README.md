@@ -2,69 +2,24 @@
 icon: banjo
 ---
 
-# Section: Sertraline
+# Sertraline 配置段
 
-Overview Structure:
-
-```yaml
-sertraline:
-  tier: C                    # Tier ID
-  type: weapon               # Type ID
-  lore-format: defaultloreformat  # Lore format ID
-  vals:                      # Static values (determined at compile time)
-    some_constant: 100
-  vars:                      # Variable data (can be persisted to NBT)
-    count: 0
-    player_name: "%player_name%"
-  dynamics:                  # Dynamic data (re-evaluated at runtime)
-    random_damage:
-      - "random 10 to 20"
-  context:                   # Runtime context (not persisted)
-    some_var: "runtime_value"
-  keep-context: [key1, key2] # Context keys that should be persisted as variables
-  actions:                   # Event actions
-    onAttack:
-      - async: false
-        js: |
-          event.damage = 100
-  revision-id: 1             # Manual revision ID
-  no-sertraline-id: false    # Prevent writing sertraline_id to NBT
-```
-
-vars placeholder usage (used with the tag handler; see below):
+`sertraline` 段可以为物品设置品级、数据和动作。下面的剑引用默认品级 `C`，并在攻击时将本次事件伤害设为 100：
 
 ```yaml
-sertraline:
-  vars:
-    pills: 14
-    total: 14
-xbuilder:
-  lore: |
-    <!i><gray>Left pills: <green>${var:pillsAsIn}$</green><gray> /${var:totalAsIn}$
-```
-
-Example:
-
-```yaml
-sword_of_counter:
+example_power_sword:
   sertraline:
     tier: C
-    vars:
-      count: 0
     actions:
       onAttack:
-        - js: |
-            var tag = ItemStackUtil.getItemTag(bItem);
-            var added = count + event.damage;
-            tag.putDeep("sertraline_data.count", added);
-            ItemStackUtil.setItemTagDirect(bItem, tag);
-            PlayerUtil.sendMessage(player, mmUtil.deserialize("Damage: " + added))
-            ItemStackUtil.rebuildLore(bItem, player);
+        - async: false
+          js: |
+            event.damage = 100
   xbuilder:
-    name: "<!i>&7Sword Of &6Counter"
-    lore: |
-      <!i><white>Total Damage: <yellow>${var:countAsIn}$
-    material: IRON_SWORD
+    material: GOLDEN_SWORD
+    name: "<!i><gold>力量之剑"
 ```
 
-Please see the pages below
+保存、重载后用 `/sertraline item give example_power_sword` 领取并攻击实体测试。修改或取消事件时需要设置 `async: false`；该例改的是触发时的事件伤害。完整默认示例可在 `workspace/default/default_weapon.yml` 中找到。
+
+你还可以使用 `vals`、`vars` 保存物品所需的数据，并在名称或描述中引用。详见[物品数据](item-data.md)和[物品动作](item-actions.md)。

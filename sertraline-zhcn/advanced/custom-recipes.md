@@ -2,7 +2,33 @@
 icon: wrench
 ---
 
-# Custom Recipes
+# 自定义配方
+
+下面先看默认配置中的配方。确认 `workspace/default/default_misc.yml` 中存在 `star_of_recall`，然后在 `plugins/Sertraline/recipes/sample.yml` 中找到 `star_from_vanilla`：
+
+```yaml
+star_from_vanilla:
+  provider: SIMPLE
+  format: SHAPED
+  type: CRAFTING
+  pattern:
+    - "PPP"
+    - "PGP"
+    - "PPP"
+  ingredients:
+    P: "minecraft:paper"
+    G: "minecraft:gold_ingot"
+  result:
+    id: sertraline:star_of_recall
+    count: 1
+```
+
+重载后，在工作台将一块金锭放在中央，周围放八张纸。`pattern` 表示摆放形状，`ingredients` 将字符对应到材料，`result` 是产物。`minecraft:` 表示原版物品，`sertraline:` 表示 Sertraline 物品；显式前缀可以避免同名歧义。这是插件自带的配方；如果想修改它，请直接编辑该条目，避免再创建一个相同配方。
+
+{% hint style="info" %}
+以下为尚待翻译和逐项核对的原参考内容。配置请优先参照安装版本自带的 `recipes/sample.yml`；其中 `COMPLEX` 示例被注释并标为尚未支持。
+{% endhint %}
+
 
 Custom Recipes Let you can customize recipes for your Sertraline Item!
 

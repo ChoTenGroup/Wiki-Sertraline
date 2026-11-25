@@ -2,7 +2,29 @@
 icon: cards-blank
 ---
 
-# Templates
+# 模板
+
+模板可以让多件物品复用配置。插件自带的 `templates/basic_gear.yml` 定义了 `basic_melee_weapon`；你可以在 `workspace` 下新建物品文件，使用它来创建一把剑：
+
+```yaml
+my_template_sword:
+  $template:
+    use: basic_melee_weapon
+    arguments:
+      material: IRON_SWORD
+      name: "<!i><green>模板练习剑"
+      damage: 10
+      speed: 1.6
+  sertraline:
+    tier: C
+```
+
+保存后执行 `/sertraline reload`，再用 `/sertraline item give my_template_sword` 领取。`use` 是模板 ID；`arguments` 只会替换模板中对应的 `%{参数名}`，因此传入模板未使用的参数不会改变物品。模板默认值及更多可运行示例请看 `templates/basic_gear.yml` 和 `workspace/default/example_templated_items.yml`。
+
+{% hint style="info" %}
+以下为尚待翻译和逐项核对的原参考内容。高级用法请同时对照安装版本自带的模板和示例。
+{% endhint %}
+
 
 ## Template System
 

@@ -2,73 +2,34 @@
 icon: floppy-disks
 ---
 
-# Installation
+# 安装与配置
 
-### THINGS YOU MUST BE KNOW
+## 选择版本
 
-{% hint style="danger" %}
-**!! DANGER !!**
+当前项目的 Standard 和 Spigot 构建以 Minecraft 1.21.4 API、Java 21 为目标；Legacy 构建以 Minecraft 1.12.2、Java 8 为目标，且不包含现代配方和数据组件功能。选择与你的服务端及 Java 版本相匹配的发行文件，并查阅发行说明确认兼容性。
 
-Under existing JS engines, some engines may have full access to all methods, including **sensitive methods** such as `java.io.File`. Therefore, if you unconditionally trust all the items you import, it may have catastrophic consequences.
+PlaceholderAPI 可用于占位符；PacketEvents 2.10 或更高版本用于发包描述和组件等功能。它们按需安装，不是创建基础物品的必备条件。
 
-\
-Before importing any Sertraline items, crafting stations, or other packages, **it is essential to check for any malicious code** and promptly report it to the management personnel at the resource acquisition location.
+{% hint style="warning" %}
+物品和合成站配置可能包含脚本。脚本引擎可能访问 Java 类和服务器资源；导入第三方配置前请先检查内容并确认来源可信。
 {% endhint %}
 
-### Requirements
+## 安装
 
-**Sertraline** requires <mark style="background-color:blue;">**PAPER**</mark>**.** It is compatible with most common forks, including <mark style="background-color:green;">**FOLIA**</mark>, Pufferfish, Purpur , Leaf and similar variants. You need **JDK 21** or above for your server.
+1. 将适用的 Sertraline 插件文件放入服务器的 `plugins` 目录，按需安装其他插件。
+2. 启动服务器，查看控制台确认插件成功加载。首次启动后会生成 `plugins/Sertraline` 目录。
+3. 如需中文消息，在 `plugins/Sertraline/config.yml` 中设置 `lang: zh_CN`，然后执行 `/sertraline reload`。
 
-| Section              | Requirements                                                                                                                           |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Supported Core       | <mark style="background-color:blue;">**PAPER**</mark> and them's fork. Include <mark style="background-color:green;">**FOLIA**</mark>. |
-| Tested Version       | **1.21.4** +                                                                                                                           |
-| Required JDK Version | ≥ 21                                                                                                                                   |
+常用目录如下；具体文件可能随版本而变化：
 
-To install the plugin, Just drag and drop the latest builds of **Sertraline** to your plugins folder. Do not forget dependencies:
+| 路径 | 用途 |
+| --- | --- |
+| `workspace/` | 物品定义，支持子目录 |
+| `templates/` | 物品模板 |
+| `lore-formats/` | 物品描述格式 |
+| `recipes/` | 原版界面中的自定义配方 |
+| `crafting-stations/` | 自定义合成站 |
+| `tiers/`、`types/` | 品级与类型配置 |
+| `config.yml` | 主配置，包括数据库设置 |
 
-| Depencendy Name    | Type                                                                 | Description                                                                                                                                                                                                                                             |
-| ------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PlaceHolderAPI     | <mark style="background-color:orange;">**Highly Recommended**</mark> | For PlaceholderAPI hook and use PAPI In your items.                                                                                                                                                                                                     |
-| Packetevents       | <mark style="background-color:blue;">**Optional**</mark>             | For packet-lore and packet DataComponents.                                                                                                                                                                                                              |
-| MythicLib          | <mark style="background-color:blue;">**Optional**</mark>             | For MythicLib mmo Attributes.                                                                                                                                                                                                                           |
-| Other Item Plugins | <mark style="background-color:blue;">**Optional**</mark>             | <p>Sertraline supports generate from other Item Plugins. You can find supported item plugin list</p><p><a href="https://github.com/ProjectUnified/UniItem/">HERE</a>(3.8.2-)</p><p><a href="https://github.com/jhqwqmc/ItemBridge">HERE</a>(3.8.3+)</p> |
-
-If you want to request support other Attribute plugin or more, you can contact me at QQ or Discord.
-
-Requests from paying users will be prioritized, but requests from free users will also be added within 1 week if there are no unexpected circumstances.
-
-### Configuring the Plugin
-
-If the plugin is installed successfully, you will see a directory named `Sertraline` in your server's plugins folder, with a structure as follows:
-
-{% code fullWidth="false" %}
-```
-.../Sertraline
-     ├── internal
-     │   └── ...
-     ├── lang
-     │   ├── zh_CN.yml
-     │   └── ...
-     ├── crafting-stations
-     │   ├── example.yml
-     │   └── ...
-     ├── workspace
-     │   └── chotenpack
-     │       └── test.yml
-     ├── config.yml
-     ├── kether.yml
-     └── datasource.yml
-```
-{% endcode %}
-
-Next, I will explain the purpose of each file and folder:
-
-* `internal` - Internal files
-* `lang` - Language files
-* `crafting-stations` - Crafting station files
-* `workspace` - Item storage / workspace
-* `config.yml` - Main configuration file
-* `kether.yml` - Kether-related settings
-* `datasource.yml` - Datasource/database settings
-
+编辑后使用 `/sertraline reload` 应用运行期设置；数据库和统计设置在启动时读取，修改后需要重启服务器。接下来可以[创建第一个物品](my-first-item.md)。

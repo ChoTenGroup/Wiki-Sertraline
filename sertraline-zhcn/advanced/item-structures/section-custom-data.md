@@ -2,34 +2,20 @@
 icon: desktop-arrow-down
 ---
 
-# Section: Custom Data
+# 自定义数据
 
-## Custom Data Structure Usage
+你可以通过 `custom_data` 为物品附加自定义数据，例如：
 
-{% hint style="info" %}
-Before and including 1.20.4, Custom Data is used for custom NBT data. In and after 1.20.5, Custom Data is used for the custom\_data data component.
-{% endhint %}
-
-```plaintext
-sample_item:
+```yaml
+marked_token:
+  xbuilder:
+    material: PAPER
+    name: "<!i><gold>标记代币"
   custom_data:
-    custom_value: hello
-    some_number: 42
+    owner: example
+    number: 42
+    details:
+      category: event
 ```
 
-Before and including 1.20.4, this will create two NBT entries: custom\_value: hello, some\_number: 42. In and after 1.20.5, this will place custom\_value: hello, some\_number: 42 inside the custom\_data data component.
-
-Deep nesting, maps, and lists are supported.
-
-```plaintext
-sample_item:
-  custom_data:
-    deep:
-      aaa: 1
-    sample_list:
-      - aaa
-      - bbb
-    sample_map_list:
-       - aa: aa
-       - bb: bb
-```
+在 1.20.4 及更早版本中，这些值写入自定义 NBT；在 1.20.5 及以后的版本中，写入 `custom_data` 数据组件。支持嵌套对象和列表。保存后重载，再用 `/sertraline item give marked_token` 获取物品。

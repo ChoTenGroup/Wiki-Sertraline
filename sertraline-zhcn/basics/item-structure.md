@@ -1,72 +1,30 @@
 ---
-icon: puzzle-piece
+icon: cubes
 ---
 
-# Item Structure
+# 物品结构
 
-### Top-Level Structure <a href="#top-level-structure" id="top-level-structure"></a>
-
-Each item definition follows this top-level structure:
+一个配置文件可以包含多个物品。每个顶层名称是一个物品 ID，其下的配置段分别描述物品的不同部分：
 
 ```yaml
-item_id:
-  xbuilder:      # Optional, but recommended
-    # Basic item properties
-  sertraline:    # Optional
-    # Custom logic and actions
-  mmo:           # Optional, requires mmo module enabled
-    # MMO attributes
-  minecraft:     # Optional
-    # Vanilla Minecraft components
-  visual:        # Optional
-    # Client-side visual overrides
-```
-
-#### Item ID Requirements <a href="#item-id-requirements" id="item-id-requirements"></a>
-
-| Property             | Type     | Description                                                 |
-| -------------------- | -------- | ----------------------------------------------------------- |
-| **Pattern**          | String   | Recommended use: `[a-zA-Z0-9_]+`                            |
-| **Uniqueness**       | Required | Must be unique across all loaded YAML files                 |
-| **Case Sensitivity** | Yes      | `sword_of_skyline` ≠ `Sword_Of_Skyline`                     |
-| **Usage**            | -        | Used in commands: `/sertralineitem give <player> <item_id>` |
-| **Storage**          | -        | Stored in item NBT as `sertraline_id` tag                   |
-
-### Processors & Adapters
-
-Processors & Adapters is **Sertraline**'s internal features.
-
-When item was loaded, the processors will work: It will read configuration and write them into a ModernSItem's data.\
-After generating an item, the Adapter will work: it will read the data from ModernSItem and process it into the item.
-
-Example a Item was this:
-
-```
-WOODEN_SWORD:
+red_token:
   xbuilder:
-    name: "<!i><#bb9900>Wooden Sword"
-    material: WOODEN_SWORD
+    material: PAPER
+    name: "<!i><red>红色代币"
 
+blue_token:
+  xbuilder:
+    material: PAPER
+    name: "<!i><blue>蓝色代币"
 ```
 
-In this example we created a item named `WOODEN_SWORD`.
+保存到 `workspace` 后重载，再用 `/sertraline item give red_token` 领取红色代币。给其他玩家时写作 `/sertraline item give red_token Steve 1`，顺序是物品 ID、玩家、数量。
 
-On **Sertraline** Loading, XBuilder processor will process data to this:
+常见配置段：
 
-`ModernSItem(key=WOODEN_SWORD, data={xbuilder={material=WOODEN_SWORD, name="<!i><#bb9900>Wooden Sword`"`}}, config=...)`
+* [xbuilder](../advanced/item-structures/section-xbuilder.md)：材质、名称、描述及常用物品属性。
+* [sertraline](../advanced/item-structures/section-sertraline/README.md)：品级、物品数据和触发动作。
+* [minecraft](../advanced/item-structures/section-minecraft-components.md)：受服务端版本支持的数据组件。
+* [custom_data](../advanced/item-structures/section-custom-data.md)：自定义数据。
 
-And then, when item generation, XBuilder Adapter will work, parse `xbuilder:material` to material, parse `xbuilder:name` for item name.
-
-Source code below:
-
-```kt
-// ITEM BUILDER
-val itemSource = source ?: itemSource(template.getDeepData("xbuilder:material") ?: template.getDeepData("minecraft:material"), player)
-```
-
-```kt
-// XBUILDER ADAPTER ($prefix = "xbuilder")
-val name = sItem.getDeepData("$prefix:name")?.toString().performPlaceholders(sItem, player)?.toComponent()
-// ...
-if (name != null) originalMeta.displayName(name)
-```
+不必为每件物品填写所有段。你可以先从 `xbuilder` 开始，再按需要添加功能。配置中的 ID 应保持唯一；使用字母、数字和下划线有助于避免命令输入问题。

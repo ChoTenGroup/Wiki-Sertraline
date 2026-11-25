@@ -1,41 +1,15 @@
 ---
 icon: hand-wave
-cover: https://gitbookio.github.io/onboarding-template-images/header.png
-coverY: 0
-layout:
-  width: default
-  cover:
-    visible: true
-    size: full
-    mask: none
-  title:
-    visible: true
-  description:
-    visible: false
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: true
-  metadata:
-    visible: true
-  tags:
-    visible: true
-  actions:
-    visible: true
-  anchors:
-    visible: true
 ---
 
-# Welcome
+# 欢迎使用 Sertraline
 
-Welcome to the **Sertraline-Hydrochloride ItemStack Plugin** wiki!
+Sertraline 是 Minecraft 服务器的物品插件。你可以在配置文件中定义物品的材质、名称、描述和效果，再通过命令将它们发给玩家。
 
-<figure><img src="https://github.com/user-attachments/assets/258bc7c3-6dcc-4a24-8ac9-9ee358f62c89" alt=""><figcaption></figcaption></figure>
+第一次使用时，请依次阅读：
 
-### Quick Start
+1. [安装与配置](basics/installation.md)
+2. [创建第一个物品](basics/my-first-item.md)
+3. [了解物品结构](basics/item-structure.md)
 
-<table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Stories &#x26; Services</strong></td><td>What stories?</td><td></td><td></td><td><a href="description/services.md">services.md</a></td></tr><tr><td><strong>Install</strong></td><td>Try sertraline now!</td><td></td><td></td><td><a href="basics/installation.md">installation.md</a></td></tr><tr><td><strong>Getting Started</strong></td><td>Create your first item!</td><td></td><td></td><td><a href="basics/my-first-item.md">my-first-item.md</a></td></tr></tbody></table>
-
-<figure><img src="https://github.com/user-attachments/assets/4e876740-8759-4b0d-a42c-7a8cf9692f9d" alt=""><figcaption></figcaption></figure>
+进阶功能可从左侧目录进入。示例以当前项目附带的默认配置为依据；不同版本的功能和配置可能有所不同，请以你安装的版本为准。
