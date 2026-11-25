@@ -4,6 +4,25 @@ icon: cards-blank
 
 # Templates
 
+## Try a bundled template
+
+Save the example below in `plugins/Sertraline/workspace/template_practice.yml`. It uses `basic_melee_weapon` from the bundled `templates/basic_gear.yml`.
+
+```yaml
+my_template_sword:
+  $template:
+    use: basic_melee_weapon
+    arguments:
+      material: IRON_SWORD
+      name: "<!i><green>Template Practice Sword"
+      damage: 10
+      speed: 1.6
+  sertraline:
+    tier: C
+```
+
+Run `/sertraline reload` and collect the sword with `/sertralineitem give my_template_sword`. Change `material` or `name` to create another variation. Templates substitute arguments where the template contains matching `%{argument}` placeholders.
+
 ## Template System
 
 Sertraline's template system allows reusable YAML fragments with parameter substitution, value transformation (`$t`), and type casting (`$c`). Templates are loaded from the `templates/` folder and can be referenced from any config file using the `$template` directive.
@@ -152,7 +171,9 @@ $t:
   type: upper
   value: "%{name}"
   locale: en             # optional locale
+```
 
+```yaml
 $t:
   type: lower
   value: "HELLO"
@@ -168,8 +189,8 @@ Boolean conditional selection:
 $t:
   type: condition
   condition: "%{enchanted?:false}"   # true/false/yes/no/1/0
-  true: "&dEnchanted Sword"
-  false: "&5Normal Sword"
+  "true": "&dEnchanted Sword"
+  "false": "&5Normal Sword"
 ```
 
 #### `$t: self_increase`
@@ -233,7 +254,9 @@ $t:
   type: js
   shell: Math.max(5, 10)
   fallback: 0
+```
 
+```yaml
 $t:
   type: jexl
   shell: |

@@ -4,11 +4,14 @@ icon: wrench
 
 # 自定义配方
 
-下面先看默认配置中的配方。确认 `workspace/default/default_misc.yml` 中存在 `star_of_recall`，然后在 `plugins/Sertraline/recipes/sample.yml` 中找到 `star_from_vanilla`：
+在 `plugins/Sertraline/recipes/` 里创建配方，玩家就能用工作台、熔炉等原版设施制作物品。Legacy 构建不提供现代配方功能。要制作带独立菜单、材料数量和等待时间的流程，请使用[合成站](crafting-stations.md)。
+
+## 试用自带配方
+
+打开 `recipes/sample.yml`，找到 `star_from_vanilla`。先确认 `workspace/default/default_misc.yml` 里的 `star_of_recall` 已加载。以下示例省略了可选的 `provider` 字段。
 
 ```yaml
 star_from_vanilla:
-  provider: SIMPLE
   format: SHAPED
   type: CRAFTING
   pattern:
@@ -19,18 +22,60 @@ star_from_vanilla:
     P: "minecraft:paper"
     G: "minecraft:gold_ingot"
   result:
-    id: sertraline:star_of_recall
+    id: "sertraline:star_of_recall"
     count: 1
 ```
 
-重载后，在工作台将一块金锭放在中央，周围放八张纸。`pattern` 表示摆放形状，`ingredients` 将字符对应到材料，`result` 是产物。`minecraft:` 表示原版物品，`sertraline:` 表示 Sertraline 物品；显式前缀可以避免同名歧义。这是插件自带的配方；如果想修改它，请直接编辑该条目，避免再创建一个相同配方。
+在工作台中央放一块金锭，周围八格各放一张纸，即可制作回忆之星。`pattern` 的每行对应网格的一行，`ingredients` 把字母对应到材料。空格表示空槽。需要修改这条配方时，直接编辑默认文件里的条目。
 
-{% hint style="info" %}
-以下参考内容请结合安装版本核对。配置请优先参照安装版本自带的 `recipes/sample.yml`；其中 `COMPLEX` 示例被注释并标为尚未支持。
-{% endhint %}
+## 添加无序配方
 
+先按[新手教程](../basics/my-first-item.md)创建 `beginner_sword`，再将下面的配置保存为 `recipes/practice.yml`：
 
-自定义配方让您可以为Sertraline物品自定义配方！
+```yaml
+practice_sword_recipe:
+  type: CRAFTING
+  format: SHAPELESS
+  ingredients:
+    - "minecraft:iron_ingot"
+    - "minecraft:iron_ingot"
+    - "minecraft:stick"
+  result:
+    id: "sertraline:beginner_sword"
+    count: 1
+```
+
+执行 `/sertraline reload`，把两块铁锭和一根木棍分别放入三个格子，顺序任意，即可得到新手之剑。每个配方槽消耗一件物品。多件相同材料应占多个格子，配置里也要写多次。
+
+## 添加熔炉配方
+
+把下面这条加到 `recipes/practice.yml` 的顶层，重载后把泥巴和燃料放进熔炉。200 游戏刻约为 10 秒，取出产物时这条配方提供经验。
+
+```yaml
+bake_practice_brick:
+  type: FURNACE
+  ingredient: "minecraft:mud"
+  experience: 0.5
+  cookingTime: 200
+  result:
+    id: "minecraft:brick"
+    count: 1
+```
+
+## 选择材料和产物
+
+- 原版物品用 `minecraft:paper`，Sertraline 物品用 `sertraline:beginner_sword`，外部物品用相应插件的前缀。省略前缀时优先匹配原版材质，再查找 Sertraline 物品。自定义物品的名称、附魔或其他数据变化可能影响材料匹配。
+- 材料可写成 Minecraft 标签（例如 `"#minecraft:planks"`）或 `{ options: ["minecraft:oak_planks", "minecraft:birch_planks"] }`，表示一个槽可接受任一候选材料。
+- 结果由 `result.id` 和 `result.count` 指定，数量省略时为 1。在工作台配方中，`result.function` 可在玩家取出产物时执行脚本或命令，写法见自带的 `craft_eternal_with_kether` 与 `any_sword_to_star`。
+
+| `type` | 所用设施 | 主要字段 |
+| --- | --- | --- |
+| `CRAFTING` | 工作台 | 有序 `SHAPED` 用 `pattern` 和字符映射。无序 `SHAPELESS` 用材料列表 |
+| `FURNACE`、`BLASTING`、`SMOKING`、`CAMPFIRE` | 熔炉、高炉、烟熏炉、营火 | `ingredient`、`experience`、`cookingTime` |
+| `STONECUTTING` | 切石机 | `ingredient` |
+| `SMITHING_TRANSFORM`、`SMITHING_TRIM` | 锻造台 | `template`、`base`、`addition` |
+
+配方没有出现时，先检查重载日志是否指出了未找到的物品或注册失败的配方，再检查配方 ID 是否重复。
 
 ## 配方系统
 
@@ -41,7 +86,6 @@ star_from_vanilla:
 主要特点
 
 * **8种配方类型**：合成（有序/无序）、熔炉、烧炼、熏制、篝火、切石、锻造转化、锻造装饰
-* **双提供商模式**： `SIMPLE` （Bukkit API）或 `COMPLEX` （直接NMS 注入）
 * **多来源物品**：Sertraline自定义物品、原版物品、Bukkit标签、外部插件物品
 * **合成后函数**：Kether 脚本、JavaScript 或控制台命令
 * **按玩家生成的结果**：在预览时，根据玩家上下文重新生成Sertraline 自定义物品结果
@@ -64,63 +108,7 @@ plugins/Sertraline/recipes/
 
 ### 配置结构
 
-```yaml
-<recipe_id>:
-  provider: SIMPLE              # RecipeProvider: SIMPLE (Bukkit API) or COMPLEX (NMS injection)
-  type: CRAFTING                # RecipeType (see below)
-  format: SHAPED                # RecipeFormat: SHAPED or SHAPELESS (CRAFTING only)
-
-  # --- Crafting (SHAPED) ---
-  pattern:                      # 1-3 rows, each 1-3 chars
-    - "SSS"
-    - "SWS"
-    - "SSS"
-  ingredients:                  # 字符对应材料
-    S: "sertraline:star_of_recall"
-    W: "sertraline:sword_of_skyline"
-
-  # --- Crafting (SHAPELESS) ---
-  ingredients:                  # List of ingredients
-    - "sertraline:doe_card"
-    - "minecraft:diamond"
-
-  # --- Cooking (FURNACE / BLASTING / SMOKING / CAMPFIRE) ---
-  ingredient: "sertraline:doe_card"  # 单一材料
-  experience: 0.5               # XP granted (float)
-  cookingTime: 200              # Ticks (200 = 10s)
-
-  # --- STONECUTTING ---
-  ingredient: "sertraline:ultimate_pickaxe"
-
-  # --- SMITHING_TRANSFORM / SMITHING_TRIM ---
-  template: "sertraline:star_of_recall"
-  base: "sertraline:sword_of_skyline"
-  addition: "sertraline:blade_of_mythic"
-
-  # --- Result ---
-  result:
-    id: sertraline:sword_of_eternal_frozen   # 产物 ID
-    count: 1                                  # 产物数量
-    function:                                 # Post-craft functions (optional)
-      - type: kether
-        kether: tell "&aCraft successful!"
-
-  # --- Input Options (optional) ---
-  input-options:
-    data-filter:
-      - "sertraline_data"
-      - "sertraline_revision"
-    components:
-      mode: REMOVE              # REMOVE or KEEP
-      elements:
-        - "minecraft:enchantments"
-
-  # --- Optional ---
-  group: "my_group"             # 配方书分组
-  showNotification: true        # 显示进度样式通知（仅 CRAFTING）
-```
-
-***
+每条配方使用唯一的顶层 ID。按下面的类型表选择字段，并使用本页对应类型的完整示例。所有类型共用 `result`，其中填写产物 `id` 和 `count`。`group` 可用于配方书分组，`showNotification` 控制工作台配方通知。
 
 ### 配方类型
 
@@ -137,21 +125,18 @@ plugins/Sertraline/recipes/
 
 ***
 
-### 配方提供方式
+### 配方注册方式
 
-#### 简单（Bukkit API）
+创建配方时可以省略 `provider`。在已核对的 Sertraline 3.13.2.2 中，省略该字段会使用默认值 `SIMPLE`。本页示例均采用默认方式。
 
-默认模式。通过以下方式注册配方： `Bukkit.addRecipe()`. 适用于所有标准的Bukkit配方机制，并兼容与其他与Bukkit配方管理器交互的插件。
+| `provider` 值 | 如何注册 | 适用情况 |
+| --- | --- | --- |
+| `SIMPLE`（默认） | 通过 Bukkit API 注册 | 常规配方。可按物品元数据匹配 Sertraline 和外部插件的材料 |
+| `COMPLEX`（实验性） | 直接注册到 Minecraft 的服务端配方管理器（NMS） | 材料按基础材质或标签匹配，适合能接受这种匹配方式的配方 |
 
-#### 复杂（NMS 注入）
+显式写 `provider: SIMPLE` 与省略该字段效果相同。`recipes/sample.yml` 中的 `COMPLEX` 示例默认注释。用这种方式注册时，自定义材料的名称、附魔和组件不会参与匹配。例如，若自定义卡牌的底材是纸，普通纸也可作为材料。`COMPLEX` 会拒绝设置了 `exact: true` 的材料。
 
-将配方直接注入《我的世界》原生 `RecipeManager.recipes` 通过反射映射。使用时机：
-
-* 作为成分的Sertraline自定义物品需要精确的NBT/组件匹配
-* Bukkit API 匹配对于自定义物品数据来说不足够
-* 需要绕过其他插件的Bukkit配方拦截
-
-**注意**：COMPLEX 提供商示例在 sample.yml 中被注释掉。使用需自行承担风险。
+插件在玩家进服以及重载配方后使用 NMS 解锁已注册的配方，让它们能出现在配方书里。这一步适用于两种注册方式。
 
 ***
 
@@ -165,18 +150,21 @@ plugins/Sertraline/recipes/
 ingredient: "sertraline:doe_card"
 ```
 
-**2. 对象格式（带数量）**
+**2. 对象格式**
 
 ```yaml
 ingredient:
   itemId: "sertraline:doe_card"
-  amount: 2
+  amount: 1
 ```
 
 **3. 标签格式**
 
 ```yaml
 ingredient: "#minecraft:planks"     # Bukkit 标签
+```
+
+```yaml
 ingredient: "tag:planks"            # Shorthand (assumes minecraft namespace)
 ```
 
@@ -185,7 +173,7 @@ ingredient: "tag:planks"            # Shorthand (assumes minecraft namespace)
 ```yaml
 ingredient:
   tagId: "#minecraft:planks"
-  amount: 2
+  amount: 1
 ```
 
 **4. 多选材料（或逻辑）**
@@ -210,17 +198,16 @@ ingredient:
 | MythicMobs        | `mythicmobs:<id>`      | `mythicmobs:some_item`        |
 | MMOItems          | `mmoitems:<type>/<id>` | `mmoitems:SWORD/flame_katana` |
 
-省略源将默认为 `minecraft:`.
+省略前缀时，插件先匹配原版材质，再尝试 Sertraline 物品。
 
-#### 解决逻辑
+#### 材料匹配
 
-| 成分类型                         | 解析为                              | 匹配方式                                   |
-| --------------------------------------- | ---------------------------------------- | ------------------------------------------ |
-| 普通物品（`minecraft:stone`)        | `MaterialChoice`                         | 按材质匹配                        |
-| Sertraline物品（`sertraline:doe_card`) | `ExactChoice`                            | 按完全相同的物品堆（包括NBT）匹配 |
-| 外部插件物品                    | `ExactChoice`                            | 按确切的物品堆栈匹配                 |
-| Tag (`#minecraft:planks`)               | `MaterialChoice(Tag)`                    | 与标签中的任何材质匹配                |
-| 多选 (`options: [...]`)               | 合并的 `ExactChoice` 或 `MaterialChoice` | 匹配任何选项（“或”逻辑）              |
+| 材料 | 默认注册方式（`SIMPLE`） | 直接 NMS 注册（`COMPLEX`） |
+| --- | --- | --- |
+| 原版物品，如 `minecraft:stone` | 按材质匹配。对象写法可加 `exact: true` 以匹配没有额外元数据的原版堆栈 | 按材质匹配 |
+| Sertraline 物品，如 `sertraline:doe_card`，或其他插件的物品 | 按构建出的物品匹配，包括名称、附魔与其他元数据。建议选用每次生成结果一致的物品 | 按该物品的基础材质匹配 |
+| 标签，如 `#minecraft:planks` | 接受标签中的任一材质 | 接受标签中的任一材质 |
+| 多选 `options` | 按各候选材料的匹配规则，满足其中一项即可 | 接受任一候选的基础材质或标签成员 |
 
 ***
 
@@ -270,7 +257,7 @@ function:
 
 ### 输入选项
 
-控制在合成过程中如何处理输入物品数据：
+当前加载器会读取下列字段，但它们尚未参与实际材料匹配。需要按物品元数据匹配时，请用自定义物品 ID 作为材料，并使用默认注册方式。
 
 ```yaml
 input-options:
@@ -287,13 +274,13 @@ input-options:
 
 | 字段                 | 类型               | 说明                                                             |
 | --------------------- | ------------------ | ----------------------------------------------------------------------- |
-| `data-filter`         | List\<String>      | 要筛选的 NBT 数据键（根据 `components.mode`) |
+| `data-filter`         | List\<String>      | 预留的数据键列表 |
 | `components.mode`     | `REMOVE` 或 `KEEP` | 是否移除或保留列出的组件                             |
 | `components.elements` | List\<String>      | 数据组件命名空间（例如， `minecraft:enchantments`)              |
 
 ***
 
-### 玩家感知结果预览
+### 按玩家生成产物预览
 
 当玩家打开带有Sertraline配方的合成台时， `onPrepareCraft` 事件监听器使用玩家的上下文重建结果项——替换占位符、应用玩家特定变量并更新动态说明。
 
@@ -321,7 +308,6 @@ input-options:
 
 ```yaml
 star_from_cards:
-  provider: SIMPLE
   format: SHAPED
   type: CRAFTING
 
@@ -340,7 +326,6 @@ star_from_cards:
 
 ```yaml
 mixed_sugar:
-  provider: SIMPLE
   format: SHAPELESS
   type: CRAFTING
 
@@ -356,7 +341,6 @@ mixed_sugar:
 
 ```yaml
 smelt_pills_from_cookie:
-  provider: SIMPLE
   type: FURNACE
 
   ingredient: "sertraline:speed_potion_cookie"
@@ -371,7 +355,6 @@ smelt_pills_from_cookie:
 
 ```yaml
 blast_pills_from_card:
-  provider: SIMPLE
   type: BLASTING
 
   ingredient: "sertraline:doe_card"
@@ -386,7 +369,6 @@ blast_pills_from_card:
 
 ```yaml
 mythic_sword_upgrade:
-  provider: SIMPLE
   type: SMITHING_TRANSFORM
 
   template: "sertraline:star_of_recall"
@@ -401,7 +383,6 @@ mythic_sword_upgrade:
 
 ```yaml
 cut_pickaxe_to_wands:
-  provider: SIMPLE
   type: STONECUTTING
 
   ingredient: "sertraline:ultimate_pickaxe"
@@ -414,7 +395,6 @@ cut_pickaxe_to_wands:
 
 ```yaml
 any_sword_to_star:
-  provider: SIMPLE
   format: SHAPELESS
   type: CRAFTING
 
@@ -446,4 +426,3 @@ any_sword_to_star:
 | **分页**        | 不适用（原味配方书）                         | 内置页面浏览功能                |
 | 物品来源      | Sertraline、原版、外部插件             | 相同（通过 OmniItem）                   |
 | **用途**          | 标准《我的世界》合成                       | 自定义计时进度系统      |
-

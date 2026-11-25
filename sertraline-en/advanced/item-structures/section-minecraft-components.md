@@ -11,7 +11,7 @@ The data component system is only available in **1.20.5+**.
 
 Some newer data components may not have been added on your server version, so they will have no effect.
 
-**For 1.20.4- NBT, as well as a convenient way to use the Custom\_Data data component, please see** Custom Data.
+**For 1.20.4- NBT, as well as a convenient way to use the Custom\_Data data component, please see** [Custom Data](section-custom-data.md).
 {% endhint %}
 
 ## What Are Data Components
@@ -21,7 +21,7 @@ Some newer data components may not have been added on your server version, so th
 Below are links to the English data component wikis: [https://minecraft.wiki/w/Data\_component\_format](https://minecraft.wiki/w/Data_component_format)
 
 {% hint style="info" %}
-Because the code is based on reflection, we support arbitrary data components, including newly added ones.If a certain data component cannot be applied, please contact the plugin developer.
+Available components depend on the server version and the plugin build. Check the console if a component cannot be applied.
 {% endhint %}
 
 ## Usage
@@ -38,7 +38,7 @@ model_item:
     material: DIAMOND
     name: "An item disguised as an iron ingot that can only stack one but is actually a diamond"
   minecraft:
-    item_model: "minecraft:item/iron_ingot"
+    item_model: "minecraft:iron_ingot"
     max_stack_size: 1
 ```
 

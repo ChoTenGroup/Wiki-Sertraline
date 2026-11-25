@@ -4,7 +4,43 @@ icon: wave-pulse
 
 # Item Actions
 
-**Sertraline** supports you run action when interact the item.
+Item actions run scripts when a player interacts with an item, attacks, drops it, or logs in with it equipped. Save this compass in `plugins/Sertraline/workspace/hello_compass.yml`:
+
+```yaml
+hello_compass:
+  xbuilder:
+    material: COMPASS
+    name: "<!i><gold>Greeting Compass"
+  sertraline:
+    actions:
+      onRightClick:
+        - async: false
+          kether: tell "You used the Greeting Compass!"
+```
+
+Run `/sertraline reload`, then `/sertralineitem give hello_compass`. Hold the compass in your main hand and right-click to see the configured chat message.
+
+## Choose a trigger
+
+| Trigger | When it runs |
+| --- | --- |
+| `onClick`, `onRightClick`, `onLeftClick` | Main-hand interactions, including the named mouse buttons. Use slot-specific actions such as `onRightClick@off` for the off hand |
+| `onAttack`, `onShoot`, `onShootTrident` | Attacking an entity, firing a bow-type weapon, or using a Riptide trident |
+| `onMine`, `onConsume`, `onBreak` | Breaking a block, eating or drinking, or exhausting an item's durability |
+| `onDrop`, `onPickUp`, `onInventoryClick` | Dropping, picking up, or clicking an inventory item. Pickup support depends on the server version |
+| `onSwap`, `onSneak` | Swapping hands, starting to sneak, or stopping sneaking |
+| `onLogin` | Checks both hands and four armor slots at login. Use a suffix such as `onLogin@helmet` to restrict an action to one slot |
+
+`onMine`, `onSwap`, and `onSneak` support `@main` and `@off`. If both the base trigger and a matching slot-specific trigger are configured, both can run. Use one list entry per action under the trigger.
+
+## Add conditions or scripts
+
+- A `condition` accepts a Kether check. Put it in the same list entry as the script it should control.
+- Script fields include `kether`, `js`, `graaljs`, `jexl`, and `fluxon`. JavaScript can use context values such as `player`, `event`, and `bItem`.
+- Item actions run asynchronously by default. Set `async: false` for inventory, world, and event changes. For example, use `event.setCancelled(true)` on a cancellable event.
+- In `config.yml`, `action.throttle-time` sets the default interval in milliseconds. Set a per-trigger override under `action.throttle` or use `0` to disable throttling for that trigger.
+
+See [Custom Events and Global Listeners](../../event-listeners.md) for additional Bukkit events.
 
 ### Action Structure in YAML <a href="#action-structure-in-yaml" id="action-structure-in-yaml"></a>
 
@@ -42,7 +78,7 @@ book_of_multi_language:
     actions:
       onLeftClick:
         - condition: check 1 == 1
-        - gjs: |
+          gjs: |
             player.sendMessage(mmUtil.deserialize("<gradient:yellow:#aaaa66>A welcome from GraalJS!"));
           kether: |
             minitell inline "<gradient:white:gray>Hello, kether with val {{ &val }} !"
@@ -134,7 +170,7 @@ You can directly use it like:
 <strong>      message: "&#x3C;yellow>Hello, &#x3C;aqua>Cho &#x3C;#ff66ff>Ten &#x3C;red>Chan &#x3C;yellow>!"
 </strong>    actions:
       onRightClick:
-        - async: true
+        - async: false
           js: |
 <strong>            player.sendMessage(mmUtil.deserialize(message)); 
 </strong>  xbuilder:
@@ -189,5 +225,5 @@ a_pack_of_gum:
         - async: false
           gjs: |
             bItem.amount--
-            player.give(SertralineAPI.buildItem("gum", player, null, 10, new Map()))
+            player.give(SertralineAPI.buildItem("gum", player, null, 10, null))
 ```

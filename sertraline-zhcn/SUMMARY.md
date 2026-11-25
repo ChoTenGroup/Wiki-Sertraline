@@ -11,6 +11,7 @@
 
 * [安装与配置](basics/installation.md)
 * [创建第一个物品](basics/my-first-item.md)
+* [常用命令](basics/commands.md)
 * [物品结构](basics/item-structure.md)
 
 ## 进阶
@@ -28,8 +29,10 @@
 * [描述格式](advanced/lore-format.md)
 * [合成站（实验性）](advanced/crafting-stations.md)
 * [自定义配方](advanced/custom-recipes.md)
+* [自定义属性](advanced/attributes.md)
+* [自定义事件与全局监听](advanced/event-listeners.md)
 * [宝石系统](advanced/gems.md)
-* [物品品级](advanced/item-tier.md)
+* [物品品级、类型与等级](advanced/item-tier.md)
 * [物品管理器](advanced/item-manager-system.md)
 * [模板](advanced/templates.md)
 

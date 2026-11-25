@@ -4,7 +4,43 @@ icon: wave-pulse
 
 # 物品动作
 
-**Sertraline** 支持您在与物品互动时执行动作。
+物品动作可以在玩家右键、攻击、丢弃或穿戴物品后登录时执行脚本。先在 `plugins/Sertraline/workspace/hello_compass.yml` 创建一把指南针：
+
+```yaml
+hello_compass:
+  xbuilder:
+    material: COMPASS
+    name: "<!i><gold>问候指南针"
+  sertraline:
+    actions:
+      onRightClick:
+        - async: false
+          kether: tell "你使用了问候指南针！"
+```
+
+保存后执行 `/sertraline reload`，再用 `/sertralineitem give hello_compass` 领取。把指南针放在主手并右键，聊天栏会显示配置里的消息。
+
+## 选择触发器
+
+| 触发器 | 触发时机 |
+| --- | --- |
+| `onClick`、`onRightClick`、`onLeftClick` | 主手点击交互，分别表示任意点击、右键和左键。副手可以配置 `onRightClick@off` 等槽位动作 |
+| `onAttack`、`onShoot`、`onShootTrident` | 攻击实体、发射弓类武器、激流三叉戟触发 |
+| `onMine`、`onConsume`、`onBreak` | 破坏方块、食用或饮用、物品耐久耗尽 |
+| `onDrop`、`onPickUp`、`onInventoryClick` | 丢弃、拾取或点击背包中的物品。拾取动作视服务端版本而定 |
+| `onSwap`、`onSneak` | 交换主副手、开始或结束潜行 |
+| `onLogin` | 登录时检查双手和四个盔甲槽，可用 `onLogin@helmet` 等限定槽位 |
+
+`onMine`、`onSwap` 和 `onSneak` 支持 `@main` 与 `@off`。基础触发器与匹配的槽位触发器都配置时，两者都可能执行。同一触发器下可以列出多条动作，每条都用 `-` 开头。
+
+## 添加条件或脚本
+
+- `condition` 可填写 Kether 判断。把它与脚本写在同一个列表条目里，条件才会控制该条脚本。
+- 脚本字段可用 `kether`、`js`、`graaljs`、`jexl` 或 `fluxon`。JavaScript 可读取 `player`、`event`、`bItem` 等上下文。
+- 物品动作默认异步执行。涉及背包、方块或修改事件时设置 `async: false`。例如，在支持取消的事件里可以调用 `event.setCancelled(true)`。
+- `config.yml` 中的 `action.throttle-time` 是默认触发间隔，单位为毫秒。可在 `action.throttle` 下按触发器覆盖，值为 `0` 时关闭该项节流。
+
+要给物品添加其他 Bukkit 事件，请参阅[自定义事件与全局监听](../../event-listeners.md)。
 
 ### YAML 中的操作结构 <a href="#action-structure-in-yaml" id="action-structure-in-yaml"></a>
 
@@ -24,7 +60,7 @@ item_id:
           graaljs: <graaljs_string>
 ```
 
-每个触发器名称都映射到一个操作条目列表。可以为同一个触发器定义多个操作，这些操作将按顺序执行。
+每个触发器名称都映射到一个操作条目列表。可以为同一个触发器定义多个操作，同步条目按配置顺序执行，异步条目的完成顺序取决于调度。
 
 示例：
 
@@ -42,7 +78,7 @@ book_of_multi_language:
     actions:
       onLeftClick:
         - condition: check 1 == 1
-        - gjs: |
+          gjs: |
             player.sendMessage(mmUtil.deserialize("<gradient:yellow:#aaaa66>A welcome from GraalJS!"));
           kether: |
             minitell inline "<gradient:white:gray>Hello, kether with val {{ &val }} !"
@@ -77,14 +113,14 @@ book_of_multi_language:
 | `onRightClick`     | `PlayerInteractEvent`       | 仅右键交互          | 是         | `bItem` （点击的物品）                     |
 | `onLeftClick`      | `PlayerInteractEvent`       | 仅左键交互           | 是         | `bItem` （点击的物品）                     |
 | `onAttack`         | `EntityDamageByEntityEvent` | 玩家持物品攻击实体       | 是         | `bItem` （武器或投射物）                |
-| `onMine`           | `BlockBreakEvent`           | 玩家破坏方块                   | 是         | 仅支持复合触发器（见下文）                 |
+| `onMine`           | `BlockBreakEvent`           | 玩家破坏方块                   | 是         | 可用槽位后缀（见下文）                 |
 | `onConsume`        | `PlayerItemConsumeEvent`    | 玩家食用食物或饮用药水           | 是         | `bItem` （消耗的物品）， `abItem` （替代物品） |
 | `onBreak`          | `PlayerItemBreakEvent`      | 物品耐久耗尽损坏           | 否          | `bItem` （损坏的物品）                      |
 | `onDrop`           | `PlayerDropItemEvent`       | 玩家丢弃物品                     | 是         | `bItem` （丢弃的物品）                     |
 | `onPickUp`         | `PlayerPickupItemEvent`     | 玩家拾取物品                  | 是         | `bItem` （拾取的物品）                   |
 | `onInventoryClick` | `InventoryClickEvent`       | 玩家点击背包            | 是         | `bItem` （当前槽位）， `abItem` （光标物品）       |
-| `onSwap`           | `PlayerSwapHandItemsEvent`  | 玩家交换主副手（F 键）     | 是         | 仅支持复合触发器（见下文）                 |
-| `onLogin`          | `PlayerLoginEvent`          | 玩家登录服务器               | 否          | 仅支持复合触发器（见下文）                 |
+| `onSwap`           | `PlayerSwapHandItemsEvent`  | 玩家交换主副手（F 键）     | 是         | 可用槽位后缀（见下文）                 |
+| `onLogin`          | `PlayerLoginEvent`          | 玩家登录服务器               | 否          | 可用槽位后缀（见下文）                 |
 
 ### 复合触发器 <a href="#composite-triggers" id="composite-triggers"></a>
 
@@ -134,7 +170,7 @@ Val、Var 和 Dynamic 可作为变量传入脚本。
 <strong>      message: "&#x3C;yellow>Hello, &#x3C;aqua>Cho &#x3C;#ff66ff>Ten &#x3C;red>Chan &#x3C;yellow>!"
 </strong>    actions:
       onRightClick:
-        - async: true
+        - async: false
           js: |
 <strong>            player.sendMessage(mmUtil.deserialize(message)); 
 </strong>  xbuilder:
@@ -189,5 +225,5 @@ a_pack_of_gum:
         - async: false
           gjs: |
             bItem.amount--
-            player.give(SertralineAPI.buildItem("gum", player, null, 10, new Map()))
+            player.give(SertralineAPI.buildItem("gum", player, null, 10, null))
 ```

@@ -9,8 +9,8 @@ Overview Structure:
 ```yaml
 sertraline:
   tier: C                    # Tier ID
-  type: weapon               # Type ID
-  lore-format: defaultloreformat  # Lore format ID
+  type: SWORD               # Type ID
+  lore-format: loreformat  # Lore format ID
   vals:                      # Static values (determined at compile time)
     some_constant: 100
   vars:                      # Variable data (can be persisted to NBT)
@@ -19,8 +19,6 @@ sertraline:
   dynamics:                  # Dynamic data (re-evaluated at runtime)
     random_damage:
       - "random 10 to 20"
-  context:                   # Runtime context (not persisted)
-    some_var: "runtime_value"
   keep-context: [key1, key2] # Context keys that should be persisted as variables
   actions:                   # Event actions
     onAttack:
@@ -53,7 +51,8 @@ sword_of_counter:
       count: 0
     actions:
       onAttack:
-        - js: |
+        - async: false
+          js: |
             var tag = ItemStackUtil.getItemTag(bItem);
             var added = count + event.damage;
             tag.putDeep("sertraline_data.count", added);

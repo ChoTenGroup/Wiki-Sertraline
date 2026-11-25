@@ -38,5 +38,5 @@ XBuilder is very useful when you are creating general item formats. To find more
 {% endhint %}
 
 {% hint style="info" %}
-When xbuilder cannot meet your needs, you can look at the minecraft section, that is, the [data component section](https://app.gitbook.com/o/4JBmDCemEmfaVwC313DV/sites/site_q33Da/s/JV8wrbRjJhmUENOaPUJm/~/edit/~/changes/41/advanced/item-structures/section-minecraft-components), which provides everything from the vanilla data components, such as maximum stack size and equippable items.
+When xbuilder cannot meet your needs, you can look at the minecraft section, that is, the [data component section](section-minecraft-components.md), which provides everything from the vanilla data components, such as maximum stack size and equippable items.
 {% endhint %}

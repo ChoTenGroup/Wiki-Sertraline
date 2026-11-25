@@ -4,6 +4,10 @@ icon: cursor
 
 # 物品管理器系统
 
+## 查看已加载的物品
+
+先在 `workspace/` 创建并重载一个物品。执行 `/sertraline manager use public` 选择公共持久范围，然后执行 `/sertraline manager list` 查看已加载的物品。要查看[新手之剑](../basics/my-first-item.md)的详情，可执行 `/sertraline manager info beginner_sword`。在游戏中也可以用 `/sertralineitem browse` 打开浏览器。
+
 ## 物品管理器系统
 
 Sertraline 的物品管理器为物品提供四种存储模式：**公开** / **私有** × **持久** / **临时**。管理器处理物品的创建、检索、删除以及跨重载的生命周期管理。

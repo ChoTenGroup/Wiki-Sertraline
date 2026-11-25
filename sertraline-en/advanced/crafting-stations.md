@@ -2,15 +2,48 @@
 icon: plug-circle-plus
 ---
 
-# Crafting Stations \[Expr]
+# Crafting Stations
 
-Crafting station allows players to create items through recipes in the GUI interface, and you can freely define conditions such as Kether and Javascript.&#x20;
+Crafting stations are experimental menus. When a player clicks a recipe, the station consumes items from their inventory, waits for the configured time, and gives them the output.
 
-In addition, the crafting station draws inspiration from `MMOItems`, but our crafting station is more scalable, maintainable ~~and has fewer bugs~~ (such as bugs in `MMOItems` where canceling a recipe will refresh the properties of synthetic materials...)
+Create `blue_token` using the [item structure example](../basics/item-structure.md). Save this configuration in `plugins/Sertraline/crafting-stations/practice.yml`:
 
-{% hint style="warning" %}
-WORK IN PROGRESS
-{% endhint %}
+```yaml
+practice_station:
+  display:
+    title: "<blue>Practice Station"
+    layout:
+      - "         "
+      - "    I    "
+      - "         "
+    key: "I"
+  recipes:
+    press_paper:
+      displayName: "Blue Token"
+      time: 3
+      inputs:
+        - item: "minecraft:paper"
+          amount: 2
+      outputs:
+        - item: "sertraline:blue_token"
+          amount: 1
+```
+
+1. Run `/sertraline reload`.
+2. Put at least two sheets of paper in your inventory and run `/sertraline station sertraline:practice_station` in game.
+3. Click the Blue Token in the center. Check your inventory for the result about three seconds later.
+
+## Adjust the layout and recipes
+
+| Field | Use |
+| --- | --- |
+| `display.layout` | Use nine characters per row and quote each row to preserve spaces. Each occurrence of `display.key` is a recipe slot |
+| `display.elements` | Define backgrounds and paging buttons. Use `char` to match layout characters and set `material` and `name` |
+| `recipes` | Give each recipe its own ID. `displayName` sets the menu label, and `time` is measured in seconds |
+| `inputs`, `outputs` | Use `item` and `amount` to select which items are consumed and granted |
+| `conditions` | Restrict crafting by permission, script, or numeric condition |
+
+See the bundled `crafting-stations/craftingStation.yml` for backgrounds, page controls, conditions, and scripts. If a station fails to open, keep the `sertraline:` prefix and match the ID after it to the top-level YAML key.
 
 ## Crafting Station System
 
@@ -49,7 +82,7 @@ If the folder does not exist on first startup, a sample file is generated automa
 ```yaml
 <station_id>:
   option:                          # Station options
-    enable-tracker: true
+    enable-tracker: true  # Reserved option from the bundled example
   display:                         # GUI layout config
     title: "..."
     layout: [...]
@@ -247,7 +280,7 @@ Agents support three script languages, auto-detected by prefix:
 | ------------------------- | -------------------- | ------------------------------------ |
 | `player` / `bukkitPlayer` | `Player`             | All agents                           |
 | `recipe`                  | String (displayName) | Recipe-level / station-level agents  |
-| `station_id`              | String               | Station-level / element-level agents |
+| `station_id`              | String               | Station title in station-level scripts, station ID in element scripts |
 | `page`                    | Int                  | Element-level agents                 |
 | `total_pages`             | Int                  | Element-level agents                 |
 
@@ -266,7 +299,7 @@ The GraalJS and JSR 223 JS environments additionally inject a `defaultData` glob
 | ------------------ | ---------------------------------------- | ---------------------------- |
 | `onStart`          | After craft begins (before timer starts) | Recipe-level → Station-level |
 | `onClaim`          | After craft completes, outputs given     | Recipe-level → Station-level |
-| `onCancel`         | Craft cancelled or interrupted           | Recipe-level → Station-level |
+| `onCancel`         | Recovery refunds an unfinished craft           | Recipe-level → Station-level |
 | `onSuccess`        | Condition check passes                   | Condition-level              |
 | `onFail`           | Condition check fails                    | Condition-level              |
 | `onLeft` / any key | GUI element clicked                      | Element-level                |
@@ -283,7 +316,6 @@ Click recipe → condition check → onSuccess/onFail → consume items
 **Cancel flow**:
 
 ```
-→ onCancel agents execute (recipe-level → station-level)
 → materials returned to inventory
 → DB session cleared
 ```
@@ -294,7 +326,7 @@ Click recipe → condition check → onSuccess/onFail → consume items
 
 | Command                           | Description                             |
 | --------------------------------- | --------------------------------------- |
-| `/sertraline station <stationId>` | Open crafting station GUI               |
+| `/sertraline station sertraline:<stationId>` | Open crafting station GUI               |
 | `/sertraline debug getStations`   | View all loaded station configs         |
 | `/sertraline reload`              | Reload all configs (including stations) |
 
@@ -302,12 +334,11 @@ Click recipe → condition check → onSuccess/onFail → consume items
 
 ### Data Persistence
 
-The crafting station system uses TabooLib DataContainer to persist player crafting progress.
+The crafting station stores in-progress crafts in the configured database.
 
 #### Stored Data
 
-* `crafting.session` — Session metadata: `stationId|recipeId|startTime|totalSeconds`
-* `crafting.items.0`, `crafting.items.1`, ... — Base64 serialized consumed items
+The crafting-session table stores the player UUID, station and recipe IDs, start time, duration, and serialized ingredients.
 
 #### Recovery Flow
 
@@ -340,7 +371,7 @@ simple_workbench:
   display:
     title: "<gold>Simple Workbench"
     layout:
-      - "##########"
+      - "#########"
       - "#IIIIIII#"
       - "#IIIIIII#"
       - "##<###>##"
@@ -351,12 +382,12 @@ simple_workbench:
         material: GRAY_STAINED_GLASS_PANE
         name: ""
       next_page:
-        slot: 50
+        char: ">"
         roll: true
         material: ARROW
         name: "<green>Next Page {next_page}"
       previous_page:
-        slot: 48
+        char: "<"
         roll: true
         material: ARROW
         name: "<green>Previous Page {previous_page}"
@@ -377,7 +408,7 @@ simple_workbench:
 
       agents:
         onClaim: |-
-          player.sendMessage("&aConversion complete! Got Diamond x1")
+          js: player.sendMessage("Conversion complete! Got Diamond x1")
 ```
 
 #### GraalJS Crafting Station
@@ -400,13 +431,13 @@ advanced_station:
         material: BLACK_STAINED_GLASS_PANE
         name: ""
       next_page:
-        slot: 50
+        char: ">"
         roll: true
         material: ARROW
         name: "<green>Page {next_page}"
         agents:
           onLeft: |-
-            gjs: player.sendMessage("Turned to page " + (page + 1))
+            gjs: player.sendMessage("Current page " + (page + 1))
 
   recipes:
     legendary_sword:
@@ -429,17 +460,17 @@ advanced_station:
           amount: "32"
 
       outputs:
-        - item: "sertraline:legendary_sword"
+        - item: "minecraft:netherite_sword"
           amount: "1"
 
       agents:
         onStart: |-
-          gjs: PlayerUtil.sendMessage(player, "Forging Legendary Sword, estimated " + time + " seconds...")
+          gjs: player.sendMessage("Forging " + recipe + "...")
         onClaim: |-
           gjs:
             var msg = "§6★ Congratulations! You got the Legendary Sword! ★";
             player.sendMessage(msg);
-            Bukkit.broadcastMessage(player.getName() + " forged the Legendary Sword!");
+            player.sendMessage("You forged " + recipe + "!");
 ```
 
 ***
@@ -458,4 +489,4 @@ Use `/sertraline debug getStations` to inspect all loaded station configs.
 | Recipes not showing          | Check if `key` character conflicts with element `char` (warning on startup)  |
 | Craft won't start            | Check if all `conditions` are met, verify input items match                  |
 | JS scripts not executing     | Verify prefix is `gjs:` or `js:`, confirm GraalJS / Nashorn engine is loaded |
-| Materials lost after restart | Check `restoreSession` logs, verify DataContainer storage is functioning     |
+| Materials lost after restart | Check `restoreSession` logs, verify the crafting-session database is working     |

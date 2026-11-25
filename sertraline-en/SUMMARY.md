@@ -11,9 +11,10 @@
 
 * [Installation](basics/installation.md)
 * [My First Item](basics/my-first-item.md)
+* [Common Commands](basics/commands.md)
 * [Item Structure](basics/item-structure.md)
 
-## ADVANCED
+## Advanced
 
 * [Item Structures](advanced/item-structures/README.md)
   * [Section: XBuilder](advanced/item-structures/section-xbuilder.md)
@@ -26,13 +27,16 @@
 * [Item Text Tags](advanced/item-text-tags.md)
 * [MythicLib/MMOItems Compat](advanced/mythiclib-mmoitems-compat.md)
 * [Lore Format](advanced/lore-format.md)
-* [Crafting Stations \[Expr\]](advanced/crafting-stations.md)
+* [Crafting Stations](advanced/crafting-stations.md)
 * [Custom Recipes](advanced/custom-recipes.md)
-* [Item Tier \[WIP\]](advanced/item-tier.md)
+* [Gems](advanced/gems.md)
+* [Custom Attributes](advanced/attributes.md)
+* [Custom Events and Global Listeners](advanced/event-listeners.md)
+* [Item Tiers, Types, and Levels](advanced/item-tier.md)
 * [Item Manager System](advanced/item-manager-system.md)
 * [Templates](advanced/templates.md)
 
-## REFRENCES
+## References
 
 * [Script Issues](refrences/script-issues.md)
 * [PlaceHolderAPI](refrences/placeholderapi.md)

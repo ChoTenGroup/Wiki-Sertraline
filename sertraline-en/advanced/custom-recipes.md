@@ -4,7 +4,78 @@ icon: wrench
 
 # Custom Recipes
 
-Custom Recipes Let you can customize recipes for your Sertraline Item!
+Save recipes under `plugins/Sertraline/recipes/` to let players craft items in vanilla interfaces. Modern recipes are unavailable on the Legacy build. For a separate menu with timed crafting and ingredient quantities, see [Crafting Stations](crafting-stations.md).
+
+## Try a bundled shaped recipe
+
+Find `star_from_vanilla` in `recipes/sample.yml` and make sure `star_of_recall` is loaded from `workspace/default/default_misc.yml`. The example below omits the optional `provider` field.
+
+```yaml
+star_from_vanilla:
+  format: SHAPED
+  type: CRAFTING
+  pattern:
+    - "PPP"
+    - "PGP"
+    - "PPP"
+  ingredients:
+    P: "minecraft:paper"
+    G: "minecraft:gold_ingot"
+  result:
+    id: "sertraline:star_of_recall"
+    count: 1
+```
+
+Place one gold ingot in the center of a crafting table and one sheet of paper in each surrounding slot. Each string in `pattern` represents a row, `ingredients` maps its letters to items, and a space represents an empty slot. Edit the existing entry if you want to change this recipe.
+
+## Add a shapeless recipe
+
+Follow the [first item tutorial](../basics/my-first-item.md) to create `beginner_sword`, then save this as `recipes/practice.yml`:
+
+```yaml
+practice_sword_recipe:
+  type: CRAFTING
+  format: SHAPELESS
+  ingredients:
+    - "minecraft:iron_ingot"
+    - "minecraft:iron_ingot"
+    - "minecraft:stick"
+  result:
+    id: "sertraline:beginner_sword"
+    count: 1
+```
+
+Run `/sertraline reload`. Place two iron ingots and a stick in three separate crafting slots in any order. Each slot consumes one item, so list repeated ingredients once per slot.
+
+## Add a furnace recipe
+
+Add this top-level entry to `recipes/practice.yml` and reload. Put mud and fuel in a furnace. The recipe takes 200 game ticks, about 10 seconds, and grants experience when the player collects the result.
+
+```yaml
+bake_practice_brick:
+  type: FURNACE
+  ingredient: "minecraft:mud"
+  experience: 0.5
+  cookingTime: 200
+  result:
+    id: "minecraft:brick"
+    count: 1
+```
+
+## Choose ingredients and results
+
+- Use `minecraft:paper` for a vanilla material, `sertraline:beginner_sword` for a Sertraline item, and the source plugin's prefix for external items. A bare ID is looked up as a vanilla material first, then as a Sertraline item. Changes to custom item names, enchantments, or other item data can affect matching.
+- An ingredient can be a Minecraft item tag such as `"#minecraft:planks"` or an alternatives map such as `{ options: ["minecraft:oak_planks", "minecraft:birch_planks"] }`.
+- `result.id` selects the output and `result.count` defaults to 1. Crafting table recipes can run scripts or commands under `result.function` when a player takes the output. See `craft_eternal_with_kether` and `any_sword_to_star` in the bundled file.
+
+| `type` | Interface | Main fields |
+| --- | --- | --- |
+| `CRAFTING` | Crafting table | `SHAPED` uses a pattern and letter mapping. `SHAPELESS` uses an ingredient list |
+| `FURNACE`, `BLASTING`, `SMOKING`, `CAMPFIRE` | Furnace, blast furnace, smoker, campfire | `ingredient`, `experience`, `cookingTime` |
+| `STONECUTTING` | Stonecutter | `ingredient` |
+| `SMITHING_TRANSFORM`, `SMITHING_TRIM` | Smithing table | `template`, `base`, `addition` |
+
+If a recipe is missing, check the reload log for unresolved items or registration errors and make sure the recipe ID is unique.
 
 ## Recipe System
 
@@ -15,7 +86,6 @@ The recipe system registers custom Minecraft recipes using vanilla mechanics —
 Key features:
 
 * **8 recipe types**: Crafting (shaped/shapeless), Furnace, Blasting, Smoking, Campfire, Stonecutting, Smithing Transform, Smithing Trim
-* **Dual provider modes**: `SIMPLE` (Bukkit API) or `COMPLEX` (direct NMS injection)
 * **Multi-source ingredients**: Sertraline custom items, vanilla items, Bukkit tags, external plugin items
 * **Post-craft functions**: Kether scripts, JavaScript, or console commands
 * **Player-aware results**: Sertraline custom item results are rebuilt with player context on preview
@@ -38,63 +108,7 @@ On first startup (if the folder does not exist), `recipes/sample.yml` is auto-ex
 
 ### Configuration Structure
 
-```yaml
-<recipe_id>:
-  provider: SIMPLE              # RecipeProvider: SIMPLE (Bukkit API) or COMPLEX (NMS injection)
-  type: CRAFTING                # RecipeType (see below)
-  format: SHAPED                # RecipeFormat: SHAPED or SHAPELESS (CRAFTING only)
-
-  # --- Crafting (SHAPED) ---
-  pattern:                      # 1-3 rows, each 1-3 chars
-    - "SSS"
-    - "SWS"
-    - "SSS"
-  ingredients:                  # Maps char → ingredient
-    S: "sertraline:star_of_recall"
-    W: "sertraline:sword_of_skyline"
-
-  # --- Crafting (SHAPELESS) ---
-  ingredients:                  # List of ingredients
-    - "sertraline:doe_card"
-    - "minecraft:diamond"
-
-  # --- Cooking (FURNACE / BLASTING / SMOKING / CAMPFIRE) ---
-  ingredient: "sertraline:doe_card"  # Single ingredient
-  experience: 0.5               # XP granted (float)
-  cookingTime: 200              # Ticks (200 = 10s)
-
-  # --- STONECUTTING ---
-  ingredient: "sertraline:ultimate_pickaxe"
-
-  # --- SMITHING_TRANSFORM / SMITHING_TRIM ---
-  template: "sertraline:star_of_recall"
-  base: "sertraline:sword_of_skyline"
-  addition: "sertraline:blade_of_mythic"
-
-  # --- Result ---
-  result:
-    id: sertraline:sword_of_eternal_frozen   # Output item ID
-    count: 1                                  # Output amount
-    function:                                 # Post-craft functions (optional)
-      - type: kether
-        kether: tell "&aCraft successful!"
-
-  # --- Input Options (optional) ---
-  input-options:
-    data-filter:
-      - "sertraline_data"
-      - "sertraline_revision"
-    components:
-      mode: REMOVE              # REMOVE or KEEP
-      elements:
-        - "minecraft:enchantments"
-
-  # --- Optional ---
-  group: "my_group"             # Recipe book group
-  showNotification: true        # Show advancement-style notification (CRAFTING only)
-```
-
-***
+Give each recipe a unique top-level ID. Select the fields for its type from the table below and use the matching complete example. All types use `result` with an item `id` and `count`. Set `group` for recipe-book grouping. `showNotification` controls crafting-table notifications.
 
 ### Recipe Types
 
@@ -111,21 +125,18 @@ On first startup (if the folder does not exist), `recipes/sample.yml` is auto-ex
 
 ***
 
-### Providers
+### Recipe registration
 
-#### SIMPLE (Bukkit API)
+You can omit `provider` when creating a recipe. In the verified Sertraline 3.13.2.2 build, the default is `SIMPLE`. The examples on this page use that default.
 
-Default mode. Registers recipes via `Bukkit.addRecipe()`. Works with all standard Bukkit recipe mechanics and is compatible with other plugins that interact with Bukkit's recipe manager.
+| `provider` value | Registration | When to use it |
+| --- | --- | --- |
+| `SIMPLE` (default) | Registers through the Bukkit API | Regular recipes, including recipes that match metadata on Sertraline or external plugin ingredients |
+| `COMPLEX` (experimental) | Registers directly with Minecraft's server recipe manager (NMS) | Recipes that can match ingredients by their base material or tag |
 
-#### COMPLEX (NMS Injection)
+Writing `provider: SIMPLE` has the same effect as omitting the field. The bundled `recipes/sample.yml` leaves the `COMPLEX` examples commented out. In this mode, custom names, enchantments, and components do not affect ingredient matching. If a custom card uses paper as its base material, ordinary paper can satisfy the ingredient. `COMPLEX` rejects ingredients with `exact: true`.
 
-Injects recipes directly into Minecraft's native `RecipeManager.recipes` map via reflection. Use when:
-
-* Sertraline custom items as ingredients need precise NBT/component matching
-* Bukkit API matching is insufficient for custom item data
-* Need to bypass other plugins' Bukkit recipe interception
-
-**Note:** COMPLEX provider examples are commented out in sample.yml. Use at your own risk.
+After a player joins or recipes are reloaded, Sertraline uses NMS to unlock registered recipes for the recipe book. This step applies to both registration modes.
 
 ***
 
@@ -139,18 +150,21 @@ Injects recipes directly into Minecraft's native `RecipeManager.recipes` map via
 ingredient: "sertraline:doe_card"
 ```
 
-**2. Object format (with amount)**
+**2. Object format**
 
 ```yaml
 ingredient:
   itemId: "sertraline:doe_card"
-  amount: 2
+  amount: 1
 ```
 
 **3. Tag format**
 
 ```yaml
 ingredient: "#minecraft:planks"     # Bukkit tag
+```
+
+```yaml
 ingredient: "tag:planks"            # Shorthand (assumes minecraft namespace)
 ```
 
@@ -159,7 +173,7 @@ Tag object format:
 ```yaml
 ingredient:
   tagId: "#minecraft:planks"
-  amount: 2
+  amount: 1
 ```
 
 **4. Multi-choice (OR logic)**
@@ -184,17 +198,16 @@ ingredient:
 | MythicMobs        | `mythicmobs:<id>`      | `mythicmobs:some_item`        |
 | MMOItems          | `mmoitems:<type>/<id>` | `mmoitems:SWORD/flame_katana` |
 
-Omitting the source defaults to `minecraft:`.
+A bare ID checks vanilla materials first and then falls back to Sertraline items.
 
-#### Resolution Logic
+#### Ingredient matching
 
-| Ingredient Type                         | Resolves To                              | Matching                                   |
-| --------------------------------------- | ---------------------------------------- | ------------------------------------------ |
-| Vanilla item (`minecraft:stone`)        | `MaterialChoice`                         | Matches by material                        |
-| Sertraline item (`sertraline:doe_card`) | `ExactChoice`                            | Matches by exact ItemStack (including NBT) |
-| External plugin item                    | `ExactChoice`                            | Matches by exact ItemStack                 |
-| Tag (`#minecraft:planks`)               | `MaterialChoice(Tag)`                    | Matches any material in tag                |
-| Choice (`options: [...]`)               | Merged `ExactChoice` or `MaterialChoice` | Matches any option (OR logic)              |
+| Ingredient | Default registration (`SIMPLE`) | Direct NMS registration (`COMPLEX`) |
+| --- | --- | --- |
+| Vanilla item such as `minecraft:stone` | Matches by material. In the object form, `exact: true` matches an unmodified vanilla stack | Matches by material |
+| Sertraline item such as `sertraline:doe_card`, or an external plugin item | Matches the generated item, including its name, enchantments, and other metadata. Use items that build consistently | Matches the item's base material |
+| Tag such as `#minecraft:planks` | Accepts any material in the tag | Accepts any material in the tag |
+| Alternatives under `options` | Accepts any option that satisfies its own matching rules | Accepts any option's base material or tag member |
 
 ***
 
@@ -244,7 +257,7 @@ function:
 
 ### Input Options
 
-Controls how input item data is handled during crafting:
+The loader accepts these fields. They currently have no effect on ingredient matching. To match metadata, use a custom item ID as the ingredient with the default registration mode.
 
 ```yaml
 input-options:
@@ -261,7 +274,7 @@ input-options:
 
 | Field                 | Type               | Description                                                             |
 | --------------------- | ------------------ | ----------------------------------------------------------------------- |
-| `data-filter`         | List\<String>      | NBT data keys to filter (REMOVE or KEEP depending on `components.mode`) |
+| `data-filter`         | List\<String>      | Reserved data-key list |
 | `components.mode`     | `REMOVE` or `KEEP` | Whether to remove or keep listed components                             |
 | `components.elements` | List\<String>      | Data component namespaces (e.g., `minecraft:enchantments`)              |
 
@@ -295,7 +308,6 @@ Recipes are re-loaded from disk and re-registered on each reload.
 
 ```yaml
 star_from_cards:
-  provider: SIMPLE
   format: SHAPED
   type: CRAFTING
 
@@ -314,7 +326,6 @@ star_from_cards:
 
 ```yaml
 mixed_sugar:
-  provider: SIMPLE
   format: SHAPELESS
   type: CRAFTING
 
@@ -330,7 +341,6 @@ mixed_sugar:
 
 ```yaml
 smelt_pills_from_cookie:
-  provider: SIMPLE
   type: FURNACE
 
   ingredient: "sertraline:speed_potion_cookie"
@@ -345,7 +355,6 @@ smelt_pills_from_cookie:
 
 ```yaml
 blast_pills_from_card:
-  provider: SIMPLE
   type: BLASTING
 
   ingredient: "sertraline:doe_card"
@@ -360,7 +369,6 @@ blast_pills_from_card:
 
 ```yaml
 mythic_sword_upgrade:
-  provider: SIMPLE
   type: SMITHING_TRANSFORM
 
   template: "sertraline:star_of_recall"
@@ -375,7 +383,6 @@ mythic_sword_upgrade:
 
 ```yaml
 cut_pickaxe_to_wands:
-  provider: SIMPLE
   type: STONECUTTING
 
   ingredient: "sertraline:ultimate_pickaxe"
@@ -388,7 +395,6 @@ cut_pickaxe_to_wands:
 
 ```yaml
 any_sword_to_star:
-  provider: SIMPLE
   format: SHAPELESS
   type: CRAFTING
 
@@ -420,4 +426,3 @@ any_sword_to_star:
 | **Pagination**        | N/A (vanilla recipe book)                         | Built-in page browsing                |
 | **Item sources**      | Sertraline, vanilla, external plugins             | Same (via OmniItem)                   |
 | **Use case**          | Standard Minecraft crafting                       | Custom timed progression systems      |
-

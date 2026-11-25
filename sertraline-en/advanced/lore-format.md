@@ -2,15 +2,51 @@
 icon: tent-double-peak
 ---
 
-# Lore Format
+# Lore Formats
+
+Reuse a lore format to show consistent type, tier, and level lines across several items. Save this as `plugins/Sertraline/lore-formats/practice.yml`:
+
+```yaml
+practice_lore:
+  settings:
+    overwrite: true
+    visual: false
+    auto-skip-blank: true
+  elements:
+    - key: "xbuilder:lore"
+      content: "{value}"
+    - key: "sertraline:type"
+      content: "<!i><gray>Type {type:name}"
+    - key: "sertraline:tier"
+      content: "<!i><gray>Tier {tier:format}"
+    - key: "sertraline:level"
+      content: "<!i><gray>Level {level:name}"
+```
+
+In the [classification example](item-tier.md), change `classified_sword` from `lore-format: loreformat` to `lore-format: practice_lore`. Reload and give yourself another sword. Its lore should show the original description followed by the three labels.
+
+## Customize individual lines
+
+- Set `content` alone for static text. Add `key` to read item data. When that value is a list, the format renders one line per entry using `{value}`.
+- `key: "sertraline:vals.note"` reads `note` from the resolved item data. `key: "*sertraline.vals.note"` reads it from the configuration using a dotted path.
+- List required keys under `lineRequire` and use `lineMode` to choose `ANY` (at least one exists), `ALL` (all exist), `NOT` (none exist), or `NOT_ALL` (at least one is missing).
+- For numeric values, use `{plus}` and `{minus}` for signs, `{auto}` for the unsigned number, or `{round:2}` for rounding. `{value}` retains the original value. Player contexts also support PlaceholderAPI and inline Kether.
+
+| `settings` field | Default | Use |
+| --- | --- | --- |
+| `overwrite` | `true` | Replace existing lore. Set to `false` to append |
+| `visual` | `false` | Writes lore onto the item by default. Packet-based display requires PacketEvents and `packet.packet-lore` |
+| `auto-skip-blank` | `true` | Collapse consecutive blank lines |
+
+The bundled `lore-formats/compare_example.yml` and `lore-formats/switchable_example.yml` show how to configure comparison and switchable lore.
 
 #### LoreSetting Properties <a href="#loresetting-properties" id="loresetting-properties"></a>
 
 | Property    | Type      | Default | Description                                                                           |
 | ----------- | --------- | ------- | ------------------------------------------------------------------------------------- |
 | `overwrite` | `Boolean` | `true`  | If true, replaces existing lore; if false, appends to it                              |
-| `visual`    | `Boolean` | `true`  | If true, applies during s2c (visual) transform; if false, applies to server-side item |
-| `skipBlank` | `Boolean` | `true`  | If true, merges consecutive empty lines into single blank line                        |
+| `visual`    | `Boolean` | `false`  | If true, applies during s2c (visual) transform; if false, applies to server-side item |
+| `auto-skip-blank` | `Boolean` | `true`  | If true, merges consecutive empty lines into single blank line                        |
 
 #### Key Iteration Examples <a href="#key-iteration-examples" id="key-iteration-examples"></a>
 
@@ -142,4 +178,3 @@ If the content contains `{{`, the system treats text within `{{...}}` as inline 
 Like:  `{{ player name }}`&#x20;
 
 This allows dynamic computation in lore templates.&#x20;
-

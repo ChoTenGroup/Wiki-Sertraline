@@ -2,15 +2,48 @@
 icon: plug-circle-plus
 ---
 
-# 合成站\[Expr]
+# 合成站
 
-合成站让玩家在图形界面中通过配方制作物品，你可以使用 Kether 和 JavaScript 定义条件。
+合成站是插件提供的独立制作菜单。玩家点击配方后，插件从背包扣除材料，等待配方设定的时间，然后发放产物。合成站属于实验性功能。
 
-此外，合成站的灵感源自 `MMOItems`，但我们的合成站更具可扩展性、更易于维护~~并且漏洞更少~~（例如， `MMOItems` 取消配方将刷新合成材料的属性……）
+先按[物品结构](../basics/item-structure.md)的例子创建 `blue_token`，再将下面的配置保存到 `plugins/Sertraline/crafting-stations/practice.yml`：
 
-{% hint style="warning" %}
-正在完善中
-{% endhint %}
+```yaml
+practice_station:
+  display:
+    title: "<blue>练习合成站"
+    layout:
+      - "         "
+      - "    I    "
+      - "         "
+    key: "I"
+  recipes:
+    press_paper:
+      displayName: "蓝色代币"
+      time: 3
+      inputs:
+        - item: "minecraft:paper"
+          amount: 2
+      outputs:
+        - item: "sertraline:blue_token"
+          amount: 1
+```
+
+1. 执行 `/sertraline reload`。
+2. 把至少两张纸放进自己的背包，再执行 `/sertraline station sertraline:practice_station`。
+3. 点击菜单中央的蓝色代币，约三秒后检查背包中的产物。
+
+## 调整布局和配方
+
+| 字段 | 用途 |
+| --- | --- |
+| `display.layout` | 每行写 9 个字符，并用引号保留空格。每个与 `display.key` 相同的字符代表一个配方槽 |
+| `display.elements` | 定义背景和翻页按钮。可使用 `char` 对应布局字符，并填写 `material` 与 `name` |
+| `recipes` | 每个配方用独立的 ID。配方中的 `displayName` 是菜单名称，`time` 的单位是秒 |
+| `inputs`、`outputs` | 分别设置要消耗和发放的物品，通过 `item` 和 `amount` 指定来源、ID 和数量 |
+| `conditions` | 限制谁能开始合成。可以配置权限、脚本或数值条件 |
+
+自带的 `crafting-stations/craftingStation.yml` 展示了背景、翻页、条件及脚本的写法。打开菜单时如果提示找不到站点，保留命令里的 `sertraline:` 前缀，并检查后面的 ID 是否与 YAML 顶层键一致。
 
 ## 合成站系统
 
@@ -49,7 +82,7 @@ plugins/Sertraline/crafting-stations/
 ```yaml
 <station_id>:
   option:                          # 合成站选项
-    enable-tracker: true
+    enable-tracker: true  # 随附示例中的保留选项
   display:                         # GUI 布局配置
     title: "..."
     layout: [...]
@@ -283,7 +316,6 @@ Click recipe → condition check → onSuccess/onFail → consume items
 **取消流程**：
 
 ```
-→ onCancel agents execute (recipe-level → station-level)
 → materials returned to inventory
 → DB session cleared
 ```
@@ -294,7 +326,7 @@ Click recipe → condition check → onSuccess/onFail → consume items
 
 | 命令                           | 说明                             |
 | --------------------------------- | --------------------------------------- |
-| `/sertraline station <stationId>` | 打开合成站界面               |
+| `/sertraline station sertraline:<stationId>` | 打开合成站界面               |
 | `/sertraline debug getStations`   | 查看所有已加载的工作站配置         |
 | `/sertraline reload`              | 重新加载所有配置（包括工作站） |
 
@@ -302,12 +334,11 @@ Click recipe → condition check → onSuccess/onFail → consume items
 
 ### 数据持久性
 
-合成站系统使用TabooLib DataContainer来持久化玩家的合成进度。
+合成站系统使用数据库会话存储来持久化玩家的合成进度。
 
 #### 存储数据
 
-* `crafting.session` — 会话元数据： `stationId|recipeId|startTime|totalSeconds`
-* `crafting.items.0`, `crafting.items.1`, ... — Base64 序列化的已消耗物品
+会话表保存玩家 UUID、合成站与配方 ID、开始时间、时长以及已扣除的材料。
 
 #### 恢复流程
 
@@ -340,7 +371,7 @@ simple_workbench:
   display:
     title: "<gold>Simple Workbench"
     layout:
-      - "##########"
+      - "#########"
       - "#IIIIIII#"
       - "#IIIIIII#"
       - "##<###>##"
@@ -351,12 +382,12 @@ simple_workbench:
         material: GRAY_STAINED_GLASS_PANE
         name: ""
       next_page:
-        slot: 50
+        char: ">"
         roll: true
         material: ARROW
         name: "<green>Next Page {next_page}"
       previous_page:
-        slot: 48
+        char: "<"
         roll: true
         material: ARROW
         name: "<green>Previous Page {previous_page}"
@@ -377,7 +408,7 @@ simple_workbench:
 
       agents:
         onClaim: |-
-          player.sendMessage("&aConversion complete! Got Diamond x1")
+          js: player.sendMessage("Conversion complete! Got Diamond x1")
 ```
 
 #### GraalJS 合成站
@@ -400,13 +431,13 @@ advanced_station:
         material: BLACK_STAINED_GLASS_PANE
         name: ""
       next_page:
-        slot: 50
+        char: ">"
         roll: true
         material: ARROW
         name: "<green>Page {next_page}"
         agents:
           onLeft: |-
-            gjs: player.sendMessage("Turned to page " + (page + 1))
+            gjs: player.sendMessage("Current page " + (page + 1))
 
   recipes:
     legendary_sword:
@@ -429,17 +460,17 @@ advanced_station:
           amount: "32"
 
       outputs:
-        - item: "sertraline:legendary_sword"
+        - item: "minecraft:netherite_sword"
           amount: "1"
 
       agents:
         onStart: |-
-          gjs: PlayerUtil.sendMessage(player, "Forging Legendary Sword, estimated " + time + " seconds...")
+          gjs: player.sendMessage("Forging " + recipe + "...")
         onClaim: |-
           gjs:
             var msg = "§6★ Congratulations! You got the Legendary Sword! ★";
             player.sendMessage(msg);
-            Bukkit.broadcastMessage(player.getName() + " forged the Legendary Sword!");
+            player.sendMessage("You forged " + recipe + "!");
 ```
 
 ***

@@ -4,7 +4,7 @@ icon: infinity
 
 # MythicLib / MMOItems 兼容
 
-物品的 `mmo` 段可以配置 MMO 属性。原手册提示，仅安装 MythicLib 时属性可能不会生效，还需要 MMOItems 或 MMOCore。实际可用属性取决于安装的插件及版本。
+物品的 `mmo` 段可以配置 MMO 属性。请同时启用 MythicLib 与 MMOItems 或 MMOCore，让 MMO 属性能够生效。实际可用属性取决于安装的插件及版本。
 
 ```yaml
 example_sword:
@@ -40,3 +40,9 @@ mmo:
 ```
 
 `fix-attack-speed` 可用于处理攻击速度回弹问题。请在测试服务器验证实际效果，更多示例见插件自带的 `workspace/default/default_mmoitem.yml`。
+
+## 来源与装备槽可选值
+
+- `source` 使用 MythicLib 定义的来源，例如 `MELEE_WEAPON`、`RANGED_WEAPON`、`MAINHAND_ITEM`、`OFFHAND_ITEM`、`HAND_ITEM`、`ARMOR`、`ACCESSORY`、`ORNAMENT`、`OTHER`、`VOID`。可用值取决于服务器上的 MythicLib 版本。
+- `slot` 可使用 `MAIN_HAND`、`OFF_HAND`、`HELMET`、`CHESTPLATE`、`LEGGINGS` 或 `BOOTS`。
+- 如果 `allowed` 没有设置或为空，插件按材质推断生效位置。例如钻石靴默认对应靴子槽。需要多个位置时，在 `allowed` 中逐行填写。

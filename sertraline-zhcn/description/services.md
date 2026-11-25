@@ -4,6 +4,31 @@ icon: servicestack
 
 # 服务与项目故事
 
-原手册列有免费、基础付费和高级付费服务，并称付费用户可以获得优先支持。原手册记录的价格是基础版 69 元 / 10 美元、高级版 99 元 / 15 美元，并说明购买后的使用、更新和售后群权益以及退款限制。这些内容可能随时间变化，请在购买前通过[发布页](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/releases)或[社区](https://discord.gg/VHs958jJXj)确认当前版本、价格和条款。
+## 服务
 
-项目名称来自药物 Sertraline；默认示例物品中的药片灵感来自游戏《NEEDY STREAMER OVERLOAD》。
+Sertraline 3.0 服务方案包含免费版、基础付费版与高级付费版。服务项目如下。
+
+| 功能或服务 | 免费版 | 基础版 | 高级版 |
+| --- | :---: | :---: | :---: |
+| 完整源代码 | ✅ | ✅ | ✅ |
+| 文档 | ✅ | ✅ | ✅ |
+| 插件文件 | ✅ | ✅ | ✅ |
+| 错误修复 | ✅ | ✅ | ✅ |
+| 插件兼容 | ✅ | ✅ | ✅ |
+| 问答支持 | ✅ | ✅ | ✅ |
+| 使用示例 | ✅ | ✅ | ✅ |
+| 优先更新 | ✅ | ✅ | ✅ |
+| 功能扩展 | ✅ | ✅ | ✅ |
+
+3.0 方案所列价格如下。
+
+- **基础付费版**为 69 元人民币或 10 美元。
+- **高级付费版**为 99 元人民币或 15 美元。
+
+购买后可使用相应版本并获得后续更新。中国地区的付费用户可受邀加入售后 QQ 群（如有 QQ 账号），也可受邀加入 Discord 售后频道获得优先支持。该方案列有购买后不退款条款。免费用户也可获得支持。购买前可在官方社区确认适用的价格、权益与条款。[Discord 社区](https://discord.gg/VHs958jJXj)
+
+## 项目故事
+
+项目名称来自药物 Sertraline。[名称来源](https://www.drugs.com/sertraline.html)
+
+默认示例物品中的药片灵感来自 WSSPlayGround 的游戏《NEEDY STREAMER OVERLOAD》。[游戏中的药品](https://needystreameroverload.wiki.gg/wiki/Medication#Depaz)

@@ -2,73 +2,52 @@
 icon: floppy-disks
 ---
 
-# Installation
+# Installation and Configuration
 
-### THINGS YOU MUST BE KNOW
+The Standard and Spigot builds target the Minecraft 1.21.4 API on Java 21. The Legacy build targets Minecraft 1.12.2 on Java 8 and omits modern recipes and data components. Use the build for your server platform and check the release notes for the version you plan to install. [Sertraline releases](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/releases)
 
-{% hint style="danger" %}
-**!! DANGER !!**
+PlaceholderAPI enables external placeholders. PacketEvents 2.10 or newer is required for packet-based lore and visual components. A basic custom item works without either plugin. MythicLib integrates MMO attributes when used with MMOItems or MMOCore. ItemBridge provides references to items from other plugins. [ItemBridge supported providers](https://github.com/jhqwqmc/ItemBridge)
 
-Under existing JS engines, some engines may have full access to all methods, including **sensitive methods** such as `java.io.File`. Therefore, if you unconditionally trust all the items you import, it may have catastrophic consequences.
+1. Place the chosen Sertraline JAR in the server's `plugins/` folder.
+2. Start the server and check its console for Sertraline's load messages. The plugin creates `plugins/Sertraline/` on first use.
+3. To change command messages to Simplified Chinese, set `lang: zh_CN` in `plugins/Sertraline/config.yml` and run `/sertraline reload`.
 
-\
-Before importing any Sertraline items, crafting stations, or other packages, **it is essential to check for any malicious code** and promptly report it to the management personnel at the resource acquisition location.
-{% endhint %}
+| Path under `plugins/Sertraline/` | Use |
+| --- | --- |
+| `workspace/` | Item definitions and bundled examples under `workspace/default/` |
+| `templates/`, `lore-formats/` | Reusable configuration and item lore layouts |
+| `recipes/`, `crafting-stations/` | Vanilla-interface recipes and custom crafting menus |
+| `tiers/`, `types/`, `levels/` | Item classification |
+| `attributes/` | Custom attribute definitions |
+| `custom-events.yml`, `global-listeners/`, `scripts/` | Custom item triggers, server-wide listeners, and reusable scripts |
+| `lang/`, `internal/` | Language files and internal resources |
+| `config.yml`, `manager.yml`, `experimental.yml` | Plugin options, item manager defaults, and experimental options |
 
-### Requirements
+Run `/sertraline reload` after changing runtime settings. Changes to database or metrics settings require a server restart. Packet handlers that were disabled at startup also require a restart to enable. Review scripts before importing third-party item packs because scripts can access server resources.
 
-**Sertraline** requires <mark style="background-color:blue;">**PAPER**</mark>**.** It is compatible with most common forks, including <mark style="background-color:green;">**FOLIA**</mark>, Pufferfish, Purpur , Leaf and similar variants. You need **JDK 21** or above for your server.
+Next, [create your first item](my-first-item.md) or look up the [common commands](commands.md).
 
-| Section              | Requirements                                                                                                                           |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Supported Core       | <mark style="background-color:blue;">**PAPER**</mark> and them's fork. Include <mark style="background-color:green;">**FOLIA**</mark>. |
-| Tested Version       | **1.21.4** +                                                                                                                           |
-| Required JDK Version | ≥ 21                                                                                                                                   |
+## Optional dependencies
 
-To install the plugin, Just drag and drop the latest builds of **Sertraline** to your plugins folder. Do not forget dependencies:
+| Plugin | When to install it |
+| --- | --- |
+| PlaceholderAPI | Resolve supported placeholders, such as player values in item lore |
+| PacketEvents 2.10+ | Display packet-based lore, materials, and components |
+| MythicLib with MMOItems or MMOCore | Use MMO attributes |
+| An ItemBridge-supported item plugin | Reference its items in recipes and crafting stations |
 
-| Depencendy Name    | Type                                                                 | Description                                                                                                                                                                                                                                             |
-| ------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PlaceHolderAPI     | <mark style="background-color:orange;">**Highly Recommended**</mark> | For PlaceholderAPI hook and use PAPI In your items.                                                                                                                                                                                                     |
-| Packetevents       | <mark style="background-color:blue;">**Optional**</mark>             | For packet-lore and packet DataComponents.                                                                                                                                                                                                              |
-| MythicLib          | <mark style="background-color:blue;">**Optional**</mark>             | For MythicLib mmo Attributes.                                                                                                                                                                                                                           |
-| Other Item Plugins | <mark style="background-color:blue;">**Optional**</mark>             | <p>Sertraline supports generate from other Item Plugins. You can find supported item plugin list</p><p><a href="https://github.com/ProjectUnified/UniItem/">HERE</a>(3.8.2-)</p><p><a href="https://github.com/jhqwqmc/ItemBridge">HERE</a>(3.8.3+)</p> |
+Use the community to request integration with an additional item or attribute plugin. [Services](../description/services.md) · [Discord community](https://discord.gg/VHs958jJXj)
 
-If you want to request support other Attribute plugin or more, you can contact me at QQ or Discord.
+## Change common settings
 
-Requests from paying users will be prioritized, but requests from free users will also be added within 1 week if there are no unexpected circumstances.
+Edit the existing settings in `config.yml`. Keep the other keys in the same section and give each YAML key only one entry.
 
-### Configuring the Plugin
+| Setting | Effect |
+| --- | --- |
+| `debug: true` | Show more diagnostics for reload and script issues |
+| `metrics.enabled: false` | Turn off the plugin's FastStats reporting after a restart |
+| `item-update.enabled: false` | Turn off automatic updates to existing items |
+| `packet.packet-lore: false` | Turn off packet-based lore. Ordinary lore stored on items remains available |
+| `database.enable: false` | Use local SQLite. To use MySQL, set it to `true`, provide the connection details, and restart |
 
-If the plugin is installed successfully, you will see a directory named `Sertraline` in your server's plugins folder, with a structure as follows:
-
-{% code fullWidth="false" %}
-```
-.../Sertraline
-     ├── internal
-     │   └── ...
-     ├── lang
-     │   ├── zh_CN.yml
-     │   └── ...
-     ├── crafting-stations
-     │   ├── example.yml
-     │   └── ...
-     ├── workspace
-     │   └── chotenpack
-     │       └── test.yml
-     ├── config.yml
-     ├── kether.yml
-     └── datasource.yml
-```
-{% endcode %}
-
-Next, I will explain the purpose of each file and folder:
-
-* `internal` - Internal files
-* `lang` - Language files
-* `crafting-stations` - Crafting station files
-* `workspace` - Item storage / workspace
-* `config.yml` - Main configuration file
-* `kether.yml` - Kether-related settings
-* `datasource.yml` - Datasource/database settings
-
+To skip scanning online players' items on every reload, set `item-update.triggers.on-reload` to `false`. Login, held-item changes, and other update checks have their own switches.

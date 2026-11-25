@@ -39,3 +39,20 @@ test_visual_name:
 ```
 
 模型效果取决于客户端资源包与服务端版本。也可以用 `custom_name` 指定原始 JSON 文本组件。
+
+## 使用原始组件
+
+如果需要直接填写 JSON 组件，可用 `visual.custom_name`。下面的纸在服务器上用固定的名称，客户端上则在名称中显示当前玩家名。使用 `%player_name%` 前，需要安装 PlaceholderAPI 和提供此占位符的 Player 扩展。
+
+```yaml
+visual_player_name:
+  xbuilder:
+    material: PAPER
+    name: "服务器上的名称"
+  visual:
+    custom_name: '{"text":"你好，%player_name%！"}'
+```
+
+<figure><img src="../../.gitbook/assets/image (5).png" alt="客户端材质示例"><figcaption>用客户端材质显示钻石外观。</figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1).png" alt="按玩家变化的视觉名称"><figcaption>根据玩家显示不同的名称。</figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2).png" alt="视觉名称和描述示例"><figcaption>结合名称、描述与模型字段。</figcaption></figure>

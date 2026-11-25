@@ -21,11 +21,6 @@ my_template_sword:
 
 保存后执行 `/sertraline reload`，再用 `/sertraline item give my_template_sword` 领取。`use` 是模板 ID；`arguments` 只会替换模板中对应的 `%{参数名}`，因此传入模板未使用的参数不会改变物品。模板默认值及更多可运行示例请看 `templates/basic_gear.yml` 和 `workspace/default/example_templated_items.yml`。
 
-{% hint style="info" %}
-以下参考内容请结合安装版本核对。高级用法请同时对照安装版本自带的模板和示例。
-{% endhint %}
-
-
 ## 模板系统
 
 Sertraline 的模板系统允许使用可重用的 YAML 片段，并支持参数替换、值转换（`$t`），以及类型转换（`$c`）。模板从 `templates/` 文件夹中，并且可以使用以下方式从任何配置文件中引用： `$template` 指令引用。
@@ -86,7 +81,7 @@ my_custom_sword:
     tier: C
 ```
 
-外部字段 `$template` 合并到解析结果中，覆盖模板默认值。
+同级物品字段会递归合并到模板结果中，并覆盖同名字段。列表默认追加。把 `$list-mode: replace` 写在 `$template` 同一级可替换重叠的列表。
 
 #### 自动参数 `_ID`
 
@@ -174,7 +169,9 @@ $t:
   type: upper
   value: "%{name}"
   locale: en             # 可选语言区域
+```
 
+```yaml
 $t:
   type: lower
   value: "HELLO"
@@ -190,8 +187,8 @@ $t:
 $t:
   type: condition
   condition: "%{enchanted?:false}"   # true/false/yes/no/1/0
-  true: "&dEnchanted Sword"
-  false: "&5Normal Sword"
+  "true": "&dEnchanted Sword"
+  "false": "&5Normal Sword"
 ```
 
 #### `$t: self_increase`
@@ -255,7 +252,9 @@ $t:
   type: js
   shell: Math.max(5, 10)
   fallback: 0
+```
 
+```yaml
 $t:
   type: jexl
   shell: |

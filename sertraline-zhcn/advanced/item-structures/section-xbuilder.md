@@ -24,3 +24,21 @@ practice_sword:
 重载后使用 `/sertraline item give practice_sword` 领取。`material` 指定原版材质；`name` 和 `lore` 分别设置名称与描述；`unbreakable` 设置无法损坏；`attributes` 示例为主手添加攻击伤害。数值和装备槽位可以按需要调整。更多字段见 [XBuilder 参考](../../refrences/xbuilder.md)，也可以参考 `workspace/default/default_weapon.yml`。
 
 需要使用更多原版组件时，可继续阅读 [Minecraft 数据组件](section-minecraft-components.md)。
+
+## 给剑添加附魔
+
+下面是一把带有耐久 III 和锋利 V 的钻石剑。`enchants` 中每个键是附魔名，值是等级。
+
+```yaml
+cool_sword:
+  xbuilder:
+    material: DIAMOND_SWORD
+    name: "&2酷炫之剑"
+    lore: |
+      <!i><gray>一把带有两种附魔的钻石剑。
+    enchants:
+      UNBREAKING: 3
+      SHARPNESS: 5
+```
+
+`name` 设置物品自定义名称，在支持组件的版本中对应 `custom_name`。`lore` 可写成多行文本或 YAML 列表。名称与描述支持 MiniMessage 和传统颜色代码。

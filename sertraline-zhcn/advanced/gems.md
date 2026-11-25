@@ -4,7 +4,7 @@
 
 ## 快速体验默认示例
 
-默认 `workspace/default/default_gem.yml` 已定义剑和红宝石。用 `/sertraline item give gem_example_sword` 和 `/sertraline item give gem_example_ruby` 各领取一个，把剑放在主手、宝石放在副手，执行 `/sertralinegem socket slot_red`。再执行 `/sertralinegem list` 查看槽位，使用 `/sertralinegem unsocket slot_red` 取下宝石。指定宝石 ID 时，玩家的背包或副手中也必须有对应宝石，成功后会消耗一颗。
+默认 `workspace/default/default_gem.yml` 已定义剑和红宝石。用 `/sertraline item give gem_example_sword` 和 `/sertraline item give gem_example_ruby` 各领取一个，把剑放在主手、宝石留在背包或放在副手，执行 `/sertralinegem socket slot_red gem_example_ruby`。再执行 `/sertralinegem list` 查看槽位，使用 `/sertralinegem unsocket slot_red` 取下宝石。指定宝石 ID 时，玩家的背包或副手中也必须有对应宝石，成功后会消耗一颗。
 
 示例中的 `atk` 是自定义变量：镶嵌后描述里的数字会变化，但这个示例没有把 `atk` 接到实际攻击伤害上。若要改变战斗效果，需要另外配置对应属性或动作。
 
@@ -146,7 +146,7 @@ gem_example_plain:
 | 命令 | 说明 |
 | --- | --- |
 | `/sertralinegem list` | 列出手持物品的槽位与已镶嵌的宝石 |
-| `/sertralinegem socket <slotId> [gemId]` | 把 `gemId`（省略时取副手）镶进指定槽位 |
+| `/sertralinegem socket <slotId> <gemId>` | 把背包或副手中 ID 为 `gemId` 的宝石镶进指定槽位 |
 | `/sertralinegem unsocket <slotId>` | 取下指定槽位的宝石并归还玩家 |
 
 别名 `/sgem`，权限 `sertraline.command.gem`（默认 OP）。命令走 `GemSocketMethod.COMMAND`，**忽略**上面的点击开关与 `click: false`，方便管理员与剧情脚本强制镶嵌。

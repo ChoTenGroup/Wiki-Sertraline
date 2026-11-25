@@ -6,8 +6,7 @@ icon: square-minus
 
 ### Cannot use return in NashornJS
 
-This is Nashorn's known limitation. In Nashorn, the top-level scope cannot use return - return can only appear inside the function body. Both GraalJS and standard JavaScript engines allow top-level returns during eval().\
-Nashorn's eval() top-level does not allow returns, while GraalJS allows them.
+Nashorn evaluates inline JavaScript at the top level, where `return` must be inside a function. Other script contexts can wrap the snippet in a function body.
 
 To solve that, just change:&#x20;
 

@@ -1,10 +1,34 @@
 ---
-icon: puzzle-piece
+icon: cubes
 ---
 
 # Item Structure
 
-### Top-Level Structure <a href="#top-level-structure" id="top-level-structure"></a>
+You can define several items in one file under `plugins/Sertraline/workspace/`. Each top-level key is a unique item ID. Use the same capitalization in commands and recipes.
+
+```yaml
+red_token:
+  xbuilder:
+    material: PAPER
+    name: "<!i><red>Red Token"
+
+blue_token:
+  xbuilder:
+    material: PAPER
+    name: "<!i><blue>Blue Token"
+```
+
+Save the file, run `/sertraline reload`, and use `/sertralineitem give red_token` in game. Add more sections as your item needs them.
+
+| Section | Use |
+| --- | --- |
+| [`xbuilder`](../advanced/item-structures/section-xbuilder.md) | Material, name, lore, and common item properties |
+| [`sertraline`](../advanced/item-structures/section-sertraline/README.md) | Classification, data, and actions |
+| [`minecraft`](../advanced/item-structures/section-minecraft-components.md) | Data components supported by the server version |
+| [`custom_data`](../advanced/item-structures/section-custom-data.md) | Custom data |
+| [`mmo`](../advanced/mythiclib-mmoitems-compat.md) | MythicLib attributes |
+
+## Configuration reference <a href="#top-level-structure" id="top-level-structure"></a>
 
 Each item definition follows this top-level structure:
 
@@ -29,8 +53,10 @@ item_id:
 | **Pattern**          | String   | Recommended use: `[a-zA-Z0-9_]+`                            |
 | **Uniqueness**       | Required | Must be unique across all loaded YAML files                 |
 | **Case Sensitivity** | Yes      | `sword_of_skyline` ≠ `Sword_Of_Skyline`                     |
-| **Usage**            | -        | Used in commands: `/sertralineitem give <player> <item_id>` |
+| **Usage**            | -        | Used in commands: `/sertralineitem give <item_id> [player]` |
 | **Storage**          | -        | Stored in item NBT as `sertraline_id` tag                   |
+
+## Developer reference
 
 ### Processors & Adapters
 

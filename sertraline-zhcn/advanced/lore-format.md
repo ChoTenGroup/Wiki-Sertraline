@@ -4,13 +4,49 @@ icon: tent-double-peak
 
 # 描述格式
 
+你可以用同一套描述格式为多件物品添加统一的类型、品级和等级行。先把下面的内容保存为 `plugins/Sertraline/lore-formats/practice.yml`：
+
+```yaml
+practice_lore:
+  settings:
+    overwrite: true
+    visual: false
+    auto-skip-blank: true
+  elements:
+    - key: "xbuilder:lore"
+      content: "{value}"
+    - key: "sertraline:type"
+      content: "<!i><gray>类型 {type:name}"
+    - key: "sertraline:tier"
+      content: "<!i><gray>品级 {tier:format}"
+    - key: "sertraline:level"
+      content: "<!i><gray>等级 {level:name}"
+```
+
+把[物品品级示例](item-tier.md)里 `classified_sword` 的 `lore-format: loreformat` 改为 `lore-format: practice_lore`。重载后重新领取这把剑，检查原描述和三项分类信息是否按顺序显示。
+
+## 自定义各行
+
+- 只填 `content` 就能添加一行固定文本。指定 `key` 后，插件按对应数据生成内容。若值是列表，`{value}` 会逐项生成一行。
+- `key: "sertraline:vals.note"` 可以读取物品 `vals` 中的 `note`。`key: "*sertraline.vals.note"` 直接读取配置文件中的值。前者用冒号区分配置段，后者用点号分隔 YAML 层级。
+- 用 `lineRequire` 列出条件键，再用 `lineMode` 选择 `ANY`（至少一个存在）、`ALL`（全部存在）、`NOT`（全部缺失）或 `NOT_ALL`（至少一个缺失）。
+- 数值行可用 `{plus}`、`{minus}` 显示符号，用 `{auto}` 显示不带符号的数值，或用 `{round:2}` 舍入。要保留原值可用 `{value}`。有玩家上下文时还可以使用 PlaceholderAPI 占位符和内嵌 Kether。
+
+| `settings` 字段 | 默认值 | 用途 |
+| --- | --- | --- |
+| `overwrite` | `true` | 覆盖原描述。设为 `false` 时追加 |
+| `visual` | `false` | 默认直接写入物品。开启后通过发包显示，需要 PacketEvents 和 `packet.packet-lore` |
+| `auto-skip-blank` | `true` | 合并连续空行 |
+
+自带的 `lore-formats/compare_example.yml` 和 `lore-formats/switchable_example.yml` 展示了对比描述和切换描述。
+
 #### LoreSetting 属性 <a href="#loresetting-properties" id="loresetting-properties"></a>
 
 | 属性    | 类型      | 默认值 | 说明                                                                           |
 | ----------- | --------- | ------- | ------------------------------------------------------------------------------------- |
 | `overwrite` | `Boolean` | `true`  | 为 true 时覆盖原描述；为 false 时追加到原描述                              |
-| `visual`    | `Boolean` | `true`  | 为 true 时应用于服务端到客户端的视觉转换；为 false 时应用于服务端物品 |
-| `skipBlank` | `Boolean` | `true`  | 如果为 true，则将连续的空行合并为单个空行                        |
+| `visual`    | `Boolean` | `false`  | 为 true 时应用于服务端到客户端的视觉转换；为 false 时应用于服务端物品 |
+| `auto-skip-blank` | `Boolean` | `true`  | 如果为 true，则将连续的空行合并为单个空行                        |
 
 #### 关键迭代示例 <a href="#key-iteration-examples" id="key-iteration-examples"></a>
 
@@ -29,7 +65,7 @@ key: "sertraline:vals.test"
 content: "<green>{plus}{value} {name}"
 ```
 
-如果 `sertraline:attributes` 包含 `[10, 20, 30]`，生成三行，每行都使用占位符替换值。
+如果 `sertraline:vals.test` 包含 `[10, 20, 30]`，生成三行，每行都使用占位符替换值。
 
 {% hint style="warning" %}
 有些键与配置的区块不同。例如，MMO属性： `attack-damage` -> `ATTACK_DAMAGE`
@@ -108,10 +144,7 @@ wooden_sword:
 
 ### 占位符处理系统 <a href="#placeholder-processing-system" id="placeholder-processing-system"></a>
 
-Lore 格式化系统支持按顺序应用三层占位符处理。
-
-```
-```
+描述格式依次替换行内的数值或分类占位符，再处理玩家上下文与内嵌脚本。
 
 **源码：** [project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt54-101](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/7fbdc299/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt#L54-L101)
 
@@ -122,7 +155,7 @@ Lore 格式化系统支持按顺序应用三层占位符处理。
 | 占位符 | 行为                                | 示例                           |
 | ----------- | --------------------------------------- | --------------------------------- |
 | `{plus}`    | 显示 `+` 如果值 > 0，则为空 | `15` → `+`                        |
-| `{minus}`   | 显示 `-` 如果值 < 0，则为空，否则不为空 | `-5` → `-`                        |
+| `{minus}`   | 值小于 0 时显示 `-`，否则为空 | `-5` → `-`                        |
 | `{value}`   | 字符串值                        | `15.5` → `15.5`                   |
 | `{auto}`    | 移除 `.0` 整数的后缀       | `15.0` → `15`                     |
 | `{round:N}` | 格式化为 N 位小数             | 对 `15.567` 使用 `{round:2}` → `15.57` |
@@ -142,4 +175,3 @@ Lore 格式化系统支持按顺序应用三层占位符处理。
 例如：  `{{ player name }}`&#x20;
 
 这样可以在描述模板中动态计算。
-

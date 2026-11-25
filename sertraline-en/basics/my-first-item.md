@@ -2,9 +2,32 @@
 icon: gem
 ---
 
-# My First Item
+# Create Your First Item
 
-## First Item
+[Install Sertraline](installation.md) and use an operator account to try this example. Create `plugins/Sertraline/workspace/my_first_item.yml` and save the following:
+
+```yaml
+beginner_sword:
+  xbuilder:
+    material: IRON_SWORD
+    name: "<!i><green>Beginner's Sword"
+    lore: |
+      <!i><gray>A sword for a new adventurer.
+      <!i><yellow>Safe travels!
+```
+
+`beginner_sword` is the item ID used in commands. Use spaces for indentation and align fields at the same level. Here `material` selects an iron sword, `name` sets its display name, and `lore` supplies two description lines. `<!i>` removes the default italics.
+
+In game, run:
+
+```text
+/sertraline reload
+/sertraline item give beginner_sword
+```
+
+Check your inventory for the sword. To give two swords to an online player called Steve, use `/sertralineitem give beginner_sword Steve 2`. The [command reference](commands.md) lists the optional arguments. If the sword does not appear, check the reload output for your filename and verify its indentation, material, and item ID. The bundled examples are under `workspace/default/`.
+
+## Customize an item
 
 ### Creating Files
 
@@ -60,7 +83,7 @@ Although the configuration is quite simple, let's briefly analyze it:
 
 * `material` - The base ItemStack used to construct the item.
 * `name` - The display name of the item.
-* `model` - The item's Custom Model Data.
+* `custom-model-data` - The item's Custom Model Data.
 * `lore` - The item's description text. Using a string defaults the list to having only one entry. Similar to Ratziel, you can use `\n` within a single line, and we will automatically handle the line breaks.
 
 Next, run `/sertraline reload` and use `/sertraline item give Embian` to Enjoy!

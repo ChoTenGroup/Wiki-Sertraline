@@ -4,6 +4,10 @@ icon: cursor
 
 # Item Manager System
 
+## Inspect a loaded item
+
+Create a workspace item and reload the plugin. Run `/sertraline manager use public` to select the persistent public scope, then `/sertraline manager list` to see loaded items. Use `/sertraline manager info beginner_sword` to inspect the [Beginner’s Sword](../basics/my-first-item.md). In game, `/sertralineitem browse` opens the item browser.
+
 ## Item Manager System
 
 Sertraline's item manager provides four storage modes for items: **Public** / **Private** × **Persistent** / **Temporary**. The manager handles item creation, retrieval, deletion, and lifecycle management across reloads.
