@@ -2,7 +2,7 @@
 icon: hammer-war
 ---
 
-# XBuilder
+# Section: XBuilder
 
 Use `xbuilder` to set an item's material, name, lore, and common properties. This example makes a diamond sword with Unbreaking III and Sharpness V. Save it to `plugins/Sertraline/workspace/cool_sword.yml`.
 
@@ -35,4 +35,4 @@ attributes:
 
 On servers with data components, `name` sets the item's `custom_name`. Names and lore accept MiniMessage and legacy color codes. Write lore as a YAML list or a multiline string.
 
-See the [XBuilder reference](../../refrences/xbuilder.md) for more fields. Use [Minecraft data components](section-minecraft-components.md) for options such as stack size and equip behavior.
+See the [XBuilder reference](../../references/xbuilder.md) for more fields. Use [Minecraft data components](section-minecraft-components.md) for options such as stack size and equip behavior.

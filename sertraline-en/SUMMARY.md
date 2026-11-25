@@ -38,11 +38,11 @@
 
 ## References
 
-* [Sertraline API](refrences/api/SertralineAPI.md)
-* [Recipe API](refrences/api/recipe-api.md)
-* [Script Issues](refrences/script-issues.md)
-* [PlaceHolderAPI](refrences/placeholderapi.md)
-* [XBuilder](refrences/xbuilder.md)
-* [Script Util](refrences/script-util/README.md)
-  * [Script Util Refs](refrences/script-util/script-util-refs.md)
-* [MythicMobs Drops and Equipment](refrences/universal-mythicmobs.md)
+* [Sertraline API](references/sertralineapi.md)
+* [Recipe API](references/recipe-api.md)
+* [Script Issues](references/script-issues.md)
+* [PlaceHolderAPI](references/placeholderapi.md)
+* [XBuilder](references/xbuilder.md)
+* [Script Util](references/script-util/README.md)
+  * [Script Util Refs](references/script-util/script-util-refs.md)
+* [MythicMobs Drops and Equipment](references/universal-mythicmobs.md)

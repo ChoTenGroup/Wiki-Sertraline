@@ -64,14 +64,14 @@ bake_practice_brick:
 
 ## Choose ingredients
 
-| Syntax | What matches |
-| --- | --- |
-| `"minecraft:paper"` | An item with paper as its base material |
-| `"sertraline:beginner_sword"` | A Beginner Sword with matching data such as name and enchantments |
-| `"itemsadder:ruby"` | A custom item supplied by the named item plugin |
-| `"#minecraft:planks"` or `"tag:planks"` | A material from the Minecraft planks tag. Quote the form that starts with `#` |
-| `{ itemId: "minecraft:paper", exact: true }` | An item with the same data as plain paper |
-| `{ tagId: "#minecraft:planks" }` | A tag written as an object |
+| Syntax                                       | What matches                                                                  |
+| -------------------------------------------- | ----------------------------------------------------------------------------- |
+| `"minecraft:paper"`                          | An item with paper as its base material                                       |
+| `"sertraline:beginner_sword"`                | A Beginner Sword with matching data such as name and enchantments             |
+| `"itemsadder:ruby"`                          | A custom item supplied by the named item plugin                               |
+| `"#minecraft:planks"` or `"tag:planks"`      | A material from the Minecraft planks tag. Quote the form that starts with `#` |
+| `{ itemId: "minecraft:paper", exact: true }` | An item with the same data as plain paper                                     |
+| `{ tagId: "#minecraft:planks" }`             | A tag written as an object                                                    |
 
 Bare IDs match vanilla materials first and then Sertraline items. For custom ingredients, use items that build the same way each time. Random stats, player-specific names, and item updates can change the data the recipe matches.
 
@@ -88,13 +88,13 @@ ingredients:
 
 ## Choose a workstation and output
 
-| `type` | Workstation | Configuration |
-| --- | --- | --- |
-| `CRAFTING` | Crafting table | `SHAPED` uses a `pattern` and character mapping. `SHAPELESS` uses an ingredient list |
-| `FURNACE`, `BLASTING`, `SMOKING`, `CAMPFIRE` | Furnace, blast furnace, smoker, campfire | `ingredient`, `experience`, `cookingTime` |
-| `STONECUTTING` | Stonecutter | `ingredient` |
-| `SMITHING_TRANSFORM` | Smithing table upgrade | `template`, `base`, `addition` |
-| `SMITHING_TRIM` | Smithing table armor trim | `template`, `base`, `addition`. Use a server and provider that support this recipe type |
+| `type`                                       | Workstation                              | Configuration                                                                           |
+| -------------------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------- |
+| `CRAFTING`                                   | Crafting table                           | `SHAPED` uses a `pattern` and character mapping. `SHAPELESS` uses an ingredient list    |
+| `FURNACE`, `BLASTING`, `SMOKING`, `CAMPFIRE` | Furnace, blast furnace, smoker, campfire | `ingredient`, `experience`, `cookingTime`                                               |
+| `STONECUTTING`                               | Stonecutter                              | `ingredient`                                                                            |
+| `SMITHING_TRANSFORM`                         | Smithing table upgrade                   | `template`, `base`, `addition`                                                          |
+| `SMITHING_TRIM`                              | Smithing table armor trim                | `template`, `base`, `addition`. Use a server and provider that support this recipe type |
 
 For example, you can cut one block of obsidian into two blackstone slabs.
 
@@ -123,8 +123,8 @@ You can use `type: command` with `command: "say %player% completed a recipe!"`. 
 
 ## Providers and troubleshooting
 
-- Leaving out `provider` uses `SIMPLE`, with the ingredient rules above. Experimental `COMPLEX` recipes match base materials or tags, so plain paper may stand in for a custom item made of paper. This provider rejects `exact: true`.
-- The filters under `input-options` are reserved. For full data matching, use `SIMPLE` and a custom item ID.
-- Keep recipe IDs unique across the folder and use lowercase letters, numbers, and underscores. Check registration in the console after reloading. If a recipe works by hand but is missing from the recipe book, sign in again.
+* Leaving out `provider` uses `SIMPLE`, with the ingredient rules above. Experimental `COMPLEX` recipes match base materials or tags, so plain paper may stand in for a custom item made of paper. This provider rejects `exact: true`.
+* The filters under `input-options` are reserved. For full data matching, use `SIMPLE` and a custom item ID.
+* Keep recipe IDs unique across the folder and use lowercase letters, numbers, and underscores. Check registration in the console after reloading. If a recipe works by hand but is missing from the recipe book, sign in again.
 
-The bundled `recipes/sample.yml` has more complete examples. Plugin developers can consult the [Recipe API](../refrences/api/recipe-api.md).
+The bundled `recipes/sample.yml` has more complete examples. Plugin developers can consult the [Recipe API](../references/recipe-api.md).
