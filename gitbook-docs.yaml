@@ -5,14 +5,14 @@ site:
     - type: space
       key: space-1
       title: Sertraline-EN
-      path: akacandy-plugins
+      path: en
       default: true
       content:
         directory: ./sertraline-en
     - type: space
       key: space-2
       title: Sertraline-ZHCN
-      path: copy-of-akacandy-plugins
+      path: zhcn
       draft: true
       content:
         directory: ./sertraline-zhcn
