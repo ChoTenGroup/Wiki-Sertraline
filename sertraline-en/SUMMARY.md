@@ -16,7 +16,7 @@
 
 ## Advanced
 
-* [Item Structures](advanced/item-structures/README.md)
+* [Item Configuration Sections](advanced/item-structures/README.md)
   * [Section: XBuilder](advanced/item-structures/section-xbuilder.md)
   * [Section: Sertraline](advanced/item-structures/section-sertraline/README.md)
     * [Item Actions](advanced/item-structures/section-sertraline/item-actions.md)
@@ -24,6 +24,7 @@
   * [Section: Minecraft / Components](advanced/item-structures/section-minecraft-components.md)
   * [Section: Visual Items](advanced/item-structures/visual-items.md)
   * [Section: Custom Data](advanced/item-structures/section-custom-data.md)
+  * [Item Attribute Sections](advanced/item-structures/section-attributes.md)
 * [Item Text Tags](advanced/item-text-tags.md)
 * [MythicLib/MMOItems Compat](advanced/mythiclib-mmoitems-compat.md)
 * [Lore Format](advanced/lore-format.md)

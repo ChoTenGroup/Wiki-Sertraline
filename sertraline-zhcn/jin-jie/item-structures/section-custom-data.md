@@ -44,3 +44,9 @@ event_token:
 ```
 
 重载后使用 `/sertralineitem give event_token` 获取。你可以借助物品数据查看工具核对这些字段是否保存。配置里的标签和奖励记录由读取这些数据的脚本或插件使用。
+
+## 值的类型和查验方式
+
+支持 YAML 数字、布尔值、带引号的文本、嵌套对象、普通列表和对象列表。NBT 用字节保存布尔值，因此数据查看器可能把 `true` 显示成 `1b`，把 `false` 显示成 `0b`。同一个列表尽量使用同一种值。请使用本服专用的键，避免占用 `sertraline_id` 和 `sertraline_data` 等已有数据键。
+
+其他插件或脚本可读取这些值。如果需要让物品动作更新变量并显示到描述里，用 [Sertraline 物品数据](section-sertraline/item-data.md)。在现代服务端，手持物品执行 `/sertraline debug dumpComponent`，查找 `minecraft:custom_data` 组件。

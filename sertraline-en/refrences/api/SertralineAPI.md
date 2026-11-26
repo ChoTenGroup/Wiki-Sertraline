@@ -2,9 +2,35 @@
 
 Use `SertralineItemAPI` to look up and build items from Sertraline, Minecraft, and other item plugins. Use `Sertraline.api()` for inventory counting and removal, item rebuilding, public and private item management, and templates.
 
-## Add the compile dependency
+## Add the dependency
 
-From the Sertraline source tree, run `./gradlew :project:common:apiJar`. On Windows, run `.\gradlew.bat :project:common:apiJar`. Add the generated `project/common/build/libs/Sertraline-<version>-api.jar` and your server API to your plugin's compile classpath. In Gradle, use `compileOnly`. Install the matching Sertraline runtime JAR on the server and declare `depend: [Sertraline]` in your plugin's `plugin.yml`.
+Add Sertraline from Maven Central. For Gradle Kotlin DSL, use the following.
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.zzzyyylllty.sertraline:Sertraline:3.13.2.2")
+}
+```
+
+For Maven, add this dependency under `<dependencies>` in `pom.xml`.
+
+```xml
+<dependency>
+    <groupId>io.github.zzzyyylllty.sertraline</groupId>
+    <artifactId>Sertraline</artifactId>
+    <version>3.13.2.2</version>
+</dependency>
+```
+
+Install the matching Sertraline runtime JAR in the server's `plugins/` directory and declare `depend: [Sertraline]` in your plugin's `plugin.yml`.
+
+### Build the API from source
+
+Run `./gradlew tabooBuildApi` from the Sertraline source root. On Windows, use `.\gradlew.bat tabooBuildApi`. The default build writes `project/common/build/libs/Sertraline-X.X.X.X-api.jar`, where `X.X.X.X` is the project version.
 
 ## Look up and give an item
 
@@ -121,8 +147,6 @@ Get an item's Sertraline ID; returns `null` for non-Sertraline items.
 
 ### getVal
 
-Deprecated compatibility method. Use AbstractSItem.getDeepData("sertraline:vals").
-
 Read a val value from a Sertraline item object (`sertraline:vals`); returns `null` if the key does not exist.
 
 `getVal(sItem: ModernSItem, valId: String): Any?`
@@ -139,17 +163,17 @@ Check whether an item is a Sertraline item (has a Sertraline ID).
 
 `isValidItem(itemStack: ItemStack): Boolean`
 
-### isRegisteredItem
+### isRegisteredItemStack
 
-Check whether an item is registered in `itemMap`.
+Check whether the stack's Sertraline ID is registered in `itemMap`.
 
-`isRegisteredItem(itemStack: ItemStack): Boolean`
+`isRegisteredItemStack(itemStack: ItemStack): Boolean`
 
-### isRegisteredItem
+### isRegisteredItemById
 
-Check whether the given ID is registered in `itemMap`.
+Check whether the given ID is registered in `itemMap`. Both original `isRegisteredItem` signatures remain available.
 
-`isRegisteredItem(id: String): Boolean`
+`isRegisteredItemById(id: String): Boolean`
 
 ---
 
@@ -293,17 +317,19 @@ Get all private items of the given UUID and sub-type.
 
 `getAllPrivateItems(uuid: String, sub: SubManagerType): Map<String, ModernSItem>`
 
-### updateSItem (private items)
+### updateSItemS
 
-Deprecated compatibility method. Use the private manager for private items.
+Update a private item for the given UUID and explicit ID. The persistent manager writes the update to the database. Returns the previous item, or `null` when inserting a new entry.
 
-Update a private item for the given UUID. Persistent updates are also written to the database; returns the previous item, or `null` when the ID was not registered.
+`updateSItemS(uuid: String, id: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
 
-`updateSItem(uuid: String, id: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
+### updateSItemM
 
-The item's `ModernSItem.key` can also be used as the ID:
+Update a private item for the given UUID using `ModernSItem.key` as its ID. Persistence and return values follow `updateSItemS`.
 
-`updateSItem(uuid: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
+`updateSItemM(uuid: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
+
+Kotlin callers can omit `sub`. Java and JS callers must pass a `SubManagerType` explicitly.
 
 ### registerItem
 
@@ -313,17 +339,21 @@ Register an item in the live public registry.
 
 `registerItem(id: String, item: ModernSItem): Unit`
 
+### updatePublicSItemS
+
+Write an item to the public registry in `itemMap` using an explicit ID. Returns the previous Sertraline item, or `null` if the ID had no entry or held an item from another source.
+
+`updatePublicSItemS(id: String, item: ModernSItem): ModernSItem?`
+
+### updatePublicSItemM
+
+Write a public registry entry using `ModernSItem.key` as its ID. Return values follow `updatePublicSItemS`.
+
+`updatePublicSItemM(item: ModernSItem): ModernSItem?`
+
 ### updateSItem
 
-Deprecated compatibility method. Use SertralineItemAPI.update.
-
-Update a public item directly in `itemMap`. Returns the replaced item, or `null` when the ID was not previously registered.
-
-`updateSItem(id: String, item: ModernSItem): ModernSItem?`
-
-The item's `ModernSItem.key` can also be used as the ID:
-
-`updateSItem(item: ModernSItem): ModernSItem?`
+All four original `updateSItem` signatures remain available as deprecated compatibility methods. The two-argument call `updateSItem(string, item)` writes to the public registry. Use `updateSItemM` to update a private item by its key.
 
 ### unregisterItem
 

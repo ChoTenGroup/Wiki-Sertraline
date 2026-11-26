@@ -4,6 +4,8 @@ icon: square-x-twitter
 
 # XBuilder
 
+[查看完整的物品配置示例](../jin-jie/item-structures/section-xbuilder.md)
+
 ## XItemStack YAML 语法参考
 
 > **来源**: [XItemStack Wiki](https://github.com/CryptoMorin/XSeries/wiki/XItemStack) — Crypto Morin, 最后更新于 2025 年 8 月 29 日
@@ -282,10 +284,11 @@ effects: [Potion]
 当材质为 `WRITTEN_BOOK`:
 
 ```yaml
-author: Text
-title: Text
-pages: [Text]
-generation: ORIGINAL or COPY_OF_ORIGINAL or COPY_OF_COPY or TATTERED
+book:
+  author: "Sertraline"
+  title: "Field Guide"
+  pages: ["Page one", "Page two"]
+  generation: ORIGINAL
 ```
 
 #### 7.10 地图
@@ -294,9 +297,16 @@ generation: ORIGINAL or COPY_OF_ORIGINAL or COPY_OF_COPY or TATTERED
 
 ```yaml
 map:
-  scaling: Boolean
-  location: Location
-  color: Color
+  scaling: false
+  location: "Spawn"
+  color: "#FFAA00"
+  view:
+    world: world
+    scale: NORMAL
+    center: {x: 0, z: 0}
+    locked: false
+    tracking-position: true
+    unlimited-tracking: false
 ```
 
 #### 7.11 刷怪蛋

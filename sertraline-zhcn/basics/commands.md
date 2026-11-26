@@ -8,6 +8,7 @@
 | `/sertraline about` | 查看插件版本 |
 | `/sertraline reload` | 重新读取配置。重载后查看控制台有无具体文件的报错 |
 | `/sertralineitem browse` | 在游戏内浏览已加载的物品 |
+| `/sertraline manager help` | 查看[物品管理器](../advanced/item-manager-system.md)的命令 |
 | `/sertralineitem give <物品ID> [玩家] [数量] [静默]` | 向在线玩家发放物品。省略玩家时发给自己，数量默认为 1 |
 | `/sertraline station sertraline:<合成站ID>` | 在游戏内打开指定的[合成站](../advanced/crafting-stations.md) |
 | `/sertralinegem list` | 查看主手物品的宝石槽位。镶嵌与拆卸方法见[宝石系统](../advanced/gems.md) |

@@ -4,6 +4,8 @@ icon: square-x-twitter
 
 # XBuilder
 
+[See complete item examples](../advanced/item-structures/section-xbuilder.md)
+
 ## XItemStack YAML Syntax Reference
 
 > **Source**: [XItemStack Wiki](https://github.com/CryptoMorin/XSeries/wiki/XItemStack) — Crypto Morin, last updated on August 29, 2025
@@ -282,10 +284,11 @@ effects: [Potion]
 When material is `WRITTEN_BOOK`:
 
 ```yaml
-author: Text
-title: Text
-pages: [Text]
-generation: ORIGINAL or COPY_OF_ORIGINAL or COPY_OF_COPY or TATTERED
+book:
+  author: "Sertraline"
+  title: "Field Guide"
+  pages: ["Page one", "Page two"]
+  generation: ORIGINAL
 ```
 
 #### 7.10 Filled Map
@@ -294,9 +297,16 @@ When material is `FILLED_MAP`:
 
 ```yaml
 map:
-  scaling: Boolean
-  location: Location
-  color: Color
+  scaling: false
+  location: "Spawn"
+  color: "#FFAA00"
+  view:
+    world: world
+    scale: NORMAL
+    center: {x: 0, z: 0}
+    locked: false
+    tracking-position: true
+    unlimited-tracking: false
 ```
 
 #### 7.11 Spawn Egg

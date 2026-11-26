@@ -4,51 +4,77 @@ icon: wave-pulse
 
 # 物品动作
 
-你可以让物品在右键、攻击、食用等操作发生时执行脚本。先在 `plugins/Sertraline/workspace/hello_compass.yml` 中创建一把指南针。
+`actions` 下每个触发器都填一个列表。把示例保存到 `workspace/guide_signal.yml`，重载并用 `/sertralineitem give guide_signal` 领取，然后分别用主手和副手右键。条件为真的主手动作会发送消息，潜行时还会显示第二条。
 
 ```yaml
-hello_compass:
+guide_signal:
   xbuilder:
     material: COMPASS
-    name: "<!i><gold>问候指南针"
   sertraline:
     actions:
       onRightClick:
         - async: false
-          kether: tell "你使用了问候指南针！"
+          condition:
+            - "check 1 == 1"
+          kether: 'tell "Signal received."'
+        - async: false
+          graaljs: |
+            if (player.isSneaking()) {
+              player.sendMessage("Sneaking signal.");
+            }
+      "onRightClick@off":
+        - async: false
+          kether:
+            - 'tell "Off-hand signal."'
 ```
 
-保存后执行 `/sertraline reload`，再用 `/sertralineitem give hello_compass` 领取。把指南针放在主手并朝空气右键，聊天栏会显示消息。
+## 内置触发器
 
-## 选择触发器
+| 触发器 | 什么时候执行，读取哪件物品 |
+| --- | --- |
+| `onClick`、`onRightClick`、`onLeftClick` | 与空气或方块交互。用 `@off` 指定副手，主手使用无后缀版本 |
+| `onAttack` | 近战读取主手武器，投射物命中可读取发射时记录的武器 |
+| `onShoot` | 发射弓类武器时读取发射武器 |
+| `onShootTrident` | 三叉戟触发激流时读取三叉戟，需要支持该事件的构建 |
+| `onMine` | 破坏方块时检查双手，支持 `@main` 与 `@off` |
+| `onConsume` | 食用、饮用等消耗动作，读取被消耗的物品 |
+| `onBreak` | 物品耐久耗尽，读取损坏的物品 |
+| `onDrop` | 丢弃物品，读取丢出的物品 |
+| `onPickUp` | 拾取掉落物，读取地面物品，需要支持该事件的构建 |
+| `onInventoryClick` | 点击容器或背包槽位，读取被点击槽内的物品 |
+| `onSwap` | 交换双手，`@main` 或 `@off` 指的是物品即将移动到的槽位 |
+| `onSneak` | 开始或结束潜行时检查双手，支持 `@main` 与 `@off` |
+| `onLogin` | 登录时检查装备。可用 `@main`、`@off`、`@helmet`、`@chestplate`、`@leggings` 和 `@boots` |
 
-| 触发器                                    | 触发时机                                 |
-| -------------------------------------- | ------------------------------------ |
-| `onClick`、`onRightClick`、`onLeftClick` | 点击交互。可以加 `@off` 指定副手的交互              |
-| `onAttack`                             | 近战命中或可追溯到发射武器的投射物命中。近战读取主手武器         |
-| `onShoot`、`onShootTrident`             | 发射弓类武器，或使用三叉戟触发激流                    |
-| `onMine`、`onConsume`、`onBreak`         | 破坏方块、食用或饮用、物品耐久耗尽                    |
-| `onDrop`、`onPickUp`、`onInventoryClick` | 丢弃、拾取或点击背包槽位中的物品。拾取触发器需要支持相应事件的现代服务端 |
-| `onSwap`、`onSneak`                     | 交换主副手，或开始与结束潜行                       |
-| `onLogin`                              | 登录时检查双手和四个盔甲槽                        |
+支持后缀的事件可以同时满足基础触发器和某个后缀触发器。无后缀的双手或多槽位动作也可能对多件物品执行。需要监听其他 Bukkit 事件时，见[自定义事件与全局监听](../../event-listeners.md)。
 
-`onMine`、`onSwap`、`onSneak` 和 `onLogin` 支持 `@main` 与 `@off`。在 `onSwap` 中，后缀表示**交换后的目标槽位**，例如 `onSwap@off` 读取即将移到副手的物品。登录还可用 `onLogin@helmet`、`onLogin@chestplate`、`onLogin@leggings` 和 `onLogin@boots`。基础触发器与对应的后缀触发器都配置时，两条动作都可能执行。要使用其他 Bukkit 事件，请参阅[自定义事件与全局监听](../../event-listeners.md)。
+## 条件、脚本和执行方式
 
-## 添加条件和脚本
+| 写在每个列表项里 | 用法 |
+| --- | --- |
+| `condition`、`require`、`requirement`、`requirements` | Kether 条件，可写单个或列表。列表全部通过才执行该项。省略时直接执行 |
+| `async` | 默认为 `true`。读取或修改背包、世界、事件伤害或取消事件时设为 `false` |
+| `kether` / `ke` | 一段 Kether，或一个脚本行列表 |
+| `javascript` / `js` | JavaScript 文本。可使用 `\|` 写多行 |
+| `jexl` / `je` | JEXL 文本 |
+| `fluxon` / `fl` | Fluxon 文本 |
+| `graaljs` / `gjs` | GraalJS 文本 |
+| `mythic` / `mm` | 安装 MythicMobs 后填技能机制字符串，可以写列表，也可在技能后用 `~触发器` 指定 MythicMobs 触发器 |
 
-一个触发器下面可以有多条动作，每条用 `-` 开头。把 `condition` 与脚本写在同一个列表项里，用 Kether 表达式决定是否执行该项。例如，把指南针原有的 `onRightClick` 条目替换为下面的写法，再手持指南针，分别测试普通右键和潜行右键。
+同一个列表项可以写多种脚本。条件通过后按 Kether、JavaScript、JEXL、Fluxon、GraalJS、MythicMobs 的顺序执行。以下片段写在 `sertraline.actions` 下面，替换同名触发器后可试验几种语法。
 
 ```yaml
 onRightClick:
   - async: false
-    graaljs: |
-      if (player.isSneaking()) {
-        player.sendMessage("你在潜行时使用了指南针！");
-      }
+    kether: 'tell "Kether"'
+    js: 'player.sendMessage("JavaScript");'
+    jexl: 'player.sendMessage("JEXL");'
+    fluxon: |
+      import 'sertraline:bukkit'
+      &player::sendMessage("Fluxon")
+    graaljs: 'player.sendMessage("GraalJS");'
 ```
 
-示例在 GraalJS 里判断玩家是否潜行。要改用其他脚本语言，可用 `kether`、`js`（也可写 `javascript`）、`jexl` 或 `fluxon`。JavaScript 可以读取 `player`（触发动作的玩家）、`event`（当前事件）、`bItem`（触发动作的物品）和[物品数据](item-data.md)。
+脚本可用 `player`、`event`、`bItem`（实际物品）、`sItem`（物品定义）和物品数据里的键。可取消的事件还能用 `cancellableEvent`，例如在 `onDrop` 中设置同步并用 `js: 'cancellableEvent.setCancelled(true);'` 阻止丢弃。
 
-动作默认异步执行。要访问背包或世界、修改伤害、取消事件，请设置 `async: false`。在可取消的事件中，可调用 `event.setCancelled(true)`。用 `config.yml` 的 `action.throttle-time` 修改默认触发间隔（毫秒），或在 `action.throttle` 下用触发器名称覆盖，例如 `onRightClick: 1000`。设为 `0` 可关闭该项节流。
-
-可以在随附的 `workspace/default/default_weapon.yml` 试用 `sword_of_ultimate_damage`，或在 `default_consumable.yml` 试用食用后获得速度效果的 `speed_potion_cookie`。脚本可用的工具见[脚本工具](../../../can-kao/script-util/)。
+`config.yml` 的 `action.throttle-time` 设定默认触发间隔，单位毫秒。可在 `action.throttle` 下按基础名覆盖，例如 `onRightClick: 1000`，设为 `0` 关闭该项节流。更多实例见 `workspace/default/default_weapon.yml` 和 `default_consumable.yml`，写入变量的方法见[物品数据](item-data.md)。

@@ -24,6 +24,7 @@
   * [Minecraft 数据组件](jin-jie/item-structures/section-minecraft-components.md)
   * [视觉物品](jin-jie/item-structures/visual-items.md)
   * [自定义数据](jin-jie/item-structures/section-custom-data.md)
+  * [物品属性配置](jin-jie/item-structures/section-attributes.md)
 * [物品文本标签](jin-jie/item-text-tags.md)
 * [MythicLib / MMOItems 兼容](jin-jie/mythiclib-mmoitems-compat.md)
 * [描述格式](jin-jie/lore-format.md)

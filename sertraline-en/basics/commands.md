@@ -8,6 +8,7 @@ Include the opening slash in game chat. Omit it in the server console. Angle bra
 | `/sertraline about` | Show the plugin version |
 | `/sertraline reload` | Reload configuration. Check the console for errors naming individual files |
 | `/sertralineitem browse` | Browse loaded items in game |
+| `/sertraline manager help` | Show [item manager](../advanced/item-manager-system.md) commands |
 | `/sertralineitem give <item-id> [player] [amount] [silent]` | Give items to an online player. Omit the player to give yourself one item |
 | `/sertraline station sertraline:<station-id>` | Open a [crafting station](../advanced/crafting-stations.md) in game |
 | `/sertralinegem list` | View sockets on the main-hand item. See [Gems](../advanced/gems.md) for socketing and removing gems |

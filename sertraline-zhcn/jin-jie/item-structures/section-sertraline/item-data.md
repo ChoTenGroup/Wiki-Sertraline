@@ -4,44 +4,61 @@ icon: binary-circle-check
 
 # 物品数据
 
-你可以在物品的 `sertraline` 段定义数据，并用[物品文本标签](../../item-text-tags.md)把值显示在名字或描述里。
+## 选择数据种类
 
-| 字段 | 读取标签 | 适用场景 |
+| 配置字段 | 文本标签 | 用途 |
 | --- | --- | --- |
-| `vals` | `${val:键}$` | 同一种物品共用的固定信息，如活动名称 |
-| `vars` | `${var:键}$` | 初次生成时写入这件物品的数据，如剩余次数 |
-| `dynamics` | `${dynamic:键}$` | 读取时运行 Kether 脚本计算的值 |
-
-## 显示固定数据
-
-将下面的内容保存到 `plugins/Sertraline/workspace/practice_badge.yml`。重载后执行 `/sertralineitem give practice_badge`，悬停查看描述中的活动名。
+| `vals` / `val` | `${val:键}$` | 同一物品定义共用的常量，支持文本、数字、列表和对象 |
+| `vars` / `var` | `${var:键}$` | 每次生成时的初始值。存入实际物品，可以用动作在之后修改 |
+| `dynamics` / `dynamic` | `${dynamic:键}$` | 渲染或读取时执行 Kether。可填一个字符串、YAML 多行文本或脚本行列表 |
+| `keep-context` / `keepContext` | `${var:键}$` | 把生成上下文里指定的键保存到物品变量。通过 `${context:键}$` 也可读取当次生成过程的上下文 |
 
 ```yaml
-practice_badge:
+guide_roll_card:
   xbuilder:
     material: PAPER
-    name: "<!i><gold>活动徽章"
     lore:
-      - "<!i><gray>所属活动 ${val:season}$"
+      - "<!i><gray>${val:guide_title}$"
+      - "<!i><gray>Uses: ${var:usesAsIn}$"
+      - "<!i><gray>Preview: ${dynamic:rollAsIn}$"
   sertraline:
     vals:
-      season: "夏日活动"
-```
-
-## 保存剩余次数
-
-在同一个文件的顶层添加下面的条目。重载后用 `/sertralineitem give practice_ticket` 领取。每张体验券的剩余次数从 3 开始，可以在之后的物品动作中分别修改。
-
-```yaml
-practice_ticket:
-  xbuilder:
-    material: PAPER
-    name: "<!i><aqua>体验券"
-    lore:
-      - "<!i><gray>剩余次数 ${var:usesAsIn}$"
-  sertraline:
+      guide_title: "Practice card"
+      rewards: [Gold, Paper]
+      stats: {points: 10, bonus: 2}
     vars:
       uses: 3
+    dynamics:
+      roll: "random 1 to 6"
+
+guide_drop_medal:
+  xbuilder:
+    material: GOLD_NUGGET
+    lore:
+      - "<!i><gray>Killer: ${var:killer?:—}$"
+  sertraline:
+    keep-context: [killer]
 ```
 
-`uses` 保存在物品的 `sertraline_data` 中，默认重建配置会保留它。可以添加动作修改这个值，再更新描述。用于累加攻击伤害的完整写法可在 `workspace/default/default_weapon.yml` 中找到，物品 ID 为 `sword_of_counter`。
+重载后用 `/sertralineitem give guide_roll_card` 领取。`uses` 从 3 开始。`roll` 是在求值时产生的 1 到 6 之间的数字，已生成的描述不会仅因玩家盯着它就自动刷新。如果想随机一次后保存结果，应把抽到的值写回变量。
+
+`guide_drop_medal` 通过 [MythicMobs 掉落](../../../can-kao/universal-mythicmobs.md)生成且击杀者是玩家时，可以保存 `killer`。直接用发放命令领取时没有这个生成上下文，会显示缺省文本 `—`。
+
+## 修改变量并刷新描述
+
+变量保存在 `sertraline_data` 中。只修改脚本里的临时变量不会写回物品。下面给 `guide_roll_card` 增加右键动作。把 `actions` 放在原有的 `sertraline` 下，与 `vars` 对齐，避免写两个 `sertraline` 段。
+
+```yaml
+actions:
+  onRightClick:
+    - async: false
+      js: |
+        if (Number(uses) > 0) {
+          var tag = ItemStackUtil.getItemTag(bItem);
+          tag.putDeep("sertraline_data.uses", Number(uses) - 1);
+          ItemStackUtil.setItemTagDirect(bItem, tag);
+          ItemStackUtil.rebuildLore(bItem, player);
+        }
+```
+
+重载、重新领取，然后手持右键。次数会从 3 降到 2，刷新描述时也会重新计算动态值。多行格式、转换和缺省文本见[物品文本标签](../../item-text-tags.md)，累计伤害的默认例子见 `workspace/default/default_weapon.yml` 中的 `sword_of_counter`。

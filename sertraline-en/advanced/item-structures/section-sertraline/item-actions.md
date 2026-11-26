@@ -4,51 +4,77 @@ icon: wave-pulse
 
 # Item Actions
 
-Make an item run a script when a player right-clicks, attacks, or consumes it. Start by creating this compass in `plugins/Sertraline/workspace/hello_compass.yml`.
+Under `actions`, give each trigger a list. Save this example in `workspace/guide_signal.yml`, reload, and run `/sertralineitem give guide_signal`. Right-click with the compass in your main hand or off hand. In the main hand, the condition lets the first message run, and sneaking enables a second message.
 
 ```yaml
-hello_compass:
+guide_signal:
   xbuilder:
     material: COMPASS
-    name: "<!i><gold>Hello Compass"
   sertraline:
     actions:
       onRightClick:
         - async: false
-          kether: tell "You used the Hello Compass!"
+          condition:
+            - "check 1 == 1"
+          kether: 'tell "Signal received."'
+        - async: false
+          graaljs: |
+            if (player.isSneaking()) {
+              player.sendMessage("Sneaking signal.");
+            }
+      "onRightClick@off":
+        - async: false
+          kether:
+            - 'tell "Off-hand signal."'
 ```
 
-Save the file, run `/sertraline reload`, and use `/sertralineitem give hello_compass`. Hold the compass in your main hand and right-click in the air to see the message.
+## Built-in triggers
 
-## Choose a trigger
+| Trigger | When it runs and which item it reads |
+| --- | --- |
+| `onClick`, `onRightClick`, `onLeftClick` | Interact with a block or the air. Use `@off` for off hand. Main hand uses the bare trigger name |
+| `onAttack` | Uses the main-hand weapon for melee or a recorded weapon for projectile impact |
+| `onShoot` | Uses the weapon when firing a bow or similar weapon |
+| `onShootTrident` | Uses the trident when Riptide triggers, on builds with that event |
+| `onMine` | Checks both hands on block break. Supports `@main` and `@off` |
+| `onConsume` | Uses the item being eaten, drunk or otherwise consumed |
+| `onBreak` | Uses the item that breaks when its durability runs out |
+| `onDrop` | Uses the dropped item |
+| `onPickUp` | Uses the item being picked up, on builds with the pickup event |
+| `onInventoryClick` | Uses the item in the clicked inventory slot |
+| `onSwap` | Uses the two swapped hand items. `@main` and `@off` describe their destinations |
+| `onSneak` | Checks both hands when entering or leaving sneak. Supports `@main` and `@off` |
+| `onLogin` | Checks equipment on login. Supports `@main`, `@off`, `@helmet`, `@chestplate`, `@leggings` and `@boots` |
 
-| Trigger                                  | When it runs                                                                                                         |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `onClick`, `onRightClick`, `onLeftClick` | Click interactions. Add `@off` for off-hand interactions                                                             |
-| `onAttack`                               | Melee hits and projectile hits that can be traced back to a weapon. Melee uses the main-hand weapon                  |
-| `onShoot`, `onShootTrident`              | Firing a bow-like weapon or using a trident's Riptide                                                                |
-| `onMine`, `onConsume`, `onBreak`         | Breaking a block, eating or drinking, or breaking an item by using up its durability                                 |
-| `onDrop`, `onPickUp`, `onInventoryClick` | Dropping, picking up, or clicking an item in an inventory slot. Pickup needs a modern server with the matching event |
-| `onSwap`, `onSneak`                      | Swapping hands or starting and stopping sneaking                                                                     |
-| `onLogin`                                | Checking both hands and all four armor slots on login                                                                |
+A base trigger and its suffixed variant can both run for the same event. A base trigger that checks multiple slots can run for multiple items. For other Bukkit events, see [Custom Events and Global Listeners](../../event-listeners.md).
 
-`onMine`, `onSwap`, `onSneak`, and `onLogin` support `@main` and `@off`. For `onSwap`, the suffix is the **destination slot**. For example, `onSwap@off` uses the item moving into the off hand. Login also supports `onLogin@helmet`, `onLogin@chestplate`, `onLogin@leggings`, and `onLogin@boots`. If you configure a base trigger and its slot-specific trigger, both can run. See [Custom Events and Global Listeners](../../event-listeners.md) to use other Bukkit events.
+## Conditions, scripts and execution
 
-## Add a condition or script
+| Action entry field | How to use it |
+| --- | --- |
+| `condition`, `require`, `requirement`, `requirements` | One Kether condition or a list. All conditions must pass. Omit it to run unconditionally |
+| `async` | Defaults to `true`. Use `false` to access the inventory or world, change damage, or cancel an event |
+| `kether` / `ke` | A Kether string or list of script lines |
+| `javascript` / `js` | JavaScript text. Use `\|` for multiple lines |
+| `jexl` / `je` | JEXL text |
+| `fluxon` / `fl` | Fluxon text |
+| `graaljs` / `gjs` | GraalJS text |
+| `mythic` / `mm` | With MythicMobs, use a mechanic string or list. Append `~trigger` to choose a MythicMobs trigger |
 
-List one or more actions under a trigger, starting each one with `-`. To use a Kether condition, add `condition` to the same list entry as the script. Here is another way to control when the compass sends a message. Replace its existing `onRightClick` entry, then compare a normal right-click with one while sneaking.
+You can set several script fields in one entry. Once the condition passes they run in the order Kether, JavaScript, JEXL, Fluxon, GraalJS, and MythicMobs. To try several forms, replace the existing `onRightClick` under `sertraline.actions` with this snippet.
 
 ```yaml
 onRightClick:
   - async: false
-    graaljs: |
-      if (player.isSneaking()) {
-        player.sendMessage("You used the compass while sneaking!");
-      }
+    kether: 'tell "Kether"'
+    js: 'player.sendMessage("JavaScript");'
+    jexl: 'player.sendMessage("JEXL");'
+    fluxon: |
+      import 'sertraline:bukkit'
+      &player::sendMessage("Fluxon")
+    graaljs: 'player.sendMessage("GraalJS");'
 ```
 
-This example uses GraalJS to check whether the player is sneaking. For other script languages, use `kether`, `js` (or `javascript`), `jexl`, or `fluxon`. JavaScript can access `player`, the current `event`, the item that triggered the action as `bItem`, and [item data](item-data.md).
+Scripts can read `player`, `event`, `bItem` (the actual stack), `sItem` (the definition), and keys from item data. For a cancellable event, use `cancellableEvent`. For example, set `async: false` and `js: 'cancellableEvent.setCancelled(true);'` in `onDrop` to prevent dropping.
 
-Actions run asynchronously by default. Set `async: false` when accessing an inventory or the world, editing damage, or cancelling an event. For a cancellable event, you can call `event.setCancelled(true)`. Set the default interval in milliseconds with `action.throttle-time` in `config.yml`. To override one trigger, add it under `action.throttle`, for example `onRightClick: 1000`. Set it to `0` to disable throttling for that trigger.
-
-Try `sword_of_ultimate_damage` in the bundled `workspace/default/default_weapon.yml` or `speed_potion_cookie` in `default_consumable.yml` for an item that gives a speed effect when eaten. See [Script Utilities](../../../references/script-util/) for tools you can use in scripts.
+Set the default interval in milliseconds with `action.throttle-time` in `config.yml`. Override per base trigger under `action.throttle`, such as `onRightClick: 1000`. Set it to `0` to turn off throttling for that trigger. Find more examples in `workspace/default/default_weapon.yml` and `default_consumable.yml`, or see [Item Data](item-data.md) to save a variable from an action.

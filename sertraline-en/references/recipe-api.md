@@ -4,7 +4,7 @@ This reference covers modern Sertraline 3.13.2.2 builds. Plugin developers can l
 
 ## Add the compile-time dependency
 
-Run `./gradlew :project:common:apiJar` from the Sertraline source tree. Use `gradlew.bat` on Windows. Add `project/common/build/libs/Sertraline-3.13.2.2-api.jar` and the target Bukkit or Paper API to your compile classpath. Use `compileOnly` in Gradle. Install the matching Sertraline runtime JAR in the server's `plugins/` directory.
+Add Sertraline from Maven Central using the [Sertraline API dependency instructions](sertralineapi.md#add-the-dependency), and include the target Bukkit or Paper API. To build a local API JAR, run `tabooBuildApi`.
 
 Declare the dependency in `src/main/resources/plugin.yml`. This example matches the Java listener below. [Plugin dependency declaration](https://docs.papermc.io/paper/dev/plugin-yml/#depend)
 

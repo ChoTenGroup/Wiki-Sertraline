@@ -4,7 +4,7 @@
 
 ## 添加编译依赖
 
-在 Sertraline 源码目录运行 `./gradlew :project:common:apiJar`，Windows 使用 `gradlew.bat`。把 `project/common/build/libs/Sertraline-3.13.2.2-api.jar` 和目标平台的 Bukkit/Paper API 加入项目的编译类路径。Gradle 项目用 `compileOnly`。服务器的 `plugins/` 目录安装同版本的 Sertraline 运行版 JAR。
+按 [Sertraline API 的依赖说明](SertralineAPI.md#添加依赖)从 Maven Central 引入 Sertraline，并添加目标平台的 Bukkit 或 Paper API。需要本地 API JAR 时，运行 `tabooBuildApi`。
 
 在你的插件的 `src/main/resources/plugin.yml` 声明依赖。下面的声明对应本页的 Java 监听器示例。[插件依赖声明](https://docs.papermc.io/paper/dev/plugin-yml/#depend)
 

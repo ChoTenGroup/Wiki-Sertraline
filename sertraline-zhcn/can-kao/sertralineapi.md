@@ -6,6 +6,36 @@
 
 查询或注册工作台、熔炉等配方，见[配方 API](recipe-api.md)。
 
+## 添加依赖
+
+从 Maven Central 引入 Sertraline。Gradle Kotlin DSL 写法如下。
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.zzzyyylllty.sertraline:Sertraline:3.13.2.2")
+}
+```
+
+使用 Maven 时，把下面的内容加入 `pom.xml` 的 `<dependencies>`。
+
+```xml
+<dependency>
+    <groupId>io.github.zzzyyylllty.sertraline</groupId>
+    <artifactId>Sertraline</artifactId>
+    <version>3.13.2.2</version>
+</dependency>
+```
+
+在服务器的 `plugins/` 目录安装同版本的 Sertraline 运行版 JAR，并在你的插件 `plugin.yml` 中声明 `depend: [Sertraline]`。
+
+### 从源码构建 API
+
+在 Sertraline 源码根目录运行 `./gradlew tabooBuildApi`。Windows 使用 `.\gradlew.bat tabooBuildApi`。默认构建生成 `project/common/build/libs/Sertraline-X.X.X.X-api.jar`，其中 `X.X.X.X` 是项目版本。
+
 ## 多来源物品 API
 
 SertralineItemAPI 通过 AbstractSItem 提供查询、构建和注册操作。物品 ID 可使用 id、minecraft::id 或 provider::id。兼容接口 Sertraline.api() 仍提供背包、重建、管理器和模板操作。
@@ -81,8 +111,6 @@ SertralineItemAPI 通过 AbstractSItem 提供查询、构建和注册操作。�
 
 ### getVal
 
-已弃用的兼容方法。推荐使用 AbstractSItem.getDeepData("sertraline:vals").
-
 从 Sertraline 物品对象读取 val 数据（`sertraline:vals`），键不存在返回 `null`。
 
 `getVal(sItem: ModernSItem, valId: String): Any?`
@@ -99,17 +127,17 @@ SertralineItemAPI 通过 AbstractSItem 提供查询、构建和注册操作。�
 
 `isValidItem(itemStack: ItemStack): Boolean`
 
-### isRegisteredItem
+### isRegisteredItemStack
 
-判断物品是否已在 `itemMap` 中注册。
+使用物品上的 Sertraline ID 查询该物品是否已在 `itemMap` 中注册。
 
-`isRegisteredItem(itemStack: ItemStack): Boolean`
+`isRegisteredItemStack(itemStack: ItemStack): Boolean`
 
-### isRegisteredItem
+### isRegisteredItemById
 
-判断指定 ID 是否已在 `itemMap` 中注册。
+判断指定 ID 是否已在 `itemMap` 中注册。原有的两个 `isRegisteredItem` 签名仍可使用。
 
-`isRegisteredItem(id: String): Boolean`
+`isRegisteredItemById(id: String): Boolean`
 
 ---
 
@@ -253,17 +281,19 @@ SertralineItemAPI 通过 AbstractSItem 提供查询、构建和注册操作。�
 
 `getAllPrivateItems(uuid: String, sub: SubManagerType): Map<String, ModernSItem>`
 
-### updateSItem（私有物品）
+### updateSItemS
 
-已弃用的兼容方法。使用私有物品管理器更新。
+按显式 ID 更新指定 UUID 的私人物品。持久管理器会同步写入数据库。返回被替换的物品，新增时返回 `null`。
 
-更新指定 UUID 的私人物品。持久管理器会同步更新数据库；返回旧物品，不存在时返回 `null`。
+`updateSItemS(uuid: String, id: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
 
-`updateSItem(uuid: String, id: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
+### updateSItemM
 
-也可以直接使用 `ModernSItem.key` 作为 ID：
+使用 `ModernSItem.key` 作为 ID，更新指定 UUID 的私人物品。持久化和返回值与 `updateSItemS` 相同。
 
-`updateSItem(uuid: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
+`updateSItemM(uuid: String, item: ModernSItem, sub: SubManagerType = SubManagerType.PERSISTENT): ModernSItem?`
+
+Kotlin 调用可以省略 `sub`。Java 和 JS 调用需要显式传入 `SubManagerType`。
 
 ### registerItem
 
@@ -273,17 +303,21 @@ SertralineItemAPI 通过 AbstractSItem 提供查询、构建和注册操作。�
 
 `registerItem(id: String, item: ModernSItem): Unit`
 
+### updatePublicSItemS
+
+按显式 ID 写入 `itemMap` 的公共注册表。返回被替换的 Sertraline 物品。该 ID 没有旧条目或旧条目来自其他来源时，返回 `null`。
+
+`updatePublicSItemS(id: String, item: ModernSItem): ModernSItem?`
+
+### updatePublicSItemM
+
+使用 `ModernSItem.key` 作为 ID 写入公共注册表，返回值与 `updatePublicSItemS` 相同。
+
+`updatePublicSItemM(item: ModernSItem): ModernSItem?`
+
 ### updateSItem
 
-已弃用的兼容方法。推荐使用 SertralineItemAPI.update.
-
-直接更新 `itemMap` 中的公共物品。返回被替换的旧物品；如果原 ID 不存在则返回 `null`。
-
-`updateSItem(id: String, item: ModernSItem): ModernSItem?`
-
-也可以直接使用 `ModernSItem.key` 作为 ID：
-
-`updateSItem(item: ModernSItem): ModernSItem?`
+原有的四个 `updateSItem` 签名仍保留为已弃用的兼容入口。两参数调用 `updateSItem(string, item)` 会更新公共注册表。按物品键更新私人物品时，请调用 `updateSItemM`。
 
 ### unregisterItem
 
