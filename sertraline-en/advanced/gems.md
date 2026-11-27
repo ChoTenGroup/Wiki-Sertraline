@@ -139,6 +139,10 @@ gem_example_plain:
 
 ### Commands
 
+{% hint style="info" %}
+`gem.interaction.click.permission` only gates click-to-socket. `/sertralinegem` uses the separate `sertraline.command.gem` permission (operators have it by default); configure that permission separately if you also need to restrict command use.
+{% endhint %}
+
 | Command | Description |
 | --- | --- |
 | `/sertralinegem list` | List sockets and socketed gems of the held item |
@@ -160,10 +164,10 @@ sertraline_gem:
   slots:
     slot_red:
       gem: "gem_example_ruby"  # Sertraline id of the socketed gem
-      timestamp: 1791764589    # unix millis
+      timestamp: 1791764589000 # unix millis
 ```
 
-The default `rebuild.keep-data` list includes `sertraline_gem`. Keep this entry when customizing the list.
+The default `rebuild.keep-data` list and its version-2 config migration include `sertraline_gem`. Gem state is also explicitly copied during rebuilds, so you normally do not need to change this setting for socketed gems to survive.
 
 ## 5. Lore placeholder
 

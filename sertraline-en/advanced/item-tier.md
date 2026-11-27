@@ -37,4 +37,4 @@ classified_sword:
 
 Reload, then run `/sertralineitem give classified_sword`. The bundled `loreformat` in `lore-formats/loreGenerator.yml` displays the sword's type, tier, and level. Use `{type:name}`, `{tier:format}`, and `{level:name}` to display those labels in your own format.
 
-Follow the matching default file when defining a custom type or level. A type can specify a `parent`. For example, the bundled `SWORD` type has `WEAPON` as its parent. Keep IDs unique within each category.
+Follow the matching default file when defining a custom type or level. A type can specify a `parent`. For example, the bundled `SWORD` type has `WEAPON` as its parent. The item-browser type filter follows this hierarchy, so filtering for `WEAPON` also includes child types such as `SWORD` and `DAGGER`. Keep IDs unique within each category.

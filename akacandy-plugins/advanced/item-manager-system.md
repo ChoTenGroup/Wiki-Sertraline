@@ -116,6 +116,10 @@ When no UUID is provided, the manager resolves one in this order:
 
 ### API (via `SertralineAPI`)
 
+{% hint style="warning" %}
+The manager-scope examples below use `SertralineAPI`. In the current source, `getPublicItem`, `getAllPublicItems`, `registerItem`, and `unregisterItem` are deprecated. Use [`SertralineItemAPI`](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/032ee71ebd935552337e02371ba39e19294d65d1/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/api/SertralineItemAPI.kt) for global item-registry lookup and registration/removal; it does not replace the public/private manager APIs or their persistence scopes.
+{% endhint %}
+
 ```kotlin
 val api = Sertraline.api()
 ```

@@ -45,6 +45,55 @@ Run `/sertraline reload` and collect the item with `/sertralineitem give focus_w
 
 See `attributes/default.yml` and `workspace/default/default_attribute.yml` for more examples.
 
+## Derived values, custom operation stages, and base providers
+
+The attribute engine can calculate one attribute from others, define custom modifier stages, and use an entity's vanilla attribute as a base:
+
+```yaml
+attributes:
+  practice:armor_ward:
+    name: Armor Ward
+    base:
+      type: vanilla
+      attribute: minecraft:armor
+      fallback: 0
+      transform: "value * 0.5"
+  practice:zombie_armor:
+    name: Zombie Armor
+    base:
+      type: by_entity_type
+      attribute: minecraft:armor
+      fallback: 0
+    entities: [minecraft:zombie]
+  practice:power:
+    name: Power
+    base: 10
+    operations:
+      - minecraft:add_value
+      - practice:add_capped
+  practice:combat_power:
+    name: Combat Power
+    derived: "practice:power * 2"
+  practice:vitality:
+    name: Vitality
+    base: 0
+    entities: [minecraft:player]
+    sync:
+      - target: minecraft:max_health
+        operation: add_value
+        value: value
+
+attribute_operations:
+  practice:add_capped:
+    expression: "MIN(current + amount, base * 2)"
+```
+
+`vanilla` reads the living entity's current vanilla base (before modifiers); `by_entity_type` reads Paper's default value for that entity type. Both use `fallback` when the attribute or platform is unsupported, and `transform` receives the provider result as `value`. `entities` can restrict a definition to entity IDs or Bukkit entity tags. `sync` applies the calculated value to a vanilla attribute as a modifier; it flows from the Sertraline attribute to Minecraft, unlike a vanilla `base` provider which reads from Minecraft. In an `operations` list, stages run in the listed order; custom stage expressions receive `base` (the value at the start of that stage), `current`, and `amount`. `MIN` and `MAX` are available in expressions.
+
+{% hint style="success" %}
+A `derived` attribute is calculated from its referenced attribute IDs; it does not use its own base, item modifiers, operation stages, or sync rules. Use a normal attribute when equipment should modify the value.
+{% endhint %}
+
 ## Try the bundled combat attributes
 
 On a modern server with the bundled combat listeners installed, run `/sertralineitem give combat_feather_boots` and wear the boots. Their 100 fall defense halves the base fall damage under the bundled formula, `damage × 100 / (100 + defense)`. Vanilla enchantments and other effects can still change final damage.

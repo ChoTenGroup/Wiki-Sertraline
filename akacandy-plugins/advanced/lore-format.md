@@ -6,11 +6,15 @@ icon: tent-double-peak
 
 #### LoreSetting Properties <a href="#loresetting-properties" id="loresetting-properties"></a>
 
-| Property    | Type      | Default | Description                                                                           |
-| ----------- | --------- | ------- | ------------------------------------------------------------------------------------- |
-| `overwrite` | `Boolean` | `true`  | If true, replaces existing lore; if false, appends to it                              |
-| `visual`    | `Boolean` | `true`  | If true, applies during s2c (visual) transform; if false, applies to server-side item |
-| `skipBlank` | `Boolean` | `true`  | If true, merges consecutive empty lines into single blank line                        |
+| YAML setting        | Type      | Default | Description                                                                 |
+| ------------------- | --------- | ------- | --------------------------------------------------------------------------- |
+| `overwrite`         | `Boolean` | `true`  | Replace existing lore; when `false`, append generated lines                 |
+| `visual`            | `Boolean` | `false` | Apply the format to the packet/client-side view instead of server-side lore |
+| `auto-skip-blank`   | `Boolean` | `true`  | Collapse consecutive empty lines into a single blank line                   |
+
+{% hint style="warning" %}
+`visual: true` requires PacketEvents and `packet.packet-lore: true` in Sertraline's main configuration. Without both, the format is treated as non-visual and the plugin logs a warning.
+{% endhint %}
 
 #### Key Iteration Examples <a href="#key-iteration-examples" id="key-iteration-examples"></a>
 
@@ -32,7 +36,7 @@ content: "<green>{plus}{value} {name}"
 If `sertraline:attributes` contains `[10, 20, 30]`, produces three lines with placeholder substitution for each value.
 
 {% hint style="warning" %}
-Some key is different with config's section. for example is MMO Attributes: `attack-damage` -> `ATTACK_DAMAGE`
+Use the key path and spelling expected by its data source; for example, the MMO attribute example below uses `mmo:ATTACK_DAMAGE`.
 {% endhint %}
 
 **With Config Key:**
@@ -106,14 +110,22 @@ The `LineMode` enum determines how multiple required keys are evaluated. The sys
 
 The `handleExistLore()` function checks key existence. If the key starts with `*`, it queries the item's config section; otherwise, it queries the item's data via `getDeepData()`.
 
+{% hint style="info" %}
+When `lineRequire` is empty or omitted, a line is shown if `lineMode` is omitted, `ALL`, or `NOT`. With an empty requirement list, `ANY` and `NOT_ALL` do not show the line.
+{% endhint %}
+
 ### Placeholder Processing System <a href="#placeholder-processing-system" id="placeholder-processing-system"></a>
 
-The lore formatting system supports three layers of placeholder processing applied in sequence.
+For a keyed element, Sertraline processes placeholders in this order:
 
-```
-```
+1. **Value and item paths:** `{plus}`, `{minus}`, `{value}`, `{auto}`, `{round:N}`, `{data:path}`, and `{config:path}`. Value placeholders use each resolved value; `data:` reads item data and `config:` reads the item's configuration tree.
+2. **General Sertraline tags:** tier, type, level, `val`, `var`, and `context` placeholders.
+3. **PlaceholderAPI:** `%...%` placeholders are expanded when a player context is available.
+4. **Inline Kether:** text inside `{{...}}` is evaluated last.
 
-**Sources:** [project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt54-101](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/7fbdc299/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt#L54-L101)
+Static elements have no keyed value, but still pass through the general tag, PlaceholderAPI, and Kether processing stages.
+
+**Implementation:** [lore-format YAML parser](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/032ee71ebd935552337e02371ba39e19294d65d1/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/config/loadLoreFormatFiles.kt#L141-L159) · [placeholder handling](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/032ee71ebd935552337e02371ba39e19294d65d1/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt#L619-L751) · [line requirements](https://github.com/zzzyyylllty/Sertraline-Hydrochloride/blob/032ee71ebd935552337e02371ba39e19294d65d1/project/common/src/main/kotlin/io/github/zzzyyylllty/sertraline/util/loreformat/handleLoreFormat.kt#L758-L861)
 
 #### Built-in Placeholder Types <a href="#built-in-placeholder-types" id="built-in-placeholder-types"></a>
 

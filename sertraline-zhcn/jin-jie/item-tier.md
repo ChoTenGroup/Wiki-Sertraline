@@ -61,4 +61,4 @@ classified_sword:
 
 重载后执行 `/sertralineitem give classified_sword`。自带的 `lore-formats/loreGenerator.yml` 中，`loreformat` 会显示类型、品级和等级。自定义格式也可以用 `{type:name}`、`{tier:format}` 和 `{level:name}` 显示这三项。
 
-定义自己的类型或等级时，沿用对应目录中默认文件的结构。类型可用 `parent` 指定父类型，例如默认的 `SWORD` 归属 `WEAPON`。每个目录中的 ID 应保持唯一。
+定义自己的类型或等级时，沿用对应目录中默认文件的结构。类型可用 `parent` 指定父类型，例如默认的 `SWORD` 归属 `WEAPON`。物品浏览器会沿着类型继承关系筛选：筛选 `WEAPON` 时也会包括 `SWORD`、`DAGGER` 等子类型。每个目录中的 ID 应保持唯一。

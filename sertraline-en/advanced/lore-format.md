@@ -50,6 +50,10 @@ Add this entry to the end of `practice_lore`'s `elements` list. Add `vals: { not
 
 When `lineRequire` lists multiple keys, `ANY` means at least one exists, `ALL` means all exist, `NOT` means none exist, and `NOT_ALL` means at least one is missing.
 
+{% hint style="warning" %}
+`lineRequire` by itself does not hide a line. Set `lineMode` as well; if it is omitted, the requirement list does not gate visibility.
+{% endhint %}
+
 ## Format numbers
 
 | Syntax | Display |

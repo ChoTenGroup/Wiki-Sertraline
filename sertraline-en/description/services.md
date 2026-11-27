@@ -2,11 +2,15 @@
 icon: servicestack
 ---
 
-# Services
+# Services & Project Story
 
-## Services
+## Sertraline 3.0 Service Plan
 
-Since version 3.0, Sertraline offers plugin services in the following tiers:
+{% hint style="warning" %}
+The table and prices below describe the Sertraline 3.0 plan. As of November 27, 2026, the project listing says non-donating users can receive support and the premium version is currently free. Offerings may change; confirm current details on the [Modrinth project page](https://modrinth.com/plugin/sertralineitem) before purchasing.
+{% endhint %}
+
+The following table records the service tiers and features described for version 3.0:
 
 | Feature / Service    | Free | Basic | Premium |
 | -------------------- | :--: | :---: | :-----: |
@@ -20,7 +24,7 @@ Since version 3.0, Sertraline offers plugin services in the following tiers:
 | Priority Updates     |   ✅  |   ✅   |    ✅    |
 | Feature Extensions   |   ✅  |   ✅   |    ✅    |
 
-Starting from version 3.0, Sertraline operates on a fully paid model. Details of the services are as follows:
+The prices stated for the version 3.0 plan were:
 
 **Basic Paid Version:** 69 RMB / 10 USD
 
@@ -30,9 +34,7 @@ Starting from version 3.0, Sertraline operates on a fully paid model. Details of
 * After purchase, if you are a user in China, you will be invited to join the Sertraline after-sales QQ group(If you have QQ) and be invited to join the Discord after-sales channel for priority support.
 * **Due to the specific nature of the product, refunds are not provided under any circumstances.**
 
-**(But in fact we also provide support for free users because we currently less friends buyed)**
-
-## Stories
+## Project Story
 
 This project's name is from [Sertraline Medicinal](https://www.drugs.com/sertraline.html).
 

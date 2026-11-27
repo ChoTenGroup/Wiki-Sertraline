@@ -4,37 +4,38 @@ icon: percent
 
 # PlaceholderAPI
 
-### Usage
+Install PlaceholderAPI to enable Sertraline's expansion. Sertraline registers the `%sertraline_...%` expansion automatically when PlaceholderAPI is present.
 
-{% hint style="success" %}
-Sertraline scripts used through PlaceholderAPI can access the script utilities available in their context.
+## Syntax and testing
+
+Use `%sertraline_<prefix>:<parameter>%`. For example, test a random integer in game with:
+
+```text
+/papi parse me %sertraline_random:40to80%
+```
+
+The prefix selects the operation; the text after `:` is its input.
+
+## Supported prefixes
+
+| Prefix | Purpose |
+| --- | --- |
+| `kether`, `ke` | Run Kether with `player` and Sertraline's default script utilities in the context. When the PAPI player is online, it is also used as the Kether sender. |
+| `javascript`, `js` | Run JavaScript with `player` and the default script utilities. Compiled scripts are cached. |
+| `jexl`, `je` | Run JEXL with `player` and the default script utilities. Compiled scripts are cached. |
+| `graaljs`, `gjs` | Evaluate GraalJS with `player` and the default script utilities. |
+| `fluxon`, `fl` | Run Fluxon with `player` and the default script utilities. |
+| `config` | Read a raw value from Sertraline's configuration by key, such as `config:debug`. |
+| `random`, `rand` | Generate a random number using `starttoend`, for example `40to80` or `1.5to3.5`; an optional `:2` sets decimal places. |
+| `data` | Read a player's raw stored value by key. |
+| `data1`, `data2` | Read numeric player data rounded to one or two decimal places. |
+| `data1a`, `data2a` | Same numeric formatting, but remove a trailing `.0`. |
+| `cdleftmil` | Read remaining cooldown time in milliseconds for a key. |
+| `cdleftsec`, `cdleftsec1`, `cdleftsec2` | Read remaining cooldown time in seconds, rounded to an integer, one decimal, or two decimals. |
+| `cdleftsec1a`, `cdleftsec2a` | One- or two-decimal cooldown values with a trailing `.0` removed. |
+
+Several value-returning prefixes support a fallback after `?:`, for example `%sertraline_data:my_key?:unset%`. Use a fallback with the prefixes that return one value; it is not a general script-language feature.
+
+{% hint style="warning" %}
+Script prefixes execute code with access to Sertraline's script utilities and the current player context. Use only scripts you trust, and do not assume a given PlaceholderAPI call runs on the server thread.
 {% endhint %}
-
-<figure><img src="../.gitbook/assets/image (8).png" alt=""><figcaption></figcaption></figure>
-
-{% hint style="info" %}
-You can use `/papi parse me %sertraline_PREFIX:PARAM%` to test Placeholders.
-{% endhint %}
-
-### PlaceHolders
-
-| PAPI Parameter Prefix      | Description                                       | Notes                                                                                      |
-| -------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| kether: / ke:              | Execute Kether script                             | Root variables include player data, Player passed as CommandSender, executes kether script |
-| javascript: / js:          | Execute JavaScript script                         | Root variables include player data, Includes script compilation and caching                |
-| jexl: / je:                | Execute JEXL script                               | Root variables include player data, Compiled and cached via prodJexlCompiler               |
-| fluxon: / fl:              | Execute Fluxon script                             | Root variables include player data                                                         |
-| graaljs: / gjs: (`3.6.3+`) | Execute GraalJS script                            | Runs the script. Use a placeholder that returns a value when you need display text                                        |
-| config:                    | Read value from configuration by key              | Directly returns config entry                                                              |
-| random: / rand:            | Generate random number (supports ints and floats) | Parameter format example: `40to80`                                                     |
-| data: (`3.6.3+`)           | Get raw player data                               | Uses DataUtil to get raw data                                                              |
-| data1: / data2: | Read numeric player data | Rounds to one or two decimal places |
-| data1a: / data2a: | Read numeric player data | Also trims the trailing ".0" |
-| cdleftmil: (`3.6.3+`)      | Get cooldown left in milliseconds                 | Uses DataUtil to get cooldown time in milliseconds                                         |
-| cdleftsec: (`3.6.3+`)      | Get cooldown left in seconds (rounded integer)    | Converts ms to seconds, rounded                                                            |
-| cdleftsec1: (`3.6.3+`)     | Get cooldown left in seconds (1 decimal place)    | Converts ms to seconds, rounded to 1 decimal place                                         |
-| cdleftsec2: (`3.6.3+`)     | Get cooldown left in seconds (2 decimal places)   | Converts ms to seconds, rounded to 2 decimal places                                        |
-| cdleftsec1a: (`3.6.3+`)    | Variant of cdleftsec1, trims trailing ".0"        | One decimal place with trailing ".0" removed                                               |
-| cdleftsec2a: (`3.6.3+`)    | Variant of cdleftsec2, trims trailing ".0"        | Two decimal places with trailing ".0" removed                                              |
-
-In game, run `/papi parse me %sertraline_random:40to80%` to verify the expansion. `random:1.5to3.5:2` rounds to at most two decimal places and removes trailing zeros. Some placeholders accept a fallback, such as `%sertraline_data:my_key?:unset%`.

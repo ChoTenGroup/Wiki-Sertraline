@@ -44,4 +44,8 @@ Sertraline 是 Minecraft 服务器的物品插件。你可以在配置文件中�
 
 在[常用命令](ji-chu/commands.md)中可以查找发放物品、浏览物品和打开合成站的命令。[服务与项目故事](jie-shao/services.md)列出了各版本的服务项目。
 
+{% hint style="success" %}
+需要下载插件或寻求帮助？请查看[简介](jie-shao/intro.md)，其中列有下载与支持渠道。
+{% endhint %}
+
 <figure><img src="https://github.com/user-attachments/assets/4e876740-8759-4b0d-a42c-7a8cf9692f9d" alt=""><figcaption></figcaption></figure>

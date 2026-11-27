@@ -50,6 +50,10 @@ practice_lore:
 
 当 `lineRequire` 中有多个键时，`ANY` 表示至少有一项存在，`ALL` 表示全部存在，`NOT` 表示全部缺失，`NOT_ALL` 表示至少缺失一项。
 
+{% hint style="warning" %}
+仅设置 `lineRequire` 不会隐藏描述行；还要设置 `lineMode`。若省略 `lineMode`，条件列表不会控制该行是否显示。
+{% endhint %}
+
 ## 格式化数值
 
 | 写法 | 显示结果 |

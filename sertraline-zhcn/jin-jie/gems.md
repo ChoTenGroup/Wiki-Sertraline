@@ -130,6 +130,10 @@ gem_example_plain:
 
 ### 命令
 
+{% hint style="info" %}
+`gem.interaction.click.permission` 只限制背包里的点击镶嵌。`/sertralinegem` 使用独立的 `sertraline.command.gem` 权限（默认仅管理员）；需要限制命令时，请单独配置该权限。
+{% endhint %}
+
 | 命令 | 说明 |
 | --- | --- |
 | `/sertralinegem list` | 列出手持物品的槽位与已镶嵌的宝石 |
@@ -151,10 +155,10 @@ sertraline_gem:
   slots:
     slot_red:
       gem: "gem_example_ruby"  # 宝石的 Sertraline ID
-      timestamp: 1791764589    # 镶嵌时间（毫秒）
+      timestamp: 1791764589000 # 镶嵌时间（Unix 毫秒）
 ```
 
-默认 `config.yml` 的 `rebuild.keep-data` 包含 `sertraline_gem`；请保留该项，以免重建后丢失镶嵌状态。
+`rebuild.keep-data` 的默认列表和旧版配置迁移中都包含 `sertraline_gem`。重建流程还会单独复制宝石状态；通常不必为了让已镶嵌宝石在重建后保留而修改此选项。
 
 ## 五、Lore 占位符
 

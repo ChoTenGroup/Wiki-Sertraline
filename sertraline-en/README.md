@@ -30,12 +30,20 @@ layout:
 
 # Welcome
 
-Welcome to the **Sertraline-Hydrochloride ItemStack Plugin** wiki!
+Welcome to the **Sertraline** wiki. Sertraline is a Minecraft server item-management plugin; this guide covers setup, item configuration, and related APIs.
 
 <figure><img src="https://github.com/user-attachments/assets/258bc7c3-6dcc-4a24-8ac9-9ee358f62c89" alt=""><figcaption></figcaption></figure>
 
 ### Quick Start
 
-<table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Stories &#x26; Services</strong></td><td>What stories?</td><td></td><td></td><td><a href="description/services.md">services.md</a></td></tr><tr><td><strong>Install</strong></td><td>Try sertraline now!</td><td></td><td></td><td><a href="basics/installation.md">installation.md</a></td></tr><tr><td><strong>Getting Started</strong></td><td>Create your first item!</td><td></td><td></td><td><a href="basics/my-first-item.md">my-first-item.md</a></td></tr></tbody></table>
+1. [Install and configure the plugin](basics/installation.md).
+2. [Create your first item](basics/my-first-item.md).
+3. [Learn the item structure](basics/item-structure.md).
+
+See [Common Commands](basics/commands.md) for the command reference.
+
+{% hint style="success" %}
+Need a download or help? See the [Intro](description/intro.md) for release links and support channels.
+{% endhint %}
 
 <figure><img src="https://github.com/user-attachments/assets/4e876740-8759-4b0d-a42c-7a8cf9692f9d" alt=""><figcaption></figcaption></figure>

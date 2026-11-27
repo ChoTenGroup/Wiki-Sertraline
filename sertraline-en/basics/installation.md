@@ -23,6 +23,10 @@ PlaceholderAPI enables external placeholders. PacketEvents 2.10 or newer is requ
 | `lang/`, `internal/` | Language files and internal resources |
 | `config.yml`, `manager.yml`, `experimental.yml` | Plugin options, item manager defaults, and experimental options |
 
+{% hint style="success" %}
+Item files are found recursively under `workspace/` (up to 10 directory levels). The default `file-load.item` regex in `config.yml` matches the **filename** and accepts `.yaml`, `.yml`, `.toml`, `.tml`, `.json`, and `.conf`. If a file is not loaded, check its extension and this filter, then review the reload log.
+{% endhint %}
+
 Run `/sertraline reload` after changing runtime settings. Changes to database or metrics settings require a server restart. Packet handlers that were disabled at startup also require a restart to enable. Review scripts before importing third-party item packs because scripts can access server resources.
 
 Next, [create your first item](my-first-item.md) or look up the [common commands](commands.md).
@@ -48,6 +52,6 @@ Edit the existing settings in `config.yml`. Keep the other keys in the same sect
 | `metrics.enabled: false` | Turn off the plugin's FastStats reporting after a restart |
 | `item-update.enabled: false` | Turn off automatic updates to existing items |
 | `packet.packet-lore: false` | Turn off packet-based lore. Ordinary lore stored on items remains available |
-| `database.enable: false` | Use local SQLite. To use MySQL, set it to `true`, provide the connection details, and restart |
+| `database.enable: false` | Use SQLite. To use MySQL, set it to `true`, provide the connection details, and restart |
 
 To skip scanning online players' items on every reload, set `item-update.triggers.on-reload` to `false`. Login, held-item changes, and other update checks have their own switches.

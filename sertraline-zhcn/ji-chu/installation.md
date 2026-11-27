@@ -35,6 +35,10 @@ PlaceholderAPI 可用于占位符；PacketEvents 2.10 或更高版本用于发�
 | `lang/`、`internal/`                                | 语言文件与内部资源        |
 | `config.yml`、`manager.yml`、`experimental.yml`      | 主配置、物品管理器和实验开关   |
 
+{% hint style="success" %}
+物品文件会在 `workspace/` 中递归扫描，最多深入 10 层目录。默认的 `config.yml` 中，`file-load.item` 正则表达式匹配的是**文件名**，支持 `.yaml`、`.yml`、`.toml`、`.tml`、`.json` 和 `.conf` 扩展名。如果文件没有加载，请检查扩展名和此筛选规则，并查看重载日志。
+{% endhint %}
+
 编辑后使用 `/sertraline reload` 应用运行期设置；数据库和统计设置在启动时读取，修改后需要重启服务器。在启动时关闭的发包注册也需要重启才能重新启用。接下来可以[创建第一个物品](my-first-item.md)。
 
 ## 可选依赖
@@ -58,6 +62,6 @@ PlaceholderAPI 可用于占位符；PacketEvents 2.10 或更高版本用于发�
 | `metrics.enabled: false`     | 停用插件的 FastStats 统计，重启后应用                     |
 | `item-update.enabled: false` | 停用物品配置修改后的自动更新                               |
 | `packet.packet-lore: false`  | 关闭发包描述。物品自身的普通描述仍可使用                         |
-| `database.enable: false`     | 使用本地 SQLite。设为 `true` 并填写连接资料可改用 MySQL，修改后重启 |
+| `database.enable: false`     | 使用 SQLite。设为 `true` 并填写连接资料可改用 MySQL，修改后重启 |
 
 例如，只想禁止每次重载都扫描在线玩家的旧物品时，可将 `item-update.triggers.on-reload` 设为 `false`。登录、切换手持物品和其他自动检查仍由各自的开关控制。
